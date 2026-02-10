@@ -31,7 +31,7 @@ let myCloset = []; // { id, name, category, style, gender }
 let useMyCloset = false;
 
 // --- Weather & Outfit Data (Placeholders) ---
-const weatherData = {
+let weatherData = {
     currentTemperature: 20,
     yesterdayTemperature: 17,
     windSpeed: 5, // m/s
@@ -97,6 +97,48 @@ function addToCloset() {
     }
 }
 
+// Lat/Long to KMA grid coordinate conversion function
+// Based on: https://www.weather.go.kr/weather/forecast/digital-forecast.jsp
+// and various JS implementations available online.
+function convertToKMA(lat, lon) {
+    const RE = 6371.00877; // 지구 반경 (km)
+    const GRID = 5.0; // 격자 간격 (km)
+    const SLAT1 = 30.0; // 표준 위도 1
+    const SLAT2 = 60.0; // 표준 위도 2
+    const OLON = 126.0; // 기준점 경도
+    const OLAT = 38.0; // 기준점 위도
+    const XO = 43; // 기준점 X좌표
+    const YO = 136; // 기준점 Y좌표
+
+    const DEGRAD = Math.PI / 180.0;
+    const RADDEG = 180.0 / Math.PI;
+
+    const re = RE / GRID;
+    const slat1 = SLAT1 * DEGRAD;
+    const slat2 = SLAT2 * DEGRAD;
+    const olon = OLON * DEGRAD;
+    const olat = OLAT * DEGRAD;
+
+    let sn = Math.tan(Math.PI * 0.25 + slat2 * 0.5) / Math.tan(Math.PI * 0.25 + slat1 * 0.5);
+    sn = Math.log(Math.cos(slat1) / Math.cos(slat2)) / Math.log(sn);
+    let sf = Math.tan(Math.PI * 0.25 + slat1 * 0.5);
+    sf = Math.pow(sf, sn) * Math.cos(slat1) / sn;
+    let ro = Math.tan(Math.PI * 0.25 + olat * 0.5);
+    ro = re * sf / Math.pow(ro, sn);
+
+    let ra = Math.tan(Math.PI * 0.25 + lat * DEGRAD * 0.5);
+    ra = re * sf / Math.pow(ra, sn);
+    let theta = lon * DEGRAD - olon;
+    if (theta > Math.PI) theta -= 2.0 * Math.PI;
+    if (theta < -Math.PI) theta += 2.0 * Math.PI;
+    theta *= sn;
+
+    const nx = Math.floor(ra * Math.sin(theta) + XO + 0.5);
+    const ny = Math.floor(ro - ra * Math.cos(theta) + YO + 0.5);
+
+    return { nx, ny };
+}
+
 // Helper function to format date and time for the API
 function getBaseDateTime() {
     const now = new Date();
@@ -127,31 +169,13 @@ function getBaseDateTime() {
     return { base_date, base_time };
 }
 
-// Coordinates for Seoul (provided by user snippet)
-const SEOUL_NX = 55;
-const SEOUL_NY = 127;
-
-async function fetchWeatherData() {
+async function fetchWeatherData(nx, ny, locationName = '현재 위치') {
     const { base_date, base_time } = getBaseDateTime();
 
-    const queryParams = new URLSearchParams({
-        serviceKey: decodeURIComponent(KOREA_WEATHER_API_KEY), // Decode key based on user's API portal note
-        pageNo: '1',
-        numOfRows: '1000', // Max rows to get all categories
-        dataType: 'JSON',
-        base_date: base_date,
-        base_time: base_time,
-        nx: SEOUL_NX,
-        ny: SEOUL_NY,
-    });
-
-    // Manually construct URL to ensure proper encoding,
-    // as serviceKey might be pre-encoded or require specific handling based on portal notes.
-    // The user's snippet itself was not URL encoded for serviceKey.
     let url = `${KOREA_WEATHER_BASE_URL}?serviceKey=${decodeURIComponent(KOREA_WEATHER_API_KEY)}`;
     url += `&pageNo=1&numOfRows=1000&dataType=JSON`;
     url += `&base_date=${base_date}&base_time=${base_time}`;
-    url += `&nx=${SEOUL_NX}&ny=${SEOUL_NY}`;
+    url += `&nx=${nx}&ny=${ny}`;
 
 
     try {
@@ -193,7 +217,7 @@ async function fetchWeatherData() {
             isRaining: isRainingValue,
             fineDustLevel: weatherData.fineDustLevel || 'good', // Placeholder
             dayNightTempDiff: weatherData.dayNightTempDiff || 10, // Placeholder
-            location: '서울', // Hardcode Seoul for now
+            location: locationName, // Use dynamic location name
         };
         console.log('Processed weather data:', weatherData);
 
@@ -208,7 +232,7 @@ async function fetchWeatherData() {
             isRaining: false,
             fineDustLevel: 'good',
             dayNightTempDiff: 10,
-            location: '서울',
+            location: locationName,
         };
     }
 }
@@ -273,7 +297,7 @@ function renderRecommendations(apparentTemp) {
         const item = filteredOutfits.find(i => i.category === category);
         if (item) {
             const itemDiv = document.createElement('div');
-            itemDiv.className = 'recommendation-item';
+            itemDiv.className = 'closet-item';
             itemDiv.innerHTML = `<img src="https://placehold.co/220x220.png?text=${item.name.replace(/ /g, '+')}" alt="${item.name}"><p>${item.name}</p>`;
             recommendationsDiv.appendChild(itemDiv);
         }
@@ -318,7 +342,7 @@ async function initializeApp() {
     }
 
     // Fetch weather data first
-    await fetchWeatherData();
+    await getUserLocationAndFetchWeather(); // Call the new function for geolocation
     
     // My Closet 데이터 불러오기 (LocalStorage)
     const savedCloset = localStorage.getItem('myCloset');
@@ -340,4 +364,36 @@ window.addEventListener('beforeunload', () => {
     localStorage.setItem('myCloset', JSON.stringify(myCloset));
 });
 
-initializeApp();
+// Function to get user's location and fetch weather
+async function getUserLocationAndFetchWeather() {
+    return new Promise((resolve) => {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                async (position) => {
+                    const lat = position.coords.latitude;
+                    const lon = position.coords.longitude;
+                    const { nx, ny } = convertToKMA(lat, lon);
+                    await fetchWeatherData(nx, ny, '현재 위치');
+                    resolve();
+                },
+                async (error) => {
+                    console.error('위치 정보를 가져오는 데 실패했습니다:', error);
+                    // Fallback to Seoul if geolocation fails or denied
+                    await fetchWeatherData(55, 127, '서울'); // Use literal values
+                    resolve();
+                },
+                { enableHighAccuracy: false, timeout: 10000, maximumAge: 0 }
+            );
+        } else {
+            console.warn('이 브라우저는 지리적 위치를 지원하지 않습니다.');
+            // Fallback to Seoul if geolocation is not supported
+            await fetchWeatherData(55, 127, '서울'); // Use literal values
+            resolve();
+        }
+    });
+}
+
+
+(async () => {
+    await initializeApp();
+})();
