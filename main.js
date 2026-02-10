@@ -20,9 +20,6 @@ const bodyTypeButtons = document.querySelectorAll('.body-type-selection button')
 const recommendationsDiv = document.getElementById('recommendations');
 
 
-const OPENWEATHER_API_KEY = 'cc408361b08a3bdccaa9d4b3aa113443dd11d6ed128fdd19d059f295314bc1f5';
-const OPENWEATHER_BASE_URL = 'https://api.openweathermap.org/data/2.5/weather';
-
 // --- State ---
 let selectedGender = 'male';
 let selectedStyle = 'casual';
@@ -30,8 +27,17 @@ let selectedBodyType = 'normal';
 let myCloset = []; // { id, name, category, style, gender }
 let useMyCloset = false;
 
-// --- Weather & Outfit Data (Dynamic) ---
-let weatherData = {};
+// --- Weather & Outfit Data (Placeholders) ---
+const weatherData = {
+    currentTemperature: 20,
+    yesterdayTemperature: 17,
+    windSpeed: 5, // m/s
+    humidity: 60, // %
+    isRaining: false,
+    fineDustLevel: 'good', // 'good', 'moderate', 'bad'
+    dayNightTempDiff: 10,
+    location: 'Seoul'
+};
 
 const defaultOutfitData = [
     { gender: 'any', style: 'any', tempMin: -100, tempMax: 5, name: '두꺼운 패딩', category: 'outer' },
@@ -85,42 +91,6 @@ function addToCloset() {
         closetItemNameInput.value = '';
         renderMyCloset();
         updateApp();
-    }
-}
-
-async function fetchWeatherData(city = 'Seoul') {
-    try {
-        const response = await fetch(`${OPENWEATHER_BASE_URL}?q=${city}&appid=${OPENWEATHER_API_KEY}&units=metric&lang=kr`);
-        if (!response.ok) {
-            throw new Error(`날씨 정보를 가져오지 못했습니다: ${response.statusText}`);
-        }
-        const data = await response.json();
-
-        // OpenWeatherMap 데이터를 weatherData 형식에 맞게 변환
-        weatherData = {
-            currentTemperature: Math.round(data.main.temp),
-            yesterdayTemperature: weatherData.yesterdayTemperature || data.main.temp - (Math.random() * 5 + 2), // Placeholder, needs actual historical data
-            windSpeed: data.wind.speed,
-            humidity: data.main.humidity,
-            isRaining: data.weather[0].main === 'Rain',
-            fineDustLevel: weatherData.fineDustLevel || 'good', // Placeholder, needs separate API
-            dayNightTempDiff: weatherData.dayNightTempDiff || 8, // Placeholder, needs forecast data
-            location: data.name,
-        };
-        console.log('Fetched weather data:', weatherData);
-    } catch (error) {
-        console.error('날씨 정보를 가져오는 중 오류 발생:', error);
-        // 오류 발생 시 기본값 설정 또는 사용자에게 알림
-        weatherData = {
-            currentTemperature: 20,
-            yesterdayTemperature: 17,
-            windSpeed: 5,
-            humidity: 60,
-            isRaining: false,
-            fineDustLevel: 'good',
-            dayNightTempDiff: 8,
-            location: 'Seoul',
-        };
     }
 }
 
@@ -222,15 +192,12 @@ useMyClosetToggle.addEventListener('change', (e) => {
 });
 
 // --- Initialization ---
-async function initializeApp() {
+function initializeApp() {
     // Dark Mode 초기 설정
     if (localStorage.getItem('darkMode') === 'true') {
         document.body.classList.add('dark-mode');
         darkModeToggle.innerHTML = '<i class="fas fa-sun"></i>';
     }
-
-    // Fetch weather data first
-    await fetchWeatherData();
     
     // My Closet 데이터 불러오기 (LocalStorage)
     const savedCloset = localStorage.getItem('myCloset');
