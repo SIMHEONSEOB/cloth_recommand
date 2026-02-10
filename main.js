@@ -20,6 +20,9 @@ const bodyTypeButtons = document.querySelectorAll('.body-type-selection button')
 const recommendationsDiv = document.getElementById('recommendations');
 
 
+const KOREA_WEATHER_API_KEY = 'c20657a3a6e6112251b4e6f3ec95231b89d6f4add90dab6fe0ed3c85aa328f92';
+const KOREA_WEATHER_BASE_URL = 'https://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getUltraSrtNcst';
+
 // --- State ---
 let selectedGender = 'male';
 let selectedStyle = 'casual';
@@ -94,7 +97,122 @@ function addToCloset() {
     }
 }
 
-// (기존 함수들은 그대로 유지)
+// Helper function to format date and time for the API
+function getBaseDateTime() {
+    const now = new Date();
+    let hours = now.getHours();
+    const minutes = now.getMinutes();
+
+    // Data is updated every 10 minutes, on the 40th minute.
+    // So if current minute is less than 40, use previous hour's data.
+    // For getUltraSrtNcst, base_time values are 00, 01, 02, ..., 23.
+    // API base_time is HHMM format, e.g., 0600 for 6 AM
+    
+    // Adjust time to the nearest base_time for the API
+    // Example: If current time is 06:35, base_time should be 0600.
+    // If current time is 06:05, base_time should be 0500 (since 0600 data not ready yet at :05)
+    
+    let base_time_hours = hours;
+    if (minutes < 40) { // If current minute is before :40, use previous hour's data
+        base_time_hours--;
+        if (base_time_hours < 0) base_time_hours = 23; // Handle midnight
+    }
+
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    const base_date = `${year}${month}${day}`;
+    const base_time = String(base_time_hours).padStart(2, '0') + '00';
+
+    return { base_date, base_time };
+}
+
+// Coordinates for Seoul (provided by user snippet)
+const SEOUL_NX = 55;
+const SEOUL_NY = 127;
+
+async function fetchWeatherData() {
+    const { base_date, base_time } = getBaseDateTime();
+
+    const queryParams = new URLSearchParams({
+        serviceKey: decodeURIComponent(KOREA_WEATHER_API_KEY), // Decode key based on user's API portal note
+        pageNo: '1',
+        numOfRows: '1000', // Max rows to get all categories
+        dataType: 'JSON',
+        base_date: base_date,
+        base_time: base_time,
+        nx: SEOUL_NX,
+        ny: SEOUL_NY,
+    });
+
+    // Manually construct URL to ensure proper encoding,
+    // as serviceKey might be pre-encoded or require specific handling based on portal notes.
+    // The user's snippet itself was not URL encoded for serviceKey.
+    let url = `${KOREA_WEATHER_BASE_URL}?serviceKey=${decodeURIComponent(KOREA_WEATHER_API_KEY)}`;
+    url += `&pageNo=1&numOfRows=1000&dataType=JSON`;
+    url += `&base_date=${base_date}&base_time=${base_time}`;
+    url += `&nx=${SEOUL_NX}&ny=${SEOUL_NY}`;
+
+
+    try {
+        const response = await fetch(url);
+        if (!response.ok) {
+            throw new Error(`날씨 정보를 가져오지 못했습니다: ${response.statusText}`);
+        }
+        const data = await response.json();
+        console.log('Korea Weather API raw data:', data);
+
+        if (data.response.header.resultCode !== '00') {
+            throw new Error(`API 오류: ${data.response.header.resultMsg}`);
+        }
+
+        const items = data.response.body.items.item;
+        let T1H, REH, WSD, PTY, RN1; // PTY: 강수형태, RN1: 1시간 강수량
+
+        items.forEach(item => {
+            if (item.category === 'T1H') T1H = item.obsrValue; // 1시간 기온
+            if (item.category === 'REH') REH = item.obsrValue; // 습도
+            if (item.category === 'WSD') WSD = item.obsrValue; // 풍속
+            if (item.category === 'PTY') PTY = item.obsrValue; // 강수형태 (0: 없음, 1: 비, 2: 비/눈, 3: 눈, 4: 소나기)
+            if (item.category === 'RN1') RN1 = item.obsrValue; // 1시간 강수량 (mm)
+        });
+
+        let isRainingValue = false;
+        if (PTY && PTY !== '0') { // PTY indicates some form of precipitation
+            isRainingValue = true;
+        } else if (RN1 && parseFloat(RN1) > 0) { // RN1 indicates actual rainfall
+            isRainingValue = true;
+        }
+
+
+        weatherData = {
+            currentTemperature: T1H !== undefined ? Math.round(parseFloat(T1H)) : 20,
+            yesterdayTemperature: weatherData.yesterdayTemperature || 17, // Placeholder
+            windSpeed: WSD !== undefined ? parseFloat(WSD) : 5,
+            humidity: REH !== undefined ? parseFloat(REH) : 60,
+            isRaining: isRainingValue,
+            fineDustLevel: weatherData.fineDustLevel || 'good', // Placeholder
+            dayNightTempDiff: weatherData.dayNightTempDiff || 10, // Placeholder
+            location: '서울', // Hardcode Seoul for now
+        };
+        console.log('Processed weather data:', weatherData);
+
+    } catch (error) {
+        console.error('날씨 정보를 가져오는 중 오류 발생:', error);
+        // 오류 발생 시 기본값 설정
+        weatherData = {
+            currentTemperature: 20,
+            yesterdayTemperature: 17,
+            windSpeed: 5,
+            humidity: 60,
+            isRaining: false,
+            fineDustLevel: 'good',
+            dayNightTempDiff: 10,
+            location: '서울',
+        };
+    }
+}
+
 function calculateApparentTemperature(temp, wind, humidity, bodyType) {
     let apparentTemp = 13.12 + 0.6215 * temp - 11.37 * Math.pow(wind, 0.16) + 0.3965 * temp * Math.pow(wind, 0.16);
     if (bodyType === 'cold-sensitive') apparentTemp -= 2;
@@ -192,12 +310,15 @@ useMyClosetToggle.addEventListener('change', (e) => {
 });
 
 // --- Initialization ---
-function initializeApp() {
+async function initializeApp() {
     // Dark Mode 초기 설정
     if (localStorage.getItem('darkMode') === 'true') {
         document.body.classList.add('dark-mode');
         darkModeToggle.innerHTML = '<i class="fas fa-sun"></i>';
     }
+
+    // Fetch weather data first
+    await fetchWeatherData();
     
     // My Closet 데이터 불러오기 (LocalStorage)
     const savedCloset = localStorage.getItem('myCloset');
