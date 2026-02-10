@@ -1,14 +1,40 @@
-<!doctype html>
-<html lang="en">
+<!DOCTYPE html>
+<html lang="ko">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Hello World</title>
-  <link href='/style.css' rel='stylesheet'>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>날씨 기반 의상 추천</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;700&display=swap" rel="stylesheet">
 </head>
 <body>
-  <h1>Hello, world!</h1>
-  <button onclick="console.log('hello');">Press me</button>
-  <script defer type="text/javascript" src="/main.js"></script>
+    <div id="app">
+        <header>
+            <h1>오늘 뭐 입지?</h1>
+            <p class="subtitle">날씨에 맞는 똑똑한 의상 추천</p>
+            <div class="weather-info">
+                 <p><span id="location">위치 불러오는 중...</span></p>
+                 <p>현재 날씨: <span id="weather"></span></p>
+            </div>
+        </header>
+        <main>
+            <div class="controls">
+                <div class="gender-selection">
+                    <button data-gender="male"><i class="fas fa-mars"></i> 남성</button>
+                    <button data-gender="female"><i class="fas fa-venus"></i> 여성</button>
+                </div>
+                <div class="style-selection">
+                    <button data-style="casual"><i class="fas fa-tshirt"></i> 캐주얼</button>
+                    <button data-style="formal"><i class="fas fa-user-tie"></i> 정장</button>
+                    <button data-style="sporty"><i class="fas fa-running"></i> 스포츠</button>
+                </div>
+            </div>
+            <div id="recommendations"></div>
+        </main>
+    </div>
+    <script src="main.js"></script>
 </body>
 </html>
