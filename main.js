@@ -156,7 +156,7 @@ function renderRecommendations(apparentTemp) {
         if (item) {
             const itemDiv = document.createElement('div');
             itemDiv.className = 'recommendation-item';
-            itemDiv.innerHTML = `<img src="https://via.placeholder.com/220x220.png?text=${item.name.replace(/ /g, '+')}" alt="${item.name}"><p>${item.name}</p>`;
+            itemDiv.innerHTML = `<img src="https://placehold.co/220x220.png?text=${item.name.replace(/ /g, '+')}" alt="${item.name}"><p>${item.name}</p>`;
             recommendationsDiv.appendChild(itemDiv);
         }
     });
