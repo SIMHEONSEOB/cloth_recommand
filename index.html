@@ -9,30 +9,62 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;700&display=swap" rel="stylesheet">
+    <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-eval' https://cdnjs.cloudflare.com https://fonts.googleapis.com https://fonts.gstatic.com https://placehold.co;">
 </head>
 <body>
     <div id="app">
         <header>
-            <h1>오늘 뭐 입지?</h1>
+            <div class="header-top">
+                <h1>오늘 뭐 입지?</h1>
+                <button id="dark-mode-toggle"><i class="fas fa-moon"></i></button>
+            </div>
             <p class="subtitle">날씨에 맞는 똑똑한 의상 추천</p>
             <div class="weather-info">
                  <p><span id="location">위치 불러오는 중...</span></p>
-                 <p>현재 날씨: <span id="weather"></span></p>
+                 <p>현재 날씨: <span id="weather"></span> (<span id="apparent-temp">체감: 22℃</span>)</p>
+                 <p id="weather-comparison">어제보다 3℃ 높아요</p> 
             </div>
         </header>
         <main>
             <div class="controls">
                 <div class="gender-selection">
-                    <button data-gender="male"><i class="fas fa-mars"></i> 남성</button>
+                    <button data-gender="male" class="active"><i class="fas fa-mars"></i> 남성</button>
                     <button data-gender="female"><i class="fas fa-venus"></i> 여성</button>
                 </div>
                 <div class="style-selection">
-                    <button data-style="casual"><i class="fas fa-tshirt"></i> 캐주얼</button>
-                    <button data-style="formal"><i class="fas fa-user-tie"></i> 정장</button>
-                    <button data-style="sporty"><i class="fas fa-running"></i> 스포츠</button>
+                    <button data-style="casual" class="active"><i class="fas fa-tshirt"></i> 캐주얼</button>
+                    <button data-style="modern"><i class="fas fa-user-tie"></i> 모던</button>
+                    <button data-style="street"><i class="fas fa-running"></i> 스트리트</button>
+                </div>
+                <div class="body-type-selection">
+                    <button data-body-type="normal" class="active"><i class="fas fa-thermometer-half"></i> 보통</button>
+                    <button data-body-type="cold-sensitive"><i class="fas fa-snowflake"></i> 추위 잘 탐</button>
+                    <button data-body-type="heat-sensitive"><i class="fas fa-fire"></i> 더위 잘 탐</button>
                 </div>
             </div>
+            <div id="advice-section">
+                <p id="outfit-explanation"></p>
+                <p id="contextual-advice"></p>
+            </div>
             <div id="recommendations"></div>
+            
+            <div id="my-closet">
+                <h2><i class="fas fa-door-open"></i> 내 옷장</h2>
+                <div class="closet-controls">
+                     <input type="text" id="closet-item-name" placeholder="옷 이름">
+                     <select id="closet-item-category">
+                         <option value="outer">아우터</option>
+                         <option value="top">상의</option>
+                         <option value="bottom">하의</option>
+                     </select>
+                     <button id="add-to-closet"><i class="fas fa-plus"></i> 추가</button>
+                </div>
+                <div id="my-closet-items"></div>
+                <div class="closet-recommend-controls">
+                    <label for="use-my-closet-toggle">내 옷으로만 추천받기</label>
+                    <input type="checkbox" id="use-my-closet-toggle">
+                </div>
+            </div>
         </main>
     </div>
     <script src="main.js"></script>
