@@ -20,7 +20,7 @@ const bodyTypeButtons = document.querySelectorAll('.body-type-selection button')
 const recommendationsDiv = document.getElementById('recommendations');
 
 
-const OPENWEATHER_API_KEY = 'c20657a3a6e6112251b4e6f3ec95231b89d6f4add90dab6fe0ed3c85aa328f92';
+const OPENWEATHER_API_KEY = 'cc408361b08a3bdccaa9d4b3aa113443dd11d6ed128fdd19d059f295314bc1f5';
 const OPENWEATHER_BASE_URL = 'https://api.openweathermap.org/data/2.5/weather';
 
 // --- State ---
