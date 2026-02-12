@@ -440,19 +440,31 @@ window.addEventListener('beforeunload', () => {
 
 // Function to get user's location and fetch weather
 async function getUserLocationAndFetchWeather() {
-    try {
-        const position = await new Promise((resolve, reject) => {
-            navigator.geolocation.getCurrentPosition(resolve, reject, { enableHighAccuracy: false, timeout: 10000, maximumAge: 0 });
-        });
-        const lat = position.coords.latitude;
-        const lon = position.coords.longitude;
-        const { nx, ny } = convertToKMA(lat, lon);
-        await fetchWeatherData(nx, ny, '현재 위치');
-    } catch (error) {
-        console.error('위치 정보를 가져오는 데 실패했습니다:', error);
-        // Fallback to Seoul if geolocation fails or denied
-        await fetchWeatherData(55, 127, '서울'); // Use literal values
-    }
+    return new Promise(async (resolve) => {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                async (position) => {
+                    const lat = position.coords.latitude;
+                    const lon = position.coords.longitude;
+                    const { nx, ny } = convertToKMA(lat, lon);
+                    await fetchWeatherData(nx, ny, '현재 위치');
+                    resolve();
+                },
+                async (error) => {
+                    console.error('위치 정보를 가져오는 데 실패했습니다:', error);
+                    // Fallback to Seoul if geolocation fails or denied
+                    await fetchWeatherData(55, 127, '서울'); // Use literal values
+                    resolve();
+                },
+                { enableHighAccuracy: false, timeout: 10000, maximumAge: 0 }
+            );
+        } else {
+            console.warn('이 브라우저는 지리적 위치를 지원하지 않습니다.');
+            // Fallback to Seoul if geolocation is not supported
+            await fetchWeatherData(55, 127, '서울'); // Use literal values
+            resolve();
+        }
+    });
 }
 
 
