@@ -1,4 +1,3 @@
-
 // --- DOM Elements ---
 const darkModeToggle = document.getElementById('dark-mode-toggle');
 const useMyClosetToggle = document.getElementById('use-my-closet-toggle');
@@ -6,6 +5,10 @@ const addToClosetButton = document.getElementById('add-to-closet');
 const closetItemNameInput = document.getElementById('closet-item-name');
 const closetItemCategorySelect = document.getElementById('closet-item-category');
 const myClosetItemsDiv = document.getElementById('my-closet-items');
+const baseAvatar = document.getElementById('base-avatar');
+const avatarOuter = document.getElementById('avatar-outer');
+const avatarTop = document.getElementById('avatar-top');
+const avatarBottom = document.getElementById('avatar-bottom');
 
 // (기존 DOM 요소들은 그대로 유지)
 const weatherDisplay = document.getElementById('weather');
@@ -20,7 +23,7 @@ const bodyTypeButtons = document.querySelectorAll('.body-type-selection button')
 const recommendationsDiv = document.getElementById('recommendations');
 
 
-const KOREA_WEATHER_API_KEY = 'c20657a3a6e6112251b4e6f3ec95231b89d6f4add90dab6fe0ed3c85aa328f92';
+const KOREA_WEATHER_API_KEY = 'cc408361b08a3bdccaa9d4b3aa113443dd11d6ed128fdd19d059f295314bc1f5';
 const KOREA_WEATHER_BASE_URL = 'https://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getUltraSrtNcst';
 
 // --- State ---
@@ -29,6 +32,11 @@ let selectedStyle = 'casual';
 let selectedBodyType = 'normal';
 let myCloset = []; // { id, name, category, style, gender }
 let useMyCloset = false;
+let currentAvatarOutfit = {
+    outer: null,
+    top: null,
+    bottom: null,
+};
 
 // --- Weather & Outfit Data (Placeholders) ---
 let weatherData = {
@@ -43,17 +51,17 @@ let weatherData = {
 };
 
 const defaultOutfitData = [
-    { gender: 'any', style: 'any', tempMin: -100, tempMax: 5, name: '두꺼운 패딩', category: 'outer' },
-    { gender: 'any', style: 'any', tempMin: 5, tempMax: 10, name: '경량 패딩', category: 'outer' },
-    { gender: 'any', style: 'any', tempMin: 10, tempMax: 15, name: '자켓 또는 가디건', category: 'outer' },
-    { gender: 'any', style: 'any', tempMin: 10, tempMax: 17, name: '맨투맨 또는 후드티', category: 'top' },
-    { gender: 'any', style: 'any', tempMin: 18, tempMax: 22, name: '긴팔 셔츠', category: 'top' },
-    { gender: 'any', style: 'any', tempMin: 23, tempMax: 100, name: '반팔 티셔츠', category: 'top' },
-    { gender: 'any', style: 'any', tempMin: -100, tempMax: 15, name: '기모 바지', category: 'bottom' },
-    { gender: 'any', style: 'any', tempMin: 16, tempMax: 100, name: '면바지 또는 슬랙스', category: 'bottom' },
-    { gender: 'male', style: 'modern', tempMin: 10, tempMax: 22, name: '블레이저', category: 'outer' },
-    { gender: 'female', style: 'modern', tempMin: 10, tempMax: 22, name: '블라우스', category: 'top' },
-    { gender: 'any', style: 'street', tempMin: 10, tempMax: 25, name: '바람막이', category: 'outer' },
+    { gender: 'any', style: 'any', tempMin: -100, tempMax: 5, name: '두꺼운 패딩', category: 'outer', imageUrl: 'https://placehold.co/220x220.png?text=두꺼운+패딩+아우터' },
+    { gender: 'any', style: 'any', tempMin: 5, tempMax: 10, name: '경량 패딩', category: 'outer', imageUrl: 'https://placehold.co/220x220.png?text=경량+패딩+아우터' },
+    { gender: 'any', style: 'any', tempMin: 10, tempMax: 15, name: '자켓 또는 가디건', category: 'outer', imageUrl: 'https://placehold.co/220x220.png?text=자켓/가디건+아우터' },
+    { gender: 'any', style: 'any', tempMin: 10, tempMax: 17, name: '맨투맨 또는 후드티', category: 'top', imageUrl: 'https://placehold.co/220x220.png?text=맨투맨/후드티+상의' },
+    { gender: 'any', style: 'any', tempMin: 18, tempMax: 22, name: '긴팔 셔츠', category: 'top', imageUrl: 'https://placehold.co/220x220.png?text=긴팔+셔츠+상의' },
+    { gender: 'any', style: 'any', tempMin: 23, tempMax: 100, name: '반팔 티셔츠', category: 'top', imageUrl: 'https://placehold.co/220x220.png?text=반팔+티셔츠+상의' },
+    { gender: 'any', style: 'any', tempMin: -100, tempMax: 15, name: '기모 바지', category: 'bottom', imageUrl: 'https://placehold.co/220x220.png?text=기모+바지+하의' },
+    { gender: 'any', style: 'any', tempMin: 16, tempMax: 100, name: '면바지 또는 슬랙스', category: 'bottom', imageUrl: 'https://placehold.co/220x220.png?text=면바지/슬랙스+하의' },
+    { gender: 'male', style: 'modern', tempMin: 10, tempMax: 22, name: '블레이저', category: 'outer', imageUrl: 'https://placehold.co/220x220.png?text=블레이저+아우터' },
+    { gender: 'female', style: 'modern', tempMin: 10, tempMax: 22, name: '블라우스', category: 'top', imageUrl: 'https://placehold.co/220x220.png?text=블라우스+상의' },
+    { gender: 'any', style: 'street', tempMin: 10, tempMax: 25, name: '바람막이', category: 'outer', imageUrl: 'https://placehold.co/220x220.png?text=바람막이+아우터' },
 ];
 
 // --- Functions ---
@@ -72,10 +80,23 @@ function renderMyCloset() {
     myCloset.forEach(item => {
         const itemDiv = document.createElement('div');
         itemDiv.className = 'closet-item';
-        itemDiv.innerHTML = `<span>${item.name} (${item.category})</span> <button class="closet-item-delete" data-id="${item.id}"><i class="fas fa-trash-alt"></i></button>`;
+        itemDiv.innerHTML = `
+            <span>${item.name} (${item.category})</span>
+            <div class="closet-item-actions">
+                <button class="try-on-button" data-item='${JSON.stringify(item)}'><i class="fas fa-shirt"></i> 입어보기</button>
+                <button class="closet-item-delete" data-id="${item.id}"><i class="fas fa-trash-alt"></i></button>
+            </div>
+        `;
         myClosetItemsDiv.appendChild(itemDiv);
     });
-    // 삭제 버튼에 이벤트 리스너 추가
+    // Add event listeners for the new "Try On" buttons
+    document.querySelectorAll('#my-closet-items .try-on-button').forEach(button => {
+        button.addEventListener('click', (e) => {
+            const itemData = JSON.parse(e.currentTarget.dataset.item);
+            tryOnOutfitItem(itemData);
+        });
+    });
+    // 삭제 버튼에 이벤트 리스너 추가 (기존 코드)
     document.querySelectorAll('.closet-item-delete').forEach(button => {
         button.addEventListener('click', (e) => {
             const itemId = parseInt(e.currentTarget.dataset.id, 10);
@@ -87,14 +108,52 @@ function renderMyCloset() {
 }
 
 function addToCloset() {
-    const name = closetItemNameInput.value.trim();
-    const category = closetItemCategorySelect.value;
-    if (name) {
-        myCloset.push({ id: Date.now(), name, category, style: 'any', gender: 'any' });
-        closetItemNameInput.value = '';
-        renderMyCloset();
-        updateApp();
+            const name = closetItemNameInput.value.trim();
+            const category = closetItemCategorySelect.value;
+            if (name) {
+                // Add a placeholder imageUrl for now.
+                // In a real application, this would be user-provided or generated.
+                const imageUrl = `https://placehold.co/220x220.png?text=${name.replace(/ /g, '+')}+${category}`;
+                myCloset.push({ id: Date.now(), name, category, style: 'any', gender: 'any', imageUrl });
+                closetItemNameInput.value = '';
+                renderMyCloset();
+                updateApp();
+            }}
+
+function renderAvatar(outfit) {
+    // Clear previous outfit
+    avatarOuter.style.display = 'none';
+    avatarTop.style.display = 'none';
+    avatarBottom.style.display = 'none';
+
+    // Apply new outfit
+    if (outfit.outer && outfit.outer.imageUrl) {
+        avatarOuter.src = outfit.outer.imageUrl;
+        avatarOuter.style.display = 'block';
     }
+    if (outfit.top && outfit.top.imageUrl) {
+        avatarTop.src = outfit.top.imageUrl;
+        avatarTop.style.display = 'block';
+    }
+    if (outfit.bottom && outfit.bottom.imageUrl) {
+        avatarBottom.src = outfit.bottom.imageUrl;
+        avatarBottom.style.display = 'block';
+    }
+
+    currentAvatarOutfit = outfit; // Update the state
+}
+
+function tryOnOutfitItem(item) {
+    if (!item || !item.category) {
+        console.warn('Invalid item provided to tryOnOutfitItem:', item);
+        return;
+    }
+
+    // Update the currentAvatarOutfit state
+    currentAvatarOutfit[item.category] = item;
+
+    // Re-render the avatar
+    renderAvatar(currentAvatarOutfit);
 }
 
 // Lat/Long to KMA grid coordinate conversion function
@@ -172,7 +231,7 @@ function getBaseDateTime() {
 async function fetchWeatherData(nx, ny, locationName = '현재 위치') {
     const { base_date, base_time } = getBaseDateTime();
 
-    let url = `${KOREA_WEATHER_BASE_URL}?serviceKey=${decodeURIComponent(KOREA_WEATHER_API_KEY)}`;
+    let url = `${KOREA_WEATHER_BASE_URL}?serviceKey=${KOREA_WEATHER_API_KEY}`;
     url += `&pageNo=1&numOfRows=1000&dataType=JSON`;
     url += `&base_date=${base_date}&base_time=${base_time}`;
     url += `&nx=${nx}&ny=${ny}`;
@@ -217,7 +276,7 @@ async function fetchWeatherData(nx, ny, locationName = '현재 위치') {
             isRaining: isRainingValue,
             fineDustLevel: weatherData.fineDustLevel || 'good', // Placeholder
             dayNightTempDiff: weatherData.dayNightTempDiff || 10, // Placeholder
-            location: locationName, // Use dynamic location name
+            location: locationName,
         };
         console.log('Processed weather data:', weatherData);
 
@@ -274,9 +333,8 @@ function renderRecommendations(apparentTemp) {
     recommendationsDiv.innerHTML = '';
     const sourceData = useMyCloset ? myCloset : defaultOutfitData;
     
-    // 온도에 맞는 아이템 필터링 (내 옷장 사용 시에는 온도 필터링을 완화하거나 다르게 적용 가능)
     const tempFilteredOutfits = sourceData.filter(item => {
-        if (useMyCloset) return true; // 내 옷장 아이템은 모두 보여주기
+        if (useMyCloset) return true;
         const tempMatch = apparentTemp >= item.tempMin && apparentTemp <= item.tempMax;
         return tempMatch;
     });
@@ -297,10 +355,22 @@ function renderRecommendations(apparentTemp) {
         const item = filteredOutfits.find(i => i.category === category);
         if (item) {
             const itemDiv = document.createElement('div');
-            itemDiv.className = 'closet-item';
-            itemDiv.innerHTML = `<img src="https://placehold.co/220x220.png?text=${item.name.replace(/ /g, '+')}" alt="${item.name}"><p>${item.name}</p>`;
+            itemDiv.className = 'recommendation-item'; // Changed from closet-item to recommendation-item for styling consistency
+            itemDiv.innerHTML = `
+                <img src="${item.imageUrl}" alt="${item.name}">
+                <p>${item.name}</p>
+                <button class="try-on-button" data-item='${JSON.stringify(item)}'>입어보기</button>
+            `;
             recommendationsDiv.appendChild(itemDiv);
         }
+    });
+
+    // Add event listeners for the new "Try On" buttons
+    document.querySelectorAll('.try-on-button').forEach(button => {
+        button.addEventListener('click', (e) => {
+            const itemData = JSON.parse(e.target.dataset.item);
+            tryOnOutfitItem(itemData);
+        });
     });
 }
 
@@ -316,6 +386,7 @@ function updateApp() {
 // (기존 이벤트 리스너들은 그대로 유지)
 [...genderButtons, ...styleButtons, ...bodyTypeButtons].forEach(button => {
     button.addEventListener('click', (e) => {
+        console.log('Button clicked:', e.target.closest('button').dataset); // Debugging line
         const parent = e.target.closest('div');
         parent.querySelectorAll('button').forEach(btn => btn.classList.remove('active'));
         e.target.closest('button').classList.add('active');
@@ -357,7 +428,10 @@ async function initializeApp() {
     document.querySelector('.body-type-selection button[data-body-type="normal"]').classList.add('active');
     
     updateApp();
+    // Initialize avatar with an empty outfit
+    renderAvatar({ outer: null, top: null, bottom: null });
 }
+
 
 // 내 옷장 데이터 저장 (페이지 벗어날 때)
 window.addEventListener('beforeunload', () => {
@@ -366,34 +440,20 @@ window.addEventListener('beforeunload', () => {
 
 // Function to get user's location and fetch weather
 async function getUserLocationAndFetchWeather() {
-    return new Promise((resolve) => {
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(
-                async (position) => {
-                    const lat = position.coords.latitude;
-                    const lon = position.coords.longitude;
-                    const { nx, ny } = convertToKMA(lat, lon);
-                    await fetchWeatherData(nx, ny, '현재 위치');
-                    resolve();
-                },
-                async (error) => {
-                    console.error('위치 정보를 가져오는 데 실패했습니다:', error);
-                    // Fallback to Seoul if geolocation fails or denied
-                    await fetchWeatherData(55, 127, '서울'); // Use literal values
-                    resolve();
-                },
-                { enableHighAccuracy: false, timeout: 10000, maximumAge: 0 }
-            );
-        } else {
-            console.warn('이 브라우저는 지리적 위치를 지원하지 않습니다.');
-            // Fallback to Seoul if geolocation is not supported
-            await fetchWeatherData(55, 127, '서울'); // Use literal values
-            resolve();
-        }
-    });
+    try {
+        const position = await new Promise((resolve, reject) => {
+            navigator.geolocation.getCurrentPosition(resolve, reject, { enableHighAccuracy: false, timeout: 10000, maximumAge: 0 });
+        });
+        const lat = position.coords.latitude;
+        const lon = position.coords.longitude;
+        const { nx, ny } = convertToKMA(lat, lon);
+        await fetchWeatherData(nx, ny, '현재 위치');
+    } catch (error) {
+        console.error('위치 정보를 가져오는 데 실패했습니다:', error);
+        // Fallback to Seoul if geolocation fails or denied
+        await fetchWeatherData(55, 127, '서울'); // Use literal values
+    }
 }
 
 
-(async () => {
-    await initializeApp();
-})();
+document.addEventListener('DOMContentLoaded', initializeApp);

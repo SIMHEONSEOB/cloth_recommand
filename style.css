@@ -1,111 +1,132 @@
-@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;700&display=swap');
 
+
+
+
+
+
+/* General Styles */
 body {
     font-family: 'Noto Sans KR', sans-serif;
     margin: 0;
-    background-color: #121212; /* Dark background */
-    color: #e0e0e0;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    transition: background-color 0.3s, color 0.3s;
 }
 
-#app {
-    max-width: 960px;
-    margin: 0 auto;
-    padding: 40px 20px;
+:root {
+    --bg-color: #f4f7f6;
+    --text-color: #333;
+    --card-bg-color: #ffffff;
+    --card-border-color: #e0e0e0;
+    --button-bg-color: #fff;
+    --button-border-color: #ccc;
+    --button-text-color: #555;
+    --active-button-bg-color: #007bff;
+    --active-button-text-color: #fff;
+    --shadow-color: rgba(0, 0, 0, 0.1);
 }
 
-header {
-    text-align: center;
-    margin-bottom: 40px;
+body.dark-mode {
+    --bg-color: #121212;
+    --text-color: #e0e0e0;
+    --card-bg-color: #1e1e1e;
+    --card-border-color: #333;
+    --button-bg-color: #1e1e1e;
+    --button-border-color: #333;
+    --button-text-color: #e0e0e0;
+    --active-button-bg-color: #007bff;
+    --active-button-text-color: #fff;
+    --shadow-color: rgba(0, 0, 0, 0.5);
 }
 
-header h1 {
-    font-size: 2.5rem;
-    font-weight: 700;
-    color: #ffffff;
-    text-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
-}
+#app { max-width: 960px; margin: 0 auto; padding: 40px 20px; }
 
-.subtitle {
-    font-size: 1.2rem;
-    color: #b0b0b0;
-    margin-top: -10px;
-}
+/* Header */
+header { text-align: center; margin-bottom: 30px; }
+.header-top { display: flex; justify-content: center; align-items: center; position: relative; }
+.header-top h1 { font-size: 2.5rem; font-weight: 700; margin: 0; }
+#dark-mode-toggle { position: absolute; right: 0; background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text-color); }
+.subtitle, .weather-info p { font-size: 1.1rem; color: var(--text-color); opacity: 0.8; margin: 5px 0; }
+#weather-comparison { font-weight: 700; }
 
-.weather-info p {
-    font-size: 1.1rem;
-    color: #a0a0a0;
-}
-
-.controls {
-    display: flex;
-    justify-content: center;
-    gap: 20px;
-    margin-bottom: 40px;
-}
-
-.gender-selection, .style-selection {
-    display: flex;
-    gap: 10px;
-}
+/* Controls */
+.controls { display: flex; flex-wrap: wrap; justify-content: center; gap: 15px; margin-bottom: 25px; padding: 15px; background-color: var(--card-bg-color); border-radius: 12px; box-shadow: 0 4px 12px var(--shadow-color); }
+.gender-selection, .style-selection, .body-type-selection { display: flex; gap: 10px; }
 
 button {
-    padding: 12px 24px;
-    border: 1px solid #333;
-    border-radius: 8px;
-    cursor: pointer;
-    background-color: #1e1e1e;
-    color: #e0e0e0;
-    font-size: 1rem;
-    font-weight: 400;
-    transition: all 0.3s ease;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    padding: 10px 20px; border: 1px solid var(--button-border-color); border-radius: 8px; cursor: pointer;
+    background-color: var(--button-bg-color); color: var(--button-text-color); font-size: 0.95rem; 
+    transition: all 0.2s ease;
 }
+button:hover { background-color: var(--active-button-bg-color); color: var(--active-button-text-color); opacity: 0.8; }
+button.active { background-color: var(--active-button-bg-color); color: var(--active-button-text-color); border-color: var(--active-button-bg-color); }
 
-button:hover {
-    background-color: #2a2a2a;
-    border-color: #555;
-}
+/* Advice Section */
+#advice-section { text-align: center; margin-bottom: 30px; padding: 20px; background-color: var(--card-bg-color); border-radius: 12px; box-shadow: 0 4px 12px var(--shadow-color); }
+#outfit-explanation { font-size: 1.1rem; font-weight: 700; margin: 0 0 10px 0; }
+#contextual-advice { font-size: 1rem; opacity: 0.9; }
 
-button.active {
-    background-color: #007bff; /* Vibrant blue for active state */
-    color: #ffffff;
-    border-color: #007bff;
-    box-shadow: 0 0 15px rgba(0, 123, 255, 0.5); /* Glow effect */
-}
-
-#recommendations {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-    gap: 30px;
-}
-
-.recommendation-item {
-    background-color: #1e1e1e;
-    border: 1px solid #333;
+/* Avatar Display */
+#avatar-display {
+    position: relative; /* For absolute positioning of layers */
+    width: 220px; /* Base width from placeholder */
+    height: 400px; /* Base height from placeholder */
+    margin: 30px auto; /* Center it and give some vertical margin */
+    background-color: var(--card-bg-color);
     border-radius: 12px;
-    padding: 20px;
-    text-align: center;
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5); /* Lifted effect */
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 4px 12px var(--shadow-color);
+    overflow: hidden; /* Ensure layers don't spill out */
+    display: flex; /* Use flex to center the initial base avatar before layers take over */
+    justify-content: center;
+    align-items: center;
 }
 
-.recommendation-item:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.7);
+#avatar-display img {
+    position: absolute; /* Position layers on top of each other */
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain; /* Ensure images fit without cropping */
 }
 
-.recommendation-item img {
-    max-width: 100%;
-    height: auto;
-    border-radius: 8px;
-    margin-bottom: 15px;
+#base-avatar {
+    z-index: 1; /* Base avatar should be at the bottom layer */
+    position: relative; /* Make base avatar relative to participate in flex centering */
 }
 
-.recommendation-item p {
-    margin: 0;
-    font-size: 1.1rem;
-    font-weight: 700;
-    color: #ffffff;
+#avatar-outer {
+    z-index: 4; /* Outerwear should be on top */
 }
+
+#avatar-top {
+    z-index: 3; /* Topwear is below outerwear */
+}
+
+#avatar-bottom {
+    z-index: 2; /* Bottomwear is below topwear but above base */
+}
+
+/* Recommendations */
+#recommendations { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 25px; }
+.recommendation-item {
+    background-color: var(--card-bg-color); border: 1px solid var(--card-border-color); border-radius: 12px;
+    padding: 20px; text-align: center; box-shadow: 0 6px 15px var(--shadow-color); 
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.recommendation-item:hover { transform: translateY(-5px); box-shadow: 0 10px 20px var(--shadow-color); }
+.recommendation-item img { max-width: 100%; height: auto; border-radius: 8px; margin-bottom: 15px; }
+.recommendation-item p { margin: 0; font-size: 1rem; font-weight: 700; }
+
+/* My Closet */
+#my-closet { margin-top: 50px; padding: 25px; background-color: var(--card-bg-color); border-radius: 12px; box-shadow: 0 4px 12px var(--shadow-color); }
+#my-closet h2 { text-align: center; margin-bottom: 20px; }
+.closet-controls { display: flex; gap: 10px; margin-bottom: 20px; }
+#closet-item-name { flex-grow: 1; padding: 10px; border: 1px solid var(--button-border-color); border-radius: 8px; }
+#add-to-closet { background-color: var(--active-button-bg-color); color: var(--active-button-text-color); }
+
+#my-closet-items { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 15px; margin-bottom: 20px; }
+.closet-item { display: flex; justify-content: space-between; align-items: center; background-color: var(--bg-color); padding: 10px; border-radius: 8px; }
+.closet-item-delete { background: none; border: none; color: #ff6b6b; cursor: pointer; font-size: 1rem; }
+
+.closet-recommend-controls { display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 20px; }
