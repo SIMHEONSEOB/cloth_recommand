@@ -366,7 +366,7 @@ window.addEventListener('beforeunload', () => {
 
 // Function to get user's location and fetch weather
 async function getUserLocationAndFetchWeather() {
-    return new Promise((resolve) => {
+    return new Promise(async (resolve) => {
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(
                 async (position) => {
