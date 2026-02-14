@@ -50,32 +50,117 @@ body {
     transition: background-color 0.3s, color 0.3s;
 }
 
-#app { max-width: 960px; margin: 0 auto; padding: 40px 20px; }
+#app {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 40px 20px;
+}
 
 /* ===== Header ===== */
-header { text-align: center; margin-bottom: 30px; }
-.header-top { display: flex; justify-content: center; align-items: center; position: relative; }
-.header-top h1 { font-size: 2.5rem; font-weight: 700; margin: 0; }
-#dark-mode-toggle { position: absolute; right: 0; background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text-color); }
-.subtitle, .weather-info p { font-size: 1.1rem; color: var(--text-color); opacity: 0.8; margin: 5px 0; }
-#weather-comparison { font-weight: 700; }
+header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.header-top {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+
+.header-top h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin: 0;
+}
+
+#dark-mode-toggle {
+    position: absolute;
+    right: 0;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: var(--text-color);
+}
+
+.subtitle,
+.weather-info p {
+    font-size: 1.1rem;
+    color: var(--text-color);
+    opacity: 0.8;
+    margin: 5px 0;
+}
+
+#weather-comparison {
+    font-weight: 700;
+}
 
 /* ===== Controls ===== */
-.controls { display: flex; flex-wrap: wrap; justify-content: center; gap: 15px; margin-bottom: 25px; padding: 15px; background-color: var(--card-bg-color); border-radius: 12px; box-shadow: 0 4px 12px var(--shadow-color); }
-.gender-selection, .style-selection, .body-type-selection { display: flex; gap: 10px; }
+.controls {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 25px;
+    padding: 15px;
+    background-color: var(--card-bg-color);
+    border-radius: 12px;
+    box-shadow: 0 4px 12px var(--shadow-color);
+}
+
+.gender-selection,
+.style-selection,
+.body-type-selection {
+    display: flex;
+    gap: 10px;
+}
 
 button {
-    padding: 10px 20px; border: 1px solid var(--button-border-color); border-radius: 8px; cursor: pointer;
-    background-color: var(--button-bg-color); color: var(--button-text-color); font-size: 0.95rem; 
-    transition: all 0.2s ease; font-family: 'Noto Sans KR', sans-serif;
+    padding: 10px 20px;
+    border: 1px solid var(--button-border-color);
+    border-radius: 8px;
+    cursor: pointer;
+    background-color: var(--button-bg-color);
+    color: var(--button-text-color);
+    font-size: 0.95rem;
+    transition: all 0.2s ease;
+    font-family: 'Noto Sans KR', sans-serif;
 }
-button:hover { background-color: var(--active-button-bg-color); color: var(--active-button-text-color); opacity: 0.8; }
-button.active { background-color: var(--active-button-bg-color); color: var(--active-button-text-color); border-color: var(--active-button-bg-color); }
+
+button:hover {
+    background-color: var(--active-button-bg-color);
+    color: var(--active-button-text-color);
+    opacity: 0.8;
+}
+
+button.active {
+    background-color: var(--active-button-bg-color);
+    color: var(--active-button-text-color);
+    border-color: var(--active-button-bg-color);
+}
 
 /* ===== Advice Section ===== */
-#advice-section { text-align: center; margin-bottom: 30px; padding: 20px; background-color: var(--card-bg-color); border-radius: 12px; box-shadow: 0 4px 12px var(--shadow-color); }
-#outfit-explanation { font-size: 1.1rem; font-weight: 700; margin: 0 0 10px 0; }
-#contextual-advice { font-size: 1rem; opacity: 0.9; }
+#advice-section {
+    text-align: center;
+    margin-bottom: 30px;
+    padding: 20px;
+    background-color: var(--card-bg-color);
+    border-radius: 12px;
+    box-shadow: 0 4px 12px var(--shadow-color);
+}
+
+#outfit-explanation {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin: 0 0 10px 0;
+}
+
+#contextual-advice {
+    font-size: 1rem;
+    opacity: 0.9;
+}
 
 /* ===== Avatar Section ===== */
 #avatar-section {
@@ -122,8 +207,11 @@ button.active { background-color: var(--active-button-bg-color); color: var(--ac
 #avatar-display::before {
     content: '';
     position: absolute;
-    top: 0; left: 0; right: 0; bottom: 0;
-    background: radial-gradient(ellipse at center bottom, rgba(0,0,0,0.06) 0%, transparent 60%);
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(ellipse at center bottom, rgba(0, 0, 0, 0.06) 0%, transparent 60%);
     pointer-events: none;
     z-index: 1;
 }
@@ -139,7 +227,8 @@ button.active { background-color: var(--active-button-bg-color); color: var(--ac
     width: 100%;
     height: 100%;
     position: absolute;
-    top: 0; left: 0;
+    top: 0;
+    left: 0;
     z-index: 1;
 }
 
@@ -155,25 +244,38 @@ button.active { background-color: var(--active-button-bg-color); color: var(--ac
 }
 
 @keyframes clothFadeIn {
-    from { opacity: 0; transform: scale(0.92); }
-    to { opacity: 1; transform: scale(1); }
+    from {
+        opacity: 0;
+        transform: scale(0.92);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
 }
 
 #clothing-layer-outer {
-    top: 70px; left: -10px;
-    width: 220px; height: 180px;
+    top: 90px;
+    left: -5px;
+    width: 210px;
+    height: 200px;
     z-index: 4;
 }
 
 #clothing-layer-top {
-    top: 78px; left: 5px;
-    width: 190px; height: 160px;
+    top: 100px;
+    left: 15px;
+    width: 170px;
+    height: 165px;
     z-index: 3;
 }
 
 #clothing-layer-bottom {
-    top: 230px; left: 15px;
-    width: 170px; height: 180px;
+    top: 255px;
+    left: 25px;
+    width: 150px;
+    height: 185px;
     z-index: 2;
 }
 
@@ -196,8 +298,15 @@ button.active { background-color: var(--active-button-bg-color); color: var(--ac
 }
 
 @keyframes hintPulse {
-    0%, 100% { opacity: 0.6; }
-    50% { opacity: 1; }
+
+    0%,
+    100% {
+        opacity: 0.6;
+    }
+
+    50% {
+        opacity: 1;
+    }
 }
 
 /* --- Outfit Info Panel --- */
@@ -340,20 +449,27 @@ button.active { background-color: var(--active-button-bg-color); color: var(--ac
 }
 
 /* ===== Recommendations ===== */
-#recommendations { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 25px; }
+#recommendations {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 25px;
+}
 
 .recommendation-item {
-    background-color: var(--card-bg-color); 
-    border: 1px solid var(--card-border-color); 
+    background-color: var(--card-bg-color);
+    border: 1px solid var(--card-border-color);
     border-radius: 16px;
     padding: 0;
-    text-align: center; 
-    box-shadow: 0 6px 15px var(--shadow-color); 
+    text-align: center;
+    box-shadow: 0 6px 15px var(--shadow-color);
     transition: transform 0.2s ease, box-shadow 0.2s ease;
     overflow: hidden;
 }
 
-.recommendation-item:hover { transform: translateY(-5px); box-shadow: 0 10px 20px var(--shadow-color); }
+.recommendation-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px var(--shadow-color);
+}
 
 .recommendation-item .item-visual {
     width: 100%;
@@ -385,15 +501,41 @@ button.active { background-color: var(--active-button-bg-color); color: var(--ac
     margin-bottom: 8px;
 }
 
-.badge-outer { background: rgba(139, 92, 246, 0.15); color: #8b5cf6; }
-.badge-top { background: rgba(59, 130, 246, 0.15); color: #3b82f6; }
-.badge-bottom { background: rgba(16, 185, 129, 0.15); color: #10b981; }
+.badge-outer {
+    background: rgba(139, 92, 246, 0.15);
+    color: #8b5cf6;
+}
 
-body.dark-mode .badge-outer { background: rgba(139, 92, 246, 0.25); color: #a78bfa; }
-body.dark-mode .badge-top { background: rgba(59, 130, 246, 0.25); color: #60a5fa; }
-body.dark-mode .badge-bottom { background: rgba(16, 185, 129, 0.25); color: #34d399; }
+.badge-top {
+    background: rgba(59, 130, 246, 0.15);
+    color: #3b82f6;
+}
 
-.recommendation-item p.item-name { margin: 0 0 12px; font-size: 1rem; font-weight: 700; }
+.badge-bottom {
+    background: rgba(16, 185, 129, 0.15);
+    color: #10b981;
+}
+
+body.dark-mode .badge-outer {
+    background: rgba(139, 92, 246, 0.25);
+    color: #a78bfa;
+}
+
+body.dark-mode .badge-top {
+    background: rgba(59, 130, 246, 0.25);
+    color: #60a5fa;
+}
+
+body.dark-mode .badge-bottom {
+    background: rgba(16, 185, 129, 0.25);
+    color: #34d399;
+}
+
+.recommendation-item p.item-name {
+    margin: 0 0 12px;
+    font-size: 1rem;
+    font-weight: 700;
+}
 
 .recommendation-item .try-on-button {
     width: 100%;
@@ -423,33 +565,88 @@ body.dark-mode .badge-bottom { background: rgba(16, 185, 129, 0.25); color: #34d
 }
 
 /* Visual backgrounds per category */
-.visual-outer { background: linear-gradient(135deg, #ede9fe, #ddd6fe); }
-.visual-top { background: linear-gradient(135deg, #dbeafe, #bfdbfe); }
-.visual-bottom { background: linear-gradient(135deg, #d1fae5, #a7f3d0); }
+.visual-outer {
+    background: linear-gradient(135deg, #ede9fe, #ddd6fe);
+}
 
-body.dark-mode .visual-outer { background: linear-gradient(135deg, #2e1065, #3b0764); }
-body.dark-mode .visual-top { background: linear-gradient(135deg, #1e3a5f, #1e40af); }
-body.dark-mode .visual-bottom { background: linear-gradient(135deg, #064e3b, #065f46); }
+.visual-top {
+    background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+}
+
+.visual-bottom {
+    background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+}
+
+body.dark-mode .visual-outer {
+    background: linear-gradient(135deg, #2e1065, #3b0764);
+}
+
+body.dark-mode .visual-top {
+    background: linear-gradient(135deg, #1e3a5f, #1e40af);
+}
+
+body.dark-mode .visual-bottom {
+    background: linear-gradient(135deg, #064e3b, #065f46);
+}
 
 /* ===== My Closet ===== */
-#my-closet { margin-top: 50px; padding: 25px; background-color: var(--card-bg-color); border-radius: 12px; box-shadow: 0 4px 12px var(--shadow-color); }
-#my-closet h2 { text-align: center; margin-bottom: 20px; }
-.closet-controls { display: flex; gap: 10px; margin-bottom: 20px; }
-#closet-item-name { 
-    flex-grow: 1; padding: 10px; border: 1px solid var(--button-border-color); border-radius: 8px; 
-    background-color: var(--bg-color); color: var(--text-color); font-family: 'Noto Sans KR', sans-serif;
+#my-closet {
+    margin-top: 50px;
+    padding: 25px;
+    background-color: var(--card-bg-color);
+    border-radius: 12px;
+    box-shadow: 0 4px 12px var(--shadow-color);
 }
+
+#my-closet h2 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.closet-controls {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+#closet-item-name {
+    flex-grow: 1;
+    padding: 10px;
+    border: 1px solid var(--button-border-color);
+    border-radius: 8px;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    font-family: 'Noto Sans KR', sans-serif;
+}
+
 #closet-item-category {
-    padding: 10px; border: 1px solid var(--button-border-color); border-radius: 8px;
-    background-color: var(--bg-color); color: var(--text-color); font-family: 'Noto Sans KR', sans-serif;
+    padding: 10px;
+    border: 1px solid var(--button-border-color);
+    border-radius: 8px;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    font-family: 'Noto Sans KR', sans-serif;
 }
-#add-to-closet { background-color: var(--active-button-bg-color); color: var(--active-button-text-color); }
 
-#my-closet-items { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; margin-bottom: 20px; }
+#add-to-closet {
+    background-color: var(--active-button-bg-color);
+    color: var(--active-button-text-color);
+}
 
-.closet-item { 
-    display: flex; justify-content: space-between; align-items: center; 
-    background-color: var(--bg-color); padding: 12px 15px; border-radius: 10px;
+#my-closet-items {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.closet-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: var(--bg-color);
+    padding: 12px 15px;
+    border-radius: 10px;
     transition: all 0.2s ease;
 }
 
@@ -473,10 +670,28 @@ body.dark-mode .visual-bottom { background: linear-gradient(135deg, #064e3b, #06
     border-radius: 6px;
 }
 
-.closet-item-delete { background: none; border: none; color: #ff6b6b; cursor: pointer; font-size: 1rem; padding: 6px; }
-.closet-item-delete:hover { background: none; color: #e55555; opacity: 1; }
+.closet-item-delete {
+    background: none;
+    border: none;
+    color: #ff6b6b;
+    cursor: pointer;
+    font-size: 1rem;
+    padding: 6px;
+}
 
-.closet-recommend-controls { display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 20px; }
+.closet-item-delete:hover {
+    background: none;
+    color: #e55555;
+    opacity: 1;
+}
+
+.closet-recommend-controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 20px;
+}
 
 /* ===== Responsive ===== */
 @media (max-width: 700px) {
@@ -484,26 +699,34 @@ body.dark-mode .visual-bottom { background: linear-gradient(135deg, #064e3b, #06
         flex-direction: column;
         align-items: center;
     }
+
     #avatar-display {
         flex: none;
         width: 100%;
         max-width: 320px;
         min-height: 420px;
     }
+
     #avatar-outfit-info {
         width: 100%;
     }
+
     .controls {
         flex-direction: column;
         align-items: center;
     }
-    .gender-selection, .style-selection, .body-type-selection {
+
+    .gender-selection,
+    .style-selection,
+    .body-type-selection {
         flex-wrap: wrap;
         justify-content: center;
     }
+
     .closet-controls {
         flex-direction: column;
     }
+
     #recommendations {
         grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
     }

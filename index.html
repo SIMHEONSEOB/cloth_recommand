@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ko">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,6 +12,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;700&display=swap" rel="stylesheet">
 </head>
+
 <body>
     <div id="app">
         <header>
@@ -20,9 +22,9 @@
             </div>
             <p class="subtitle">날씨에 맞는 똑똑한 의상 추천</p>
             <div class="weather-info">
-                 <p><span id="location">위치 불러오는 중...</span></p>
-                 <p>현재 날씨: <span id="weather"></span> (<span id="apparent-temp">체감: 22℃</span>)</p>
-                 <p id="weather-comparison">어제보다 3℃ 높아요</p> 
+                <p><span id="location">위치 불러오는 중...</span></p>
+                <p>현재 날씨: <span id="weather"></span> (<span id="apparent-temp">체감: 22℃</span>)</p>
+                <p id="weather-comparison">어제보다 3℃ 높아요</p>
             </div>
         </header>
         <main>
@@ -55,20 +57,34 @@
                         <!-- SVG 마네킹 바디 -->
                         <div id="avatar-body">
                             <svg viewBox="0 0 200 460" xmlns="http://www.w3.org/2000/svg" id="mannequin-svg">
-                                <!-- Head -->
-                                <circle cx="100" cy="38" r="28" fill="var(--mannequin-skin)" stroke="var(--mannequin-outline)" stroke-width="1.5"/>
+                                <!-- Background Shadow for depth -->
+                                <ellipse cx="100" cy="445" rx="60" ry="10" fill="rgba(0,0,0,0.1)" />
+                                <!-- Head and Face -->
+                                <path d="M100 15 Q125 15 125 45 Q125 75 100 75 Q75 75 75 45 Q75 15 100 15 Z"
+                                    fill="var(--mannequin-skin)" stroke="var(--mannequin-outline)" stroke-width="1.5" />
                                 <!-- Neck -->
-                                <rect x="90" y="64" width="20" height="18" rx="4" fill="var(--mannequin-skin)" stroke="var(--mannequin-outline)" stroke-width="1"/>
-                                <!-- Body / Torso -->
-                                <path d="M60 82 Q55 82 52 90 L42 160 Q40 172 50 175 L75 180 L75 240 L125 240 L125 180 L150 175 Q160 172 158 160 L148 90 Q145 82 140 82 Z" fill="var(--mannequin-body)" stroke="var(--mannequin-outline)" stroke-width="1.5"/>
+                                <path d="M90 72 Q100 85 110 72 L110 85 Q100 95 90 85 Z" fill="var(--mannequin-skin)"
+                                    stroke="var(--mannequin-outline)" stroke-width="1" />
+                                <!-- Shoulders and Torso -->
+                                <path
+                                    d="M45 105 Q100 85 155 105 L165 140 Q160 200 145 250 L140 260 L60 260 L55 250 Q40 200 35 140 Z"
+                                    fill="var(--mannequin-body)" stroke="var(--mannequin-outline)" stroke-width="1.5" />
                                 <!-- Left Arm -->
-                                <path d="M52 90 Q38 95 30 130 Q25 150 28 170 Q30 178 36 176 Q42 174 44 160 L50 130" fill="var(--mannequin-skin)" stroke="var(--mannequin-outline)" stroke-width="1.5"/>
+                                <path d="M45 105 Q30 110 25 150 L20 210 Q18 225 28 225 Q35 225 38 210 L45 150 Z"
+                                    fill="var(--mannequin-skin)" stroke="var(--mannequin-outline)" stroke-width="1.5" />
                                 <!-- Right Arm -->
-                                <path d="M148 90 Q162 95 170 130 Q175 150 172 170 Q170 178 164 176 Q158 174 156 160 L150 130" fill="var(--mannequin-skin)" stroke="var(--mannequin-outline)" stroke-width="1.5"/>
+                                <path
+                                    d="M155 105 Q170 110 175 150 L180 210 Q182 225 172 225 Q165 225 162 210 L155 150 Z"
+                                    fill="var(--mannequin-skin)" stroke="var(--mannequin-outline)" stroke-width="1.5" />
+                                <!-- Hips and Waist -->
+                                <path d="M60 260 L140 260 L145 290 Q145 310 100 310 Q55 310 55 290 Z"
+                                    fill="var(--mannequin-body)" stroke="var(--mannequin-outline)" stroke-width="1.5" />
                                 <!-- Left Leg -->
-                                <path d="M75 240 L68 350 Q66 370 70 380 L60 410 Q58 420 65 425 L85 425 Q90 425 90 420 L88 400 L82 370 L90 240" fill="var(--mannequin-skin)" stroke="var(--mannequin-outline)" stroke-width="1.5"/>
+                                <path d="M60 295 L55 370 Q52 420 65 435 L85 435 Q95 435 95 425 L90 310 Z"
+                                    fill="var(--mannequin-skin)" stroke="var(--mannequin-outline)" stroke-width="1.5" />
                                 <!-- Right Leg -->
-                                <path d="M125 240 L132 350 Q134 370 130 380 L140 410 Q142 420 135 425 L115 425 Q110 425 110 420 L112 400 L118 370 L110 240" fill="var(--mannequin-skin)" stroke="var(--mannequin-outline)" stroke-width="1.5"/>
+                                <path d="M140 295 L145 370 Q148 420 135 435 L115 435 Q105 435 105 425 L110 310 Z"
+                                    fill="var(--mannequin-skin)" stroke="var(--mannequin-outline)" stroke-width="1.5" />
                             </svg>
                             <!-- Clothing layers rendered on top of SVG mannequin -->
                             <div id="clothing-layer-outer" class="clothing-layer" style="display:none;"></div>
@@ -86,7 +102,8 @@
                                     <span class="slot-label">아우터</span>
                                     <span class="slot-name" id="slot-outer-name">미착용</span>
                                 </div>
-                                <button class="slot-remove" data-category="outer" style="display:none;" title="벗기"><i class="fas fa-times"></i></button>
+                                <button class="slot-remove" data-category="outer" style="display:none;" title="벗기"><i
+                                        class="fas fa-times"></i></button>
                             </div>
                             <div class="outfit-slot" id="slot-top">
                                 <div class="slot-icon"><i class="fas fa-shirt"></i></div>
@@ -94,7 +111,8 @@
                                     <span class="slot-label">상의</span>
                                     <span class="slot-name" id="slot-top-name">미착용</span>
                                 </div>
-                                <button class="slot-remove" data-category="top" style="display:none;" title="벗기"><i class="fas fa-times"></i></button>
+                                <button class="slot-remove" data-category="top" style="display:none;" title="벗기"><i
+                                        class="fas fa-times"></i></button>
                             </div>
                             <div class="outfit-slot" id="slot-bottom">
                                 <div class="slot-icon"><i class="fas fa-socks"></i></div>
@@ -102,7 +120,8 @@
                                     <span class="slot-label">하의</span>
                                     <span class="slot-name" id="slot-bottom-name">미착용</span>
                                 </div>
-                                <button class="slot-remove" data-category="bottom" style="display:none;" title="벗기"><i class="fas fa-times"></i></button>
+                                <button class="slot-remove" data-category="bottom" style="display:none;" title="벗기"><i
+                                        class="fas fa-times"></i></button>
                             </div>
                         </div>
                         <button id="avatar-reset-btn"><i class="fas fa-rotate-left"></i> 전체 초기화</button>
@@ -111,17 +130,17 @@
             </div>
 
             <div id="recommendations"></div>
-            
+
             <div id="my-closet">
                 <h2><i class="fas fa-door-open"></i> 내 옷장</h2>
                 <div class="closet-controls">
-                     <input type="text" id="closet-item-name" placeholder="옷 이름">
-                     <select id="closet-item-category">
-                         <option value="outer">아우터</option>
-                         <option value="top">상의</option>
-                         <option value="bottom">하의</option>
-                     </select>
-                     <button id="add-to-closet"><i class="fas fa-plus"></i> 추가</button>
+                    <input type="text" id="closet-item-name" placeholder="옷 이름">
+                    <select id="closet-item-category">
+                        <option value="outer">아우터</option>
+                        <option value="top">상의</option>
+                        <option value="bottom">하의</option>
+                    </select>
+                    <button id="add-to-closet"><i class="fas fa-plus"></i> 추가</button>
                 </div>
                 <div id="my-closet-items"></div>
                 <div class="closet-recommend-controls">
@@ -133,4 +152,5 @@
     </div>
     <script src="main.js" type="module"></script>
 </body>
+
 </html>

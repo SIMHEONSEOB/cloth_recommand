@@ -104,17 +104,7 @@ const clothingSVGs = {
         </svg>`,
 
     // === BOTTOMS ===
-    '기모 바지': (color = '#374151') => `
-        <svg viewBox="0 0 170 180" xmlns="http://www.w3.org/2000/svg">
-            <defs><linearGradient id="fp1" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="${color}"/><stop offset="100%" stop-color="${adjustColor(color, -20)}"/></linearGradient></defs>
-            <path d="M25 10 Q22 5 20 10 L20 15 L15 165 Q14 175 25 175 L70 175 L78 85 L92 85 L100 175 L145 175 Q156 175 155 165 L150 15 L150 10 Q148 5 145 10 Z" fill="url(#fp1)" stroke="${adjustColor(color, -30)}" stroke-width="1.5"/>
-            <path d="M20 15 L150 15" stroke="${adjustColor(color, 20)}" stroke-width="2"/>
-            <rect x="75" y="15" width="20" height="8" rx="2" fill="${adjustColor(color, -15)}" opacity="0.5"/>
-            <path d="M55 30 L55 55" stroke="${adjustColor(color, 15)}" stroke-width="1" opacity="0.3"/>
-            <path d="M115 30 L115 55" stroke="${adjustColor(color, 15)}" stroke-width="1" opacity="0.3"/>
-            <rect x="30" y="40" width="22" height="18" rx="3" fill="${adjustColor(color, -10)}" opacity="0.3"/>
-            <rect x="118" y="40" width="22" height="18" rx="3" fill="${adjustColor(color, -10)}" opacity="0.3"/>
-        </svg>`,
+    // 기모 바지는 실제 이미지 사용 (images/fleece_pants.png)
 
     '면바지 또는 슬랙스': (color = '#92400e') => `
         <svg viewBox="0 0 170 180" xmlns="http://www.w3.org/2000/svg">
@@ -267,7 +257,7 @@ const defaultOutfitData = [
     { gender: 'any', style: 'any', tempMin: 10, tempMax: 17, name: '맨투맨 또는 후드티', category: 'top', color: '#6b7280' },
     { gender: 'any', style: 'any', tempMin: 18, tempMax: 22, name: '긴팔 셔츠', category: 'top', color: '#e5e7eb' },
     { gender: 'any', style: 'any', tempMin: 23, tempMax: 100, name: '반팔 티셔츠', category: 'top', color: '#3b82f6' },
-    { gender: 'any', style: 'any', tempMin: -100, tempMax: 15, name: '기모 바지', category: 'bottom', color: '#374151' },
+    { gender: 'any', style: 'any', tempMin: -100, tempMax: 15, name: '기모 바지', category: 'bottom', color: '#374151', imageUrl: 'images/fleece_pants.png' },
     { gender: 'any', style: 'any', tempMin: 16, tempMax: 100, name: '면바지 또는 슬랙스', category: 'bottom', color: '#92400e' },
     { gender: 'male', style: 'modern', tempMin: 10, tempMax: 22, name: '블레이저', category: 'outer', color: '#1f2937' },
     { gender: 'female', style: 'modern', tempMin: 10, tempMax: 22, name: '블라우스', category: 'top', color: '#f9a8d4' },
