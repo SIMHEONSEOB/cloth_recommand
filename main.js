@@ -198,6 +198,41 @@ function convertToKMA(lat, lon) {
     return { nx, ny };
 }
 
+// Function to get reverse geocoded address using OpenStreetMap Nominatim
+async function getReverseGeocodedAddress(lat, lon) {
+    try {
+        const nominatimUrl = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&zoom=18&addressdetails=1`;
+        const response = await fetch(nominatimUrl, {
+            headers: {
+                'User-Agent': 'GeminiCLIWeatherApp/1.0' // Required by Nominatim policy
+            }
+        });
+        if (!response.ok) {
+            throw new Error(`Reverse geocoding failed: ${response.statusText}`);
+        }
+        const data = await response.json();
+        console.log('Nominatim API raw data:', data);
+
+        if (data.address) {
+            // Try to get a more specific neighborhood or city name
+            // Prioritize Korean administrative divisions if available, otherwise general terms
+            const address = data.address;
+            if (address.neighbourhood) return address.neighbourhood;
+            if (address.suburb) return address.suburb;
+            if (address.village) return address.village; // For villages
+            if (address.town) return address.town;       // For towns
+            if (address.city) return address.city;       // For cities
+            if (address.county) return address.county;   // For counties (e.g., Namyangju-si is a 'county' level in some contexts)
+            return data.display_name; // Fallback to full display name
+        } else {
+            return '알 수 없는 위치'; // Unknown location
+        }
+    } catch (error) {
+        console.error('Reverse geocoding 중 오류 발생:', error);
+        return '알 수 없는 위치'; // Unknown location on error
+    }
+}
+
 // Helper function to format date and time for the API
 function getBaseDateTime() {
     const now = new Date();
@@ -440,31 +475,31 @@ window.addEventListener('beforeunload', () => {
 
 // Function to get user's location and fetch weather
 async function getUserLocationAndFetchWeather() {
-    return new Promise(async (resolve) => {
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(
-                async (position) => {
-                    const lat = position.coords.latitude;
-                    const lon = position.coords.longitude;
-                    const { nx, ny } = convertToKMA(lat, lon);
-                    await fetchWeatherData(nx, ny, '현재 위치');
-                    resolve();
-                },
-                async (error) => {
-                    console.error('위치 정보를 가져오는 데 실패했습니다:', error);
-                    // Fallback to Seoul if geolocation fails or denied
-                    await fetchWeatherData(55, 127, '서울'); // Use literal values
-                    resolve();
-                },
-                { enableHighAccuracy: false, timeout: 10000, maximumAge: 0 }
-            );
+    let finalLocationName = '서울'; // Default fallback
+
+    try {
+        const position = await new Promise((resolve, reject) => {
+            navigator.geolocation.getCurrentPosition(resolve, reject, { enableHighAccuracy: false, timeout: 10000, maximumAge: 0 });
+        });
+        const lat = position.coords.latitude;
+        const lon = position.coords.longitude;
+        const { nx, ny } = convertToKMA(lat, lon);
+
+        // Try to get a more specific location name from reverse geocoding
+        const geocodedLocation = await getReverseGeocodedAddress(lat, lon);
+        if (geocodedLocation && geocodedLocation !== '알 수 없는 위치') {
+            finalLocationName = geocodedLocation;
         } else {
-            console.warn('이 브라우저는 지리적 위치를 지원하지 않습니다.');
-            // Fallback to Seoul if geolocation is not supported
-            await fetchWeatherData(55, 127, '서울'); // Use literal values
-            resolve();
+            // If geocoding fails, but geolocation succeeded, use a generic "현재 위치"
+            finalLocationName = '현재 위치';
         }
-    });
+
+        await fetchWeatherData(nx, ny, finalLocationName);
+    } catch (error) {
+        console.error('위치 정보를 가져오는 데 실패했습니다:', error);
+        // Geolocation failed or denied, use the default fallback '서울'
+        await fetchWeatherData(55, 127, finalLocationName); // finalLocationName will be '서울' here
+    }
 }
 
 
