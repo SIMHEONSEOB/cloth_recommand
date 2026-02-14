@@ -1,18 +1,4 @@
-
-
-
-
-
-
-/* General Styles */
-body {
-    font-family: 'Noto Sans KR', sans-serif;
-    margin: 0;
-    background-color: var(--bg-color);
-    color: var(--text-color);
-    transition: background-color 0.3s, color 0.3s;
-}
-
+/* ===== CSS Variables / Design Tokens ===== */
 :root {
     --bg-color: #f4f7f6;
     --text-color: #333;
@@ -24,6 +10,14 @@ body {
     --active-button-bg-color: #007bff;
     --active-button-text-color: #fff;
     --shadow-color: rgba(0, 0, 0, 0.1);
+    --mannequin-skin: #f0d5b8;
+    --mannequin-body: #e8c9a8;
+    --mannequin-outline: #c9a882;
+    --avatar-bg: linear-gradient(145deg, #e8edf2, #f5f7fa);
+    --slot-empty-color: #aaa;
+    --slot-active-color: #007bff;
+    --danger-color: #ff6b6b;
+    --success-glow: rgba(0, 123, 255, 0.3);
 }
 
 body.dark-mode {
@@ -37,11 +31,28 @@ body.dark-mode {
     --active-button-bg-color: #007bff;
     --active-button-text-color: #fff;
     --shadow-color: rgba(0, 0, 0, 0.5);
+    --mannequin-skin: #c4a882;
+    --mannequin-body: #b89870;
+    --mannequin-outline: #8a6e50;
+    --avatar-bg: linear-gradient(145deg, #1a1f25, #22272e);
+    --slot-empty-color: #666;
+    --slot-active-color: #4da3ff;
+    --danger-color: #ff6b6b;
+    --success-glow: rgba(77, 163, 255, 0.3);
+}
+
+/* ===== General Styles ===== */
+body {
+    font-family: 'Noto Sans KR', sans-serif;
+    margin: 0;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    transition: background-color 0.3s, color 0.3s;
 }
 
 #app { max-width: 960px; margin: 0 auto; padding: 40px 20px; }
 
-/* Header */
+/* ===== Header ===== */
 header { text-align: center; margin-bottom: 30px; }
 .header-top { display: flex; justify-content: center; align-items: center; position: relative; }
 .header-top h1 { font-size: 2.5rem; font-weight: 700; margin: 0; }
@@ -49,84 +60,451 @@ header { text-align: center; margin-bottom: 30px; }
 .subtitle, .weather-info p { font-size: 1.1rem; color: var(--text-color); opacity: 0.8; margin: 5px 0; }
 #weather-comparison { font-weight: 700; }
 
-/* Controls */
+/* ===== Controls ===== */
 .controls { display: flex; flex-wrap: wrap; justify-content: center; gap: 15px; margin-bottom: 25px; padding: 15px; background-color: var(--card-bg-color); border-radius: 12px; box-shadow: 0 4px 12px var(--shadow-color); }
 .gender-selection, .style-selection, .body-type-selection { display: flex; gap: 10px; }
 
 button {
     padding: 10px 20px; border: 1px solid var(--button-border-color); border-radius: 8px; cursor: pointer;
     background-color: var(--button-bg-color); color: var(--button-text-color); font-size: 0.95rem; 
-    transition: all 0.2s ease;
+    transition: all 0.2s ease; font-family: 'Noto Sans KR', sans-serif;
 }
 button:hover { background-color: var(--active-button-bg-color); color: var(--active-button-text-color); opacity: 0.8; }
 button.active { background-color: var(--active-button-bg-color); color: var(--active-button-text-color); border-color: var(--active-button-bg-color); }
 
-/* Advice Section */
+/* ===== Advice Section ===== */
 #advice-section { text-align: center; margin-bottom: 30px; padding: 20px; background-color: var(--card-bg-color); border-radius: 12px; box-shadow: 0 4px 12px var(--shadow-color); }
 #outfit-explanation { font-size: 1.1rem; font-weight: 700; margin: 0 0 10px 0; }
 #contextual-advice { font-size: 1rem; opacity: 0.9; }
 
-/* Avatar Display */
-#avatar-display {
-    position: relative; /* For absolute positioning of layers */
-    width: 220px; /* Base width from placeholder */
-    height: 400px; /* Base height from placeholder */
-    margin: 30px auto; /* Center it and give some vertical margin */
+/* ===== Avatar Section ===== */
+#avatar-section {
+    margin-bottom: 40px;
+    padding: 30px;
     background-color: var(--card-bg-color);
-    border-radius: 12px;
-    box-shadow: 0 4px 12px var(--shadow-color);
-    overflow: hidden; /* Ensure layers don't spill out */
-    display: flex; /* Use flex to center the initial base avatar before layers take over */
-    justify-content: center;
-    align-items: center;
+    border-radius: 16px;
+    box-shadow: 0 8px 30px var(--shadow-color);
 }
 
-#avatar-display img {
-    position: absolute; /* Position layers on top of each other */
-    top: 0;
-    left: 0;
+#avatar-section h2 {
+    text-align: center;
+    margin: 0 0 25px 0;
+    font-size: 1.4rem;
+    font-weight: 700;
+}
+
+#avatar-section h2 i {
+    margin-right: 8px;
+    color: var(--active-button-bg-color);
+}
+
+#avatar-container {
+    display: flex;
+    gap: 30px;
+    align-items: stretch;
+}
+
+/* --- Avatar Display --- */
+#avatar-display {
+    flex: 0 0 280px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: var(--avatar-bg);
+    border-radius: 16px;
+    padding: 20px;
+    position: relative;
+    overflow: hidden;
+    min-height: 480px;
+}
+
+#avatar-display::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: radial-gradient(ellipse at center bottom, rgba(0,0,0,0.06) 0%, transparent 60%);
+    pointer-events: none;
+    z-index: 1;
+}
+
+#avatar-body {
+    position: relative;
+    width: 200px;
+    height: 460px;
+    z-index: 2;
+}
+
+#mannequin-svg {
     width: 100%;
     height: 100%;
-    object-fit: contain; /* Ensure images fit without cropping */
+    position: absolute;
+    top: 0; left: 0;
+    z-index: 1;
 }
 
-#base-avatar {
-    z-index: 1; /* Base avatar should be at the bottom layer */
-    position: relative; /* Make base avatar relative to participate in flex centering */
+/* Clothing layers */
+.clothing-layer {
+    position: absolute;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+    animation: clothFadeIn 0.4s ease-out;
 }
 
-#avatar-outer {
-    z-index: 4; /* Outerwear should be on top */
+@keyframes clothFadeIn {
+    from { opacity: 0; transform: scale(0.92); }
+    to { opacity: 1; transform: scale(1); }
 }
 
-#avatar-top {
-    z-index: 3; /* Topwear is below outerwear */
+#clothing-layer-outer {
+    top: 70px; left: -10px;
+    width: 220px; height: 180px;
+    z-index: 4;
 }
 
-#avatar-bottom {
-    z-index: 2; /* Bottomwear is below topwear but above base */
+#clothing-layer-top {
+    top: 78px; left: 5px;
+    width: 190px; height: 160px;
+    z-index: 3;
 }
 
-/* Recommendations */
+#clothing-layer-bottom {
+    top: 230px; left: 15px;
+    width: 170px; height: 180px;
+    z-index: 2;
+}
+
+.clothing-layer svg {
+    width: 100%;
+    height: 100%;
+}
+
+#avatar-hint {
+    position: absolute;
+    bottom: 15px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.8rem;
+    color: var(--slot-empty-color);
+    text-align: center;
+    z-index: 5;
+    white-space: nowrap;
+    animation: hintPulse 2s ease-in-out infinite;
+}
+
+@keyframes hintPulse {
+    0%, 100% { opacity: 0.6; }
+    50% { opacity: 1; }
+}
+
+/* --- Outfit Info Panel --- */
+#avatar-outfit-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+#avatar-outfit-info h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 700;
+}
+
+#avatar-outfit-info h3 i {
+    margin-right: 6px;
+    color: var(--active-button-bg-color);
+}
+
+#outfit-slots {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    flex: 1;
+}
+
+.outfit-slot {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 16px;
+    background-color: var(--bg-color);
+    border-radius: 12px;
+    border: 2px solid transparent;
+    transition: all 0.3s ease;
+}
+
+.outfit-slot.active {
+    border-color: var(--slot-active-color);
+    box-shadow: 0 0 12px var(--success-glow);
+}
+
+.slot-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: var(--card-bg-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    color: var(--slot-empty-color);
+    flex-shrink: 0;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 6px var(--shadow-color);
+}
+
+.outfit-slot.active .slot-icon {
+    background: var(--active-button-bg-color);
+    color: #fff;
+}
+
+.slot-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    flex: 1;
+    min-width: 0;
+}
+
+.slot-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--slot-empty-color);
+}
+
+.slot-name {
+    font-size: 0.95rem;
+    font-weight: 400;
+    color: var(--text-color);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.outfit-slot.active .slot-name {
+    font-weight: 700;
+}
+
+.slot-remove {
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+    background: var(--danger-color);
+    color: #fff;
+    font-size: 0.75rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.8;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+}
+
+.slot-remove:hover {
+    opacity: 1;
+    transform: scale(1.1);
+    background: #e55555;
+}
+
+#avatar-reset-btn {
+    margin-top: auto;
+    padding: 12px 20px;
+    background: linear-gradient(135deg, var(--danger-color), #e55555);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    font-weight: 700;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.25s ease;
+}
+
+#avatar-reset-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(255, 107, 107, 0.35);
+    background: linear-gradient(135deg, #e55555, var(--danger-color));
+    opacity: 1;
+}
+
+#avatar-reset-btn i {
+    margin-right: 6px;
+}
+
+/* ===== Recommendations ===== */
 #recommendations { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 25px; }
-.recommendation-item {
-    background-color: var(--card-bg-color); border: 1px solid var(--card-border-color); border-radius: 12px;
-    padding: 20px; text-align: center; box-shadow: 0 6px 15px var(--shadow-color); 
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-.recommendation-item:hover { transform: translateY(-5px); box-shadow: 0 10px 20px var(--shadow-color); }
-.recommendation-item img { max-width: 100%; height: auto; border-radius: 8px; margin-bottom: 15px; }
-.recommendation-item p { margin: 0; font-size: 1rem; font-weight: 700; }
 
-/* My Closet */
+.recommendation-item {
+    background-color: var(--card-bg-color); 
+    border: 1px solid var(--card-border-color); 
+    border-radius: 16px;
+    padding: 0;
+    text-align: center; 
+    box-shadow: 0 6px 15px var(--shadow-color); 
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    overflow: hidden;
+}
+
+.recommendation-item:hover { transform: translateY(-5px); box-shadow: 0 10px 20px var(--shadow-color); }
+
+.recommendation-item .item-visual {
+    width: 100%;
+    height: 180px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    position: relative;
+}
+
+.recommendation-item .item-visual svg {
+    width: 70%;
+    height: 70%;
+}
+
+.recommendation-item .item-info {
+    padding: 15px 20px 20px;
+}
+
+.recommendation-item .item-category-badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 8px;
+}
+
+.badge-outer { background: rgba(139, 92, 246, 0.15); color: #8b5cf6; }
+.badge-top { background: rgba(59, 130, 246, 0.15); color: #3b82f6; }
+.badge-bottom { background: rgba(16, 185, 129, 0.15); color: #10b981; }
+
+body.dark-mode .badge-outer { background: rgba(139, 92, 246, 0.25); color: #a78bfa; }
+body.dark-mode .badge-top { background: rgba(59, 130, 246, 0.25); color: #60a5fa; }
+body.dark-mode .badge-bottom { background: rgba(16, 185, 129, 0.25); color: #34d399; }
+
+.recommendation-item p.item-name { margin: 0 0 12px; font-size: 1rem; font-weight: 700; }
+
+.recommendation-item .try-on-button {
+    width: 100%;
+    padding: 10px;
+    background: linear-gradient(135deg, var(--active-button-bg-color), #0056b3);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    font-size: 0.9rem;
+}
+
+.recommendation-item .try-on-button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 14px var(--success-glow);
+    opacity: 1;
+}
+
+.recommendation-item .try-on-button i {
+    margin-right: 6px;
+}
+
+.recommendation-item .try-on-button.worn {
+    background: linear-gradient(135deg, #10b981, #059669);
+}
+
+/* Visual backgrounds per category */
+.visual-outer { background: linear-gradient(135deg, #ede9fe, #ddd6fe); }
+.visual-top { background: linear-gradient(135deg, #dbeafe, #bfdbfe); }
+.visual-bottom { background: linear-gradient(135deg, #d1fae5, #a7f3d0); }
+
+body.dark-mode .visual-outer { background: linear-gradient(135deg, #2e1065, #3b0764); }
+body.dark-mode .visual-top { background: linear-gradient(135deg, #1e3a5f, #1e40af); }
+body.dark-mode .visual-bottom { background: linear-gradient(135deg, #064e3b, #065f46); }
+
+/* ===== My Closet ===== */
 #my-closet { margin-top: 50px; padding: 25px; background-color: var(--card-bg-color); border-radius: 12px; box-shadow: 0 4px 12px var(--shadow-color); }
 #my-closet h2 { text-align: center; margin-bottom: 20px; }
 .closet-controls { display: flex; gap: 10px; margin-bottom: 20px; }
-#closet-item-name { flex-grow: 1; padding: 10px; border: 1px solid var(--button-border-color); border-radius: 8px; }
+#closet-item-name { 
+    flex-grow: 1; padding: 10px; border: 1px solid var(--button-border-color); border-radius: 8px; 
+    background-color: var(--bg-color); color: var(--text-color); font-family: 'Noto Sans KR', sans-serif;
+}
+#closet-item-category {
+    padding: 10px; border: 1px solid var(--button-border-color); border-radius: 8px;
+    background-color: var(--bg-color); color: var(--text-color); font-family: 'Noto Sans KR', sans-serif;
+}
 #add-to-closet { background-color: var(--active-button-bg-color); color: var(--active-button-text-color); }
 
-#my-closet-items { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 15px; margin-bottom: 20px; }
-.closet-item { display: flex; justify-content: space-between; align-items: center; background-color: var(--bg-color); padding: 10px; border-radius: 8px; }
-.closet-item-delete { background: none; border: none; color: #ff6b6b; cursor: pointer; font-size: 1rem; }
+#my-closet-items { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; margin-bottom: 20px; }
+
+.closet-item { 
+    display: flex; justify-content: space-between; align-items: center; 
+    background-color: var(--bg-color); padding: 12px 15px; border-radius: 10px;
+    transition: all 0.2s ease;
+}
+
+.closet-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px var(--shadow-color);
+}
+
+.closet-item-actions {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+}
+
+.closet-item .try-on-button {
+    padding: 6px 10px;
+    font-size: 0.75rem;
+    background: var(--active-button-bg-color);
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+}
+
+.closet-item-delete { background: none; border: none; color: #ff6b6b; cursor: pointer; font-size: 1rem; padding: 6px; }
+.closet-item-delete:hover { background: none; color: #e55555; opacity: 1; }
 
 .closet-recommend-controls { display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 20px; }
+
+/* ===== Responsive ===== */
+@media (max-width: 700px) {
+    #avatar-container {
+        flex-direction: column;
+        align-items: center;
+    }
+    #avatar-display {
+        flex: none;
+        width: 100%;
+        max-width: 320px;
+        min-height: 420px;
+    }
+    #avatar-outfit-info {
+        width: 100%;
+    }
+    .controls {
+        flex-direction: column;
+        align-items: center;
+    }
+    .gender-selection, .style-selection, .body-type-selection {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    .closet-controls {
+        flex-direction: column;
+    }
+    #recommendations {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    }
+}

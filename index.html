@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>날씨 기반 의상 추천</title>
+    <title>날씨 기반 의상 추천 — 오늘 뭐 입지?</title>
+    <meta name="description" content="실시간 날씨 정보를 기반으로 오늘의 최적 의상을 추천해주는 스마트 웹 애플리케이션">
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -45,12 +46,70 @@
                 <p id="outfit-explanation"></p>
                 <p id="contextual-advice"></p>
             </div>
-            <div id="avatar-display">
-                <img id="base-avatar" src="https://placehold.co/220x400/png?text=Base+Avatar" alt="Base Avatar">
-                <img id="avatar-outer" class="avatar-layer" src="" alt="Outer" style="display: none;">
-                <img id="avatar-top" class="avatar-layer" src="" alt="Top" style="display: none;">
-                <img id="avatar-bottom" class="avatar-layer" src="" alt="Bottom" style="display: none;">
+
+            <!-- ===== 아바타 코디 미리보기 섹션 ===== -->
+            <div id="avatar-section">
+                <h2><i class="fas fa-user-astronaut"></i> 코디 미리보기</h2>
+                <div id="avatar-container">
+                    <div id="avatar-display">
+                        <!-- SVG 마네킹 바디 -->
+                        <div id="avatar-body">
+                            <svg viewBox="0 0 200 460" xmlns="http://www.w3.org/2000/svg" id="mannequin-svg">
+                                <!-- Head -->
+                                <circle cx="100" cy="38" r="28" fill="var(--mannequin-skin)" stroke="var(--mannequin-outline)" stroke-width="1.5"/>
+                                <!-- Neck -->
+                                <rect x="90" y="64" width="20" height="18" rx="4" fill="var(--mannequin-skin)" stroke="var(--mannequin-outline)" stroke-width="1"/>
+                                <!-- Body / Torso -->
+                                <path d="M60 82 Q55 82 52 90 L42 160 Q40 172 50 175 L75 180 L75 240 L125 240 L125 180 L150 175 Q160 172 158 160 L148 90 Q145 82 140 82 Z" fill="var(--mannequin-body)" stroke="var(--mannequin-outline)" stroke-width="1.5"/>
+                                <!-- Left Arm -->
+                                <path d="M52 90 Q38 95 30 130 Q25 150 28 170 Q30 178 36 176 Q42 174 44 160 L50 130" fill="var(--mannequin-skin)" stroke="var(--mannequin-outline)" stroke-width="1.5"/>
+                                <!-- Right Arm -->
+                                <path d="M148 90 Q162 95 170 130 Q175 150 172 170 Q170 178 164 176 Q158 174 156 160 L150 130" fill="var(--mannequin-skin)" stroke="var(--mannequin-outline)" stroke-width="1.5"/>
+                                <!-- Left Leg -->
+                                <path d="M75 240 L68 350 Q66 370 70 380 L60 410 Q58 420 65 425 L85 425 Q90 425 90 420 L88 400 L82 370 L90 240" fill="var(--mannequin-skin)" stroke="var(--mannequin-outline)" stroke-width="1.5"/>
+                                <!-- Right Leg -->
+                                <path d="M125 240 L132 350 Q134 370 130 380 L140 410 Q142 420 135 425 L115 425 Q110 425 110 420 L112 400 L118 370 L110 240" fill="var(--mannequin-skin)" stroke="var(--mannequin-outline)" stroke-width="1.5"/>
+                            </svg>
+                            <!-- Clothing layers rendered on top of SVG mannequin -->
+                            <div id="clothing-layer-outer" class="clothing-layer" style="display:none;"></div>
+                            <div id="clothing-layer-top" class="clothing-layer" style="display:none;"></div>
+                            <div id="clothing-layer-bottom" class="clothing-layer" style="display:none;"></div>
+                        </div>
+                        <p id="avatar-hint"><i class="fas fa-hand-pointer"></i> 아래 추천 의상의 '입어보기'를 클릭하세요</p>
+                    </div>
+                    <div id="avatar-outfit-info">
+                        <h3><i class="fas fa-list-check"></i> 착용 중인 의상</h3>
+                        <div id="outfit-slots">
+                            <div class="outfit-slot" id="slot-outer">
+                                <div class="slot-icon"><i class="fas fa-vest-patches"></i></div>
+                                <div class="slot-info">
+                                    <span class="slot-label">아우터</span>
+                                    <span class="slot-name" id="slot-outer-name">미착용</span>
+                                </div>
+                                <button class="slot-remove" data-category="outer" style="display:none;" title="벗기"><i class="fas fa-times"></i></button>
+                            </div>
+                            <div class="outfit-slot" id="slot-top">
+                                <div class="slot-icon"><i class="fas fa-shirt"></i></div>
+                                <div class="slot-info">
+                                    <span class="slot-label">상의</span>
+                                    <span class="slot-name" id="slot-top-name">미착용</span>
+                                </div>
+                                <button class="slot-remove" data-category="top" style="display:none;" title="벗기"><i class="fas fa-times"></i></button>
+                            </div>
+                            <div class="outfit-slot" id="slot-bottom">
+                                <div class="slot-icon"><i class="fas fa-socks"></i></div>
+                                <div class="slot-info">
+                                    <span class="slot-label">하의</span>
+                                    <span class="slot-name" id="slot-bottom-name">미착용</span>
+                                </div>
+                                <button class="slot-remove" data-category="bottom" style="display:none;" title="벗기"><i class="fas fa-times"></i></button>
+                            </div>
+                        </div>
+                        <button id="avatar-reset-btn"><i class="fas fa-rotate-left"></i> 전체 초기화</button>
+                    </div>
+                </div>
             </div>
+
             <div id="recommendations"></div>
             
             <div id="my-closet">
