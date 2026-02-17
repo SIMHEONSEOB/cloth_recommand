@@ -198,6 +198,7 @@ const KOREA_WEATHER_BASE_URL = 'https://apis.data.go.kr/1360000/VilageFcstInfoSe
 let selectedGender = 'male';
 let selectedStyle = 'casual';
 let selectedBodyType = 'normal';
+let selectedCategory = 'all';
 
 // --- Default colors per item ---
 const itemColors = {
@@ -228,16 +229,24 @@ let weatherData = {
 
 const defaultOutfitData = [
     { gender: 'any', style: 'any', tempMin: -100, tempMax: 5, name: '두꺼운 패딩', category: 'outer', color: '#2d3748' },
-    { gender: 'any', style: 'any', tempMin: 5, tempMax: 10, name: '경량 패딩', category: 'outer', color: '#2d3748', imageUrl: 'images/light_padding.png' },
+    { gender: 'any', style: 'any', tempMin: 5, tempMax: 10, name: '경량 패딩', category: 'outer', color: '#2d3748' },
     { gender: 'any', style: 'any', tempMin: 10, tempMax: 15, name: '자켓 또는 가디건', category: 'outer', color: '#d97706' },
     { gender: 'any', style: 'any', tempMin: 10, tempMax: 17, name: '맨투맨 또는 후드티', category: 'top', color: '#6b7280' },
     { gender: 'any', style: 'any', tempMin: 18, tempMax: 22, name: '긴팔 셔츠', category: 'top', color: '#e5e7eb' },
     { gender: 'any', style: 'any', tempMin: 23, tempMax: 100, name: '반팔 티셔츠', category: 'top', color: '#3b82f6' },
-    { gender: 'any', style: 'any', tempMin: -100, tempMax: 15, name: '기모 바지', category: 'bottom', color: '#374151', imageUrl: 'images/fleece_pants.png' },
+    { gender: 'any', style: 'any', tempMin: -100, tempMax: 15, name: '기모 바지', category: 'bottom', color: '#374151' },
     { gender: 'any', style: 'any', tempMin: 16, tempMax: 100, name: '면바지 또는 슬랙스', category: 'bottom', color: '#92400e' },
     { gender: 'male', style: 'modern', tempMin: 10, tempMax: 22, name: '블레이저', category: 'outer', color: '#1f2937' },
     { gender: 'female', style: 'modern', tempMin: 10, tempMax: 22, name: '블라우스', category: 'top', color: '#f9a8d4' },
     { gender: 'any', style: 'street', tempMin: 10, tempMax: 25, name: '바람막이', category: 'outer', color: '#0ea5e9' },
+    // New Items from Images
+    { gender: 'any', style: 'any', tempMin: 5, tempMax: 20, name: '갈색 팬츠', category: 'bottom', imageUrl: 'images/갈색팬츠.png' },
+    { gender: 'any', style: 'any', tempMin: 5, tempMax: 15, name: '녹색 니트', category: 'top', imageUrl: 'images/니트-녹색.png' },
+    { gender: 'any', style: 'any', tempMin: 5, tempMax: 20, name: '검정 레귤러핏 진', category: 'bottom', imageUrl: 'images/레큘러핏진(검은색).png' },
+    { gender: 'any', style: 'any', tempMin: 10, tempMax: 18, name: '회색 맨투맨', category: 'top', imageUrl: 'images/맨투맨-회색.png' },
+    { gender: 'any', style: 'any', tempMin: 5, tempMax: 20, name: '블랙진', category: 'bottom', imageUrl: 'images/블랙진.png' },
+    { gender: 'any', style: 'any', tempMin: 5, tempMax: 15, name: '파란색 스웨터', category: 'top', imageUrl: 'images/스웨터 파란색.png' },
+    { gender: 'any', style: 'any', tempMin: 5, tempMax: 20, name: '청바지', category: 'bottom', imageUrl: 'images/청바지.png' },
 ];
 
 // --- Functions ---
@@ -320,18 +329,19 @@ async function getReverseGeocodedAddress(lat, lon) {
 
 function getBaseDateTime() {
     const now = new Date();
-    let hours = now.getHours();
-    const minutes = now.getMinutes();
-    let base_time_hours = hours;
-    if (minutes < 40) {
-        base_time_hours--;
-        if (base_time_hours < 0) base_time_hours = 23;
+    // API provides updates at 40 min past each hour.
+    // So if current minutes < 40, we must use the previous hour data.
+    if (now.getMinutes() < 40) {
+        now.setHours(now.getHours() - 1);
     }
+
+    // Formatting handles date rollback automatically via Date object
     const year = now.getFullYear();
     const month = String(now.getMonth() + 1).padStart(2, '0');
     const day = String(now.getDate()).padStart(2, '0');
     const base_date = `${year}${month}${day}`;
-    const base_time = String(base_time_hours).padStart(2, '0') + '00';
+    const base_time = String(now.getHours()).padStart(2, '0') + '00';
+
     return { base_date, base_time };
 }
 
@@ -414,7 +424,9 @@ function updateWeatherUI(apparentTemp, weather) {
 
 function renderRecommendations(apparentTemp) {
     recommendationsDiv.innerHTML = '';
-    const sourceData = defaultOutfitData;
+    // Use stored custom items if available
+    const customItems = JSON.parse(localStorage.getItem('customClothes')) || [];
+    const sourceData = [...defaultOutfitData, ...customItems];
 
     const tempFilteredOutfits = sourceData.filter(item => {
         return apparentTemp >= item.tempMin && apparentTemp <= item.tempMax;
@@ -431,11 +443,17 @@ function renderRecommendations(apparentTemp) {
         return;
     }
 
-    const uniqueCategories = ['outer', 'top', 'bottom'];
     const categoryLabels = { outer: '아우터', top: '상의', bottom: '하의' };
 
+    // Filter categories based on selection
+    const availableCategories = ['outer', 'top', 'bottom'];
+    const uniqueCategories = selectedCategory === 'all' ? availableCategories : [selectedCategory];
+
     uniqueCategories.forEach(category => {
-        const item = filteredOutfits.find(i => i.category === category);
+        // Randomly select one item from valid candidates to ensure variety
+        const candidates = filteredOutfits.filter(i => i.category === category);
+        const item = candidates.length > 0 ? candidates[Math.floor(Math.random() * candidates.length)] : null;
+
         if (item) {
             const itemDiv = document.createElement('div');
             itemDiv.className = 'recommendation-item';
@@ -466,7 +484,9 @@ function updateApp() {
 
 // --- Event Listeners ---
 
-[...genderButtons, ...styleButtons, ...bodyTypeButtons].forEach(button => {
+const categoryButtons = document.querySelectorAll('.category-selection button');
+
+[...genderButtons, ...styleButtons, ...bodyTypeButtons, ...categoryButtons].forEach(button => {
     button.addEventListener('click', (e) => {
         const parent = e.target.closest('div');
         parent.querySelectorAll('button').forEach(btn => btn.classList.remove('active'));
@@ -474,6 +494,7 @@ function updateApp() {
         if (parent.classList.contains('gender-selection')) selectedGender = e.target.closest('button').dataset.gender;
         if (parent.classList.contains('style-selection')) selectedStyle = e.target.closest('button').dataset.style;
         if (parent.classList.contains('body-type-selection')) selectedBodyType = e.target.closest('button').dataset.bodyType;
+        if (parent.classList.contains('category-selection')) selectedCategory = e.target.closest('button').dataset.category;
         updateApp();
     });
 });
@@ -526,3 +547,79 @@ async function getUserLocationAndFetchWeather() {
 }
 
 document.addEventListener('DOMContentLoaded', initializeApp);
+
+// --- Custom Clothes Logic ---
+const modal = document.getElementById('add-clothes-modal');
+const openModalBtn = document.getElementById('open-add-clothes-modal');
+const closeModalBtn = document.querySelector('.close-modal');
+const addClothesForm = document.getElementById('add-clothes-form');
+
+if (openModalBtn) {
+    openModalBtn.addEventListener('click', () => {
+        modal.classList.remove('hidden');
+    });
+}
+
+if (closeModalBtn) {
+    closeModalBtn.addEventListener('click', () => {
+        modal.classList.add('hidden');
+    });
+}
+
+window.addEventListener('click', (e) => {
+    if (e.target === modal) {
+        modal.classList.add('hidden');
+    }
+});
+
+if (addClothesForm) {
+    addClothesForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+
+        const name = document.getElementById('new-item-name').value;
+        const category = document.getElementById('new-item-category').value;
+        const imageFile = document.getElementById('new-item-image').files[0];
+
+        const newItem = {
+            id: Date.now(),
+            name: name,
+            category: category,
+            tempMin: -100, // Default valid for all temps
+            tempMax: 100,
+            gender: 'any',
+            style: 'any',
+            imageUrl: null // Default
+        };
+
+        const saveAndRender = (item) => {
+            try {
+                const customItems = JSON.parse(localStorage.getItem('customClothes')) || [];
+                customItems.push(item);
+                localStorage.setItem('customClothes', JSON.stringify(customItems));
+
+                modal.classList.add('hidden');
+                addClothesForm.reset();
+                updateApp();
+                alert('의상이 추가되었습니다!');
+            } catch (e) {
+                alert('저장 공간이 부족하여 의상을 추가할 수 없습니다. (이미지 크기를 줄여주세요)');
+                console.error(e);
+            }
+        };
+
+        if (imageFile) {
+            if (imageFile.size > 1024 * 1024) {
+                alert('이미지 파일이 너무 큽니다. 1MB 이하로 선택해주세요.');
+                return;
+            }
+            const reader = new FileReader();
+            reader.onload = function (event) {
+                newItem.imageUrl = event.target.result;
+                saveAndRender(newItem);
+            };
+            reader.readAsDataURL(imageFile);
+        } else {
+            saveAndRender(newItem);
+        }
+    });
+}

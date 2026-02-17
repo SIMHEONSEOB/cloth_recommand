@@ -43,7 +43,48 @@
                     <button data-body-type="cold-sensitive"><i class="fas fa-snowflake"></i> 추위 잘 탐</button>
                     <button data-body-type="heat-sensitive"><i class="fas fa-fire"></i> 더위 잘 탐</button>
                 </div>
+                <div class="category-selection">
+                    <button data-category="all" class="active"><i class="fas fa-layer-group"></i> 전체</button>
+                    <button data-category="outer"><i class="fas fa-vest"></i> 아우터</button>
+                    <button data-category="top"><i class="fas fa-tshirt"></i> 상의</button>
+                    <button data-category="bottom"><i class="fas fa-socks"></i> 바지</button>
+                </div>
             </div>
+
+            <!-- Add Clothes Section -->
+            <div class="custom-clothes-controls">
+                <button id="open-add-clothes-modal" class="action-btn"><i class="fas fa-plus-circle"></i> 의상 직접
+                    추가하기</button>
+            </div>
+
+            <div id="add-clothes-modal" class="modal hidden">
+                <div class="modal-content">
+                    <span class="close-modal">&times;</span>
+                    <h2>새 의상 추가</h2>
+                    <form id="add-clothes-form">
+                        <div class="form-group">
+                            <label for="new-item-name">이름</label>
+                            <input type="text" id="new-item-name" required placeholder="예: 파란 셔츠">
+                        </div>
+                        <div class="form-group">
+                            <label for="new-item-category">카테고리</label>
+                            <select id="new-item-category">
+                                <option value="top">상의</option>
+                                <option value="bottom">하의</option>
+                                <option value="outer">아우터</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="new-item-image">이미지 (선택)</label>
+                            <input type="file" id="new-item-image" accept="image/*">
+                        </div>
+                        <button type="submit" class="submit-btn full-width">추가하기</button>
+                    </form>
+                </div>
+            </div>
+
+
+
             <div id="advice-section">
                 <p id="outfit-explanation"></p>
                 <p id="contextual-advice"></p>
@@ -51,7 +92,36 @@
 
 
 
-            <div id="recommendations"></div>
+            <div id="outfit-display-section">
+                <div class="outfit-visualization">
+                    <!-- Outer Slot -->
+                    <div class="outfit-layer" id="layer-outer" data-category="outer">
+                        <span class="layer-label">OUTER</span>
+                        <div class="layer-content">
+                            <i class="fas fa-vest placeholder-icon"></i>
+                            <div class="placeholder-text">아우터</div>
+                        </div>
+                    </div>
+
+                    <!-- Top Slot -->
+                    <div class="outfit-layer" id="layer-top" data-category="top">
+                        <span class="layer-label">TOP</span>
+                        <div class="layer-content">
+                            <i class="fas fa-tshirt placeholder-icon"></i>
+                            <div class="placeholder-text">상의</div>
+                        </div>
+                    </div>
+
+                    <!-- Bottom Slot -->
+                    <div class="outfit-layer" id="layer-bottom" data-category="bottom">
+                        <span class="layer-label">BOTTOM</span>
+                        <div class="layer-content">
+                            <i class="fas fa-socks placeholder-icon"></i>
+                            <div class="placeholder-text">하의</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
 
         </main>
