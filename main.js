@@ -194,19 +194,6 @@ const styleButtons = document.querySelectorAll('.style-selection button');
 const bodyTypeButtons = document.querySelectorAll('.body-type-selection button');
 const recommendationsDiv = document.getElementById('recommendations');
 
-// Avatar DOM
-const clothingLayerOuter = document.getElementById('clothing-layer-outer');
-const clothingLayerTop = document.getElementById('clothing-layer-top');
-const clothingLayerBottom = document.getElementById('clothing-layer-bottom');
-const avatarHint = document.getElementById('avatar-hint');
-const avatarResetBtn = document.getElementById('avatar-reset-btn');
-const slotOuterName = document.getElementById('slot-outer-name');
-const slotTopName = document.getElementById('slot-top-name');
-const slotBottomName = document.getElementById('slot-bottom-name');
-const slotOuter = document.getElementById('slot-outer');
-const slotTop = document.getElementById('slot-top');
-const slotBottom = document.getElementById('slot-bottom');
-
 
 const KOREA_WEATHER_API_KEY = 'cc408361b08a3bdccaa9d4b3aa113443dd11d6ed128fdd19d059f295314bc1f5';
 const KOREA_WEATHER_BASE_URL = 'https://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getUltraSrtNcst';
@@ -217,11 +204,6 @@ let selectedStyle = 'casual';
 let selectedBodyType = 'normal';
 let myCloset = [];
 let useMyCloset = false;
-let currentAvatarOutfit = {
-    outer: null,
-    top: null,
-    bottom: null,
-};
 
 // --- Default colors per item ---
 const itemColors = {
@@ -273,116 +255,7 @@ function toggleDarkMode() {
     darkModeToggle.innerHTML = isDarkMode ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
 }
 
-// === Avatar System ===
 
-function renderAvatar(outfit) {
-    // Hide all layers first
-    clothingLayerOuter.style.display = 'none';
-    clothingLayerTop.style.display = 'none';
-    clothingLayerBottom.style.display = 'none';
-    clothingLayerOuter.innerHTML = '';
-    clothingLayerTop.innerHTML = '';
-    clothingLayerBottom.innerHTML = '';
-
-    // Reset all outfit slots
-    slotOuter.classList.remove('active');
-    slotTop.classList.remove('active');
-    slotBottom.classList.remove('active');
-    slotOuterName.textContent = '미착용';
-    slotTopName.textContent = '미착용';
-    slotBottomName.textContent = '미착용';
-    document.querySelectorAll('.slot-remove').forEach(btn => btn.style.display = 'none');
-
-    let hasAnyItem = false;
-
-    if (outfit.outer) {
-        const svg = getClothingSVG(outfit.outer.name, outfit.outer.color, 'outer', outfit.outer.imageUrl);
-        if (svg) {
-            clothingLayerOuter.innerHTML = svg;
-            clothingLayerOuter.style.display = 'flex';
-        }
-        slotOuterName.textContent = outfit.outer.name;
-        slotOuter.classList.add('active');
-        slotOuter.querySelector('.slot-remove').style.display = 'flex';
-        hasAnyItem = true;
-    }
-
-    if (outfit.top) {
-        const svg = getClothingSVG(outfit.top.name, outfit.top.color, 'top', outfit.top.imageUrl);
-        if (svg) {
-            clothingLayerTop.innerHTML = svg;
-            clothingLayerTop.style.display = 'flex';
-        }
-        slotTopName.textContent = outfit.top.name;
-        slotTop.classList.add('active');
-        slotTop.querySelector('.slot-remove').style.display = 'flex';
-        hasAnyItem = true;
-    }
-
-    if (outfit.bottom) {
-        const svg = getClothingSVG(outfit.bottom.name, outfit.bottom.color, 'bottom', outfit.bottom.imageUrl);
-        if (svg) {
-            clothingLayerBottom.innerHTML = svg;
-            clothingLayerBottom.style.display = 'flex';
-        }
-        slotBottomName.textContent = outfit.bottom.name;
-        slotBottom.classList.add('active');
-        slotBottom.querySelector('.slot-remove').style.display = 'flex';
-        hasAnyItem = true;
-    }
-
-    // Show/hide hint
-    if (avatarHint) {
-        avatarHint.style.display = hasAnyItem ? 'none' : 'block';
-    }
-
-    currentAvatarOutfit = outfit;
-
-    // Update try-on button states
-    updateTryOnButtonStates();
-}
-
-function tryOnOutfitItem(item) {
-    if (!item || !item.category) {
-        console.warn('Invalid item provided to tryOnOutfitItem:', item);
-        return;
-    }
-
-    currentAvatarOutfit[item.category] = item;
-    renderAvatar(currentAvatarOutfit);
-
-    // Scroll to avatar section smoothly
-    const avatarSection = document.getElementById('avatar-section');
-    if (avatarSection) {
-        avatarSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }
-}
-
-function removeOutfitItem(category) {
-    currentAvatarOutfit[category] = null;
-    renderAvatar(currentAvatarOutfit);
-}
-
-function resetAvatar() {
-    currentAvatarOutfit = { outer: null, top: null, bottom: null };
-    renderAvatar(currentAvatarOutfit);
-}
-
-function updateTryOnButtonStates() {
-    document.querySelectorAll('#recommendations .try-on-button').forEach(btn => {
-        try {
-            const itemData = JSON.parse(btn.dataset.item);
-            const current = currentAvatarOutfit[itemData.category];
-            if (current && current.name === itemData.name) {
-                btn.classList.add('worn');
-                btn.innerHTML = '<i class="fas fa-check"></i> 착용 중';
-            } else {
-                btn.classList.remove('worn');
-                btn.innerHTML = '<i class="fas fa-shirt"></i> 입어보기';
-            }
-        } catch (e) { /* ignore */ }
-    });
-}
 
 // === My Closet ===
 
@@ -395,18 +268,10 @@ function renderMyCloset() {
         itemDiv.innerHTML = `
             <span>${item.name} (${categoryLabel})</span>
             <div class="closet-item-actions">
-                <button class="try-on-button" data-item='${JSON.stringify(item)}'><i class="fas fa-shirt"></i> 입어보기</button>
                 <button class="closet-item-delete" data-id="${item.id}"><i class="fas fa-trash-alt"></i></button>
             </div>
         `;
         myClosetItemsDiv.appendChild(itemDiv);
-    });
-
-    document.querySelectorAll('#my-closet-items .try-on-button').forEach(button => {
-        button.addEventListener('click', (e) => {
-            const itemData = JSON.parse(e.currentTarget.dataset.item);
-            tryOnOutfitItem(itemData);
-        });
     });
 
     document.querySelectorAll('.closet-item-delete').forEach(button => {
@@ -638,8 +503,6 @@ function renderRecommendations(apparentTemp) {
 
             // Get SVG visual
             const svgContent = getClothingSVG(item.name, item.color || itemColors[item.name] || '#888', category, item.imageUrl);
-            const current = currentAvatarOutfit[item.category];
-            const isWorn = current && current.name === item.name;
 
             itemDiv.innerHTML = `
                 <div class="item-visual visual-${category}">
@@ -648,22 +511,10 @@ function renderRecommendations(apparentTemp) {
                 <div class="item-info">
                     <span class="item-category-badge badge-${category}">${categoryLabels[category]}</span>
                     <p class="item-name">${item.name}</p>
-                    <button class="try-on-button ${isWorn ? 'worn' : ''}" data-item='${JSON.stringify(item)}'>
-                        <i class="fas fa-${isWorn ? 'check' : 'shirt'}"></i> ${isWorn ? '착용 중' : '입어보기'}
-                    </button>
                 </div>
             `;
             recommendationsDiv.appendChild(itemDiv);
         }
-    });
-
-    // Bind try-on buttons
-    document.querySelectorAll('#recommendations .try-on-button').forEach(button => {
-        button.addEventListener('click', (e) => {
-            const btn = e.target.closest('button');
-            const itemData = JSON.parse(btn.dataset.item);
-            tryOnOutfitItem(itemData);
-        });
     });
 }
 
@@ -695,14 +546,7 @@ useMyClosetToggle.addEventListener('change', (e) => {
     updateApp();
 });
 
-// Avatar controls
-avatarResetBtn.addEventListener('click', resetAvatar);
-document.querySelectorAll('.slot-remove').forEach(btn => {
-    btn.addEventListener('click', (e) => {
-        const category = e.currentTarget.dataset.category;
-        removeOutfitItem(category);
-    });
-});
+
 
 // --- Initialization ---
 async function initializeApp() {
@@ -724,7 +568,6 @@ async function initializeApp() {
     document.querySelector('.body-type-selection button[data-body-type="normal"]').classList.add('active');
 
     updateApp();
-    renderAvatar({ outer: null, top: null, bottom: null });
 }
 
 window.addEventListener('beforeunload', () => {

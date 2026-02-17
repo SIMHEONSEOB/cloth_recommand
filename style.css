@@ -10,12 +10,7 @@
     --active-button-bg-color: #007bff;
     --active-button-text-color: #fff;
     --shadow-color: rgba(0, 0, 0, 0.1);
-    --mannequin-skin: #f0d5b8;
-    --mannequin-body: #e8c9a8;
-    --mannequin-outline: #c9a882;
-    --avatar-bg: linear-gradient(145deg, #e8edf2, #f5f7fa);
-    --slot-empty-color: #aaa;
-    --slot-active-color: #007bff;
+    --shadow-color: rgba(0, 0, 0, 0.1);
     --danger-color: #ff6b6b;
     --success-glow: rgba(0, 123, 255, 0.3);
 }
@@ -31,12 +26,6 @@ body.dark-mode {
     --active-button-bg-color: #007bff;
     --active-button-text-color: #fff;
     --shadow-color: rgba(0, 0, 0, 0.5);
-    --mannequin-skin: #c4a882;
-    --mannequin-body: #b89870;
-    --mannequin-outline: #8a6e50;
-    --avatar-bg: linear-gradient(145deg, #1a1f25, #22272e);
-    --slot-empty-color: #666;
-    --slot-active-color: #4da3ff;
     --danger-color: #ff6b6b;
     --success-glow: rgba(77, 163, 255, 0.3);
 }
@@ -162,291 +151,185 @@ button.active {
     opacity: 0.9;
 }
 
-/* ===== Avatar Section ===== */
-#avatar-section {
-    margin-bottom: 40px;
+
+
+/* ===== Outfit Display Section (No Avatar) ===== */
+#outfit-display-section {
+    background: var(--card-bg-color);
+    border-radius: 20px;
     padding: 30px;
-    background-color: var(--card-bg-color);
-    border-radius: 16px;
-    box-shadow: 0 8px 30px var(--shadow-color);
+    margin-bottom: 40px;
+    text-align: center;
+    box-shadow: 0 4px 15px var(--shadow-color);
 }
 
-#avatar-section h2 {
-    text-align: center;
-    margin: 0 0 25px 0;
-    font-size: 1.4rem;
+#outfit-display-section h2 {
+    font-size: 1.5rem;
+    margin-bottom: 30px;
+    color: var(--text-color);
     font-weight: 700;
 }
 
-#avatar-section h2 i {
-    margin-right: 8px;
-    color: var(--active-button-bg-color);
-}
-
-#avatar-container {
+.outfit-visualization {
     display: flex;
+    justify-content: center;
     gap: 30px;
-    align-items: stretch;
+    flex-wrap: wrap;
+    margin-bottom: 30px;
 }
 
-/* --- Avatar Display --- */
-#avatar-display {
-    flex: 0 0 280px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    background: var(--avatar-bg);
+.outfit-layer {
+    width: 220px;
+    height: 280px;
+    background: var(--bg-color);
+    border: 2px dashed var(--button-border-color);
     border-radius: 16px;
-    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
     position: relative;
+    transition: all 0.3s ease;
     overflow: hidden;
-    min-height: 480px;
+    cursor: pointer;
 }
 
-#avatar-display::before {
-    content: '';
+.outfit-layer:hover {
+    border-color: var(--active-button-bg-color);
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+}
+
+.outfit-layer.filled {
+    border-style: solid;
+    border-color: transparent;
+    background: var(--card-bg-color);
+    box-shadow: 0 4px 12px var(--shadow-color);
+}
+
+.outfit-layer svg,
+.outfit-layer img {
+    width: 90%;
+    height: 80%;
+    object-fit: contain;
+    filter: drop-shadow(0 5px 10px rgba(0, 0, 0, 0.1));
+    margin-bottom: 10px;
+    transition: transform 0.3s ease;
+}
+
+.outfit-layer:hover svg,
+.outfit-layer:hover img {
+    transform: scale(1.05);
+}
+
+.placeholder-icon {
+    font-size: 3rem;
+    color: var(--slot-empty-color);
+    margin-bottom: 15px;
+    opacity: 0.5;
+}
+
+.placeholder-text {
+    font-size: 1rem;
+    color: var(--text-color);
+    opacity: 0.6;
+    font-weight: 500;
+}
+
+.layer-label {
     position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: radial-gradient(ellipse at center bottom, rgba(0, 0, 0, 0.06) 0%, transparent 60%);
-    pointer-events: none;
-    z-index: 1;
+    top: 12px;
+    left: 12px;
+    font-size: 0.8rem;
+    background: rgba(255, 255, 255, 0.8);
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-weight: 700;
+    color: var(--text-color);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    backdrop-filter: blur(4px);
 }
 
-#avatar-body {
-    position: relative;
-    width: 200px;
-    height: 460px;
-    z-index: 2;
+.light-mode .layer-label {
+    background: rgba(255, 255, 255, 0.8);
 }
 
-#mannequin-svg {
-    width: 100%;
-    height: 100%;
+.dark-mode .layer-label {
+    background: rgba(0, 0, 0, 0.6);
+    color: #fff;
+}
+
+.remove-item-btn {
     position: absolute;
-    top: 0;
-    left: 0;
-    z-index: 1;
-}
-
-/* Clothing layers */
-.clothing-layer {
-    position: absolute;
-    z-index: 2;
+    top: 10px;
+    right: 10px;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--danger-color);
+    color: white;
+    border: none;
     display: flex;
     align-items: center;
     justify-content: center;
-    pointer-events: none;
-    animation: clothFadeIn 0.4s ease-out;
+    font-size: 0.9rem;
+    cursor: pointer;
+    opacity: 0;
+    transform: scale(0.8);
+    transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    z-index: 10;
 }
 
-@keyframes clothFadeIn {
-    from {
-        opacity: 0;
-        transform: scale(0.92);
-    }
-
-    to {
-        opacity: 1;
-        transform: scale(1);
-    }
+.outfit-layer:hover .remove-item-btn {
+    opacity: 1;
+    transform: scale(1);
 }
 
-#clothing-layer-outer {
-    top: 90px;
-    left: -5px;
-    width: 210px;
-    height: 200px;
-    z-index: 4;
-}
-
-#clothing-layer-top {
-    top: 100px;
-    left: 15px;
-    width: 170px;
-    height: 165px;
-    z-index: 3;
-}
-
-#clothing-layer-bottom {
-    top: 255px;
-    left: 25px;
-    width: 150px;
-    height: 185px;
-    z-index: 2;
-}
-
-.clothing-layer svg {
-    width: 100%;
-    height: 100%;
-}
-
-#avatar-hint {
-    position: absolute;
-    bottom: 15px;
-    left: 50%;
-    transform: translateX(-50%);
-    font-size: 0.8rem;
-    color: var(--slot-empty-color);
-    text-align: center;
-    z-index: 5;
-    white-space: nowrap;
-    animation: hintPulse 2s ease-in-out infinite;
-}
-
-@keyframes hintPulse {
-
-    0%,
-    100% {
-        opacity: 0.6;
-    }
-
-    50% {
-        opacity: 1;
-    }
-}
-
-/* --- Outfit Info Panel --- */
-#avatar-outfit-info {
-    flex: 1;
+.outfit-controls {
     display: flex;
     flex-direction: column;
+    align-items: center;
     gap: 15px;
 }
 
-#avatar-outfit-info h3 {
-    margin: 0;
-    font-size: 1.1rem;
-    font-weight: 700;
-}
-
-#avatar-outfit-info h3 i {
-    margin-right: 6px;
+#outfit-hint {
     color: var(--active-button-bg-color);
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 10px;
 }
 
-#outfit-slots {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    flex: 1;
-}
-
-.outfit-slot {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    padding: 16px;
-    background-color: var(--bg-color);
-    border-radius: 12px;
-    border: 2px solid transparent;
-    transition: all 0.3s ease;
-}
-
-.outfit-slot.active {
-    border-color: var(--slot-active-color);
-    box-shadow: 0 0 12px var(--success-glow);
-}
-
-.slot-icon {
-    width: 44px;
-    height: 44px;
-    border-radius: 12px;
-    background: var(--card-bg-color);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.2rem;
-    color: var(--slot-empty-color);
-    flex-shrink: 0;
-    transition: all 0.3s ease;
-    box-shadow: 0 2px 6px var(--shadow-color);
-}
-
-.outfit-slot.active .slot-icon {
-    background: var(--active-button-bg-color);
-    color: #fff;
-}
-
-.slot-info {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-    flex: 1;
-    min-width: 0;
-}
-
-.slot-label {
-    font-size: 0.75rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    color: var(--slot-empty-color);
-}
-
-.slot-name {
-    font-size: 0.95rem;
-    font-weight: 400;
+#reset-outfit-btn {
+    padding: 10px 24px;
+    font-size: 1rem;
+    border-radius: 25px;
+    background: var(--button-bg-color);
     color: var(--text-color);
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-.outfit-slot.active .slot-name {
-    font-weight: 700;
-}
-
-.slot-remove {
-    width: 32px;
-    height: 32px;
-    padding: 0;
-    border: none;
-    border-radius: 50%;
-    background: var(--danger-color);
-    color: #fff;
-    font-size: 0.75rem;
-    cursor: pointer;
+    border: 1px solid var(--button-border-color);
     display: flex;
     align-items: center;
-    justify-content: center;
-    opacity: 0.8;
-    transition: all 0.2s ease;
-    flex-shrink: 0;
+    gap: 8px;
+    transition: all 0.2s;
 }
 
-.slot-remove:hover {
-    opacity: 1;
-    transform: scale(1.1);
-    background: #e55555;
-}
-
-#avatar-reset-btn {
-    margin-top: auto;
-    padding: 12px 20px;
-    background: linear-gradient(135deg, var(--danger-color), #e55555);
-    color: #fff;
-    border: none;
-    border-radius: 10px;
-    font-weight: 700;
-    font-size: 0.9rem;
-    cursor: pointer;
-    transition: all 0.25s ease;
-}
-
-#avatar-reset-btn:hover {
+#reset-outfit-btn:hover {
+    background: var(--danger-color);
+    color: white;
+    border-color: var(--danger-color);
     transform: translateY(-2px);
-    box-shadow: 0 6px 18px rgba(255, 107, 107, 0.35);
-    background: linear-gradient(135deg, #e55555, var(--danger-color));
-    opacity: 1;
+    box-shadow: 0 4px 12px rgba(229, 85, 85, 0.3);
 }
 
-#avatar-reset-btn i {
-    margin-right: 6px;
+#current-outfit-summary {
+    background: var(--active-button-bg-color);
+    color: white;
+    padding: 8px 20px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    animation: fadeIn 0.3s ease;
 }
+
+
 
 /* ===== Recommendations ===== */
 #recommendations {
@@ -465,6 +348,96 @@ button.active {
     transition: transform 0.2s ease, box-shadow 0.2s ease;
     overflow: hidden;
 }
+
+/* --- Real Product Card Styles --- */
+.recommendation-item.real-product-card {
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    overflow: hidden;
+    gap: 0;
+}
+
+.item-visual-container {
+    width: 100%;
+    height: 180px;
+    background: #f3f4f6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.product-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.recommendation-item:hover .product-image {
+    transform: scale(1.05);
+}
+
+.item-info {
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.item-name {
+    font-size: 0.95rem;
+    font-weight: 600;
+    margin: 0;
+    color: var(--text-color);
+}
+
+.item-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: auto;
+}
+
+.try-on-button {
+    flex: 1;
+    padding: 8px;
+    font-size: 0.85rem;
+}
+
+.shop-button {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-color);
+    border: 1px solid var(--button-border-color);
+    border-radius: 8px;
+    color: var(--text-color);
+    text-decoration: none;
+    transition: all 0.2s;
+}
+
+.shop-button:hover {
+    background: var(--active-button-bg-color);
+    color: white;
+    border-color: var(--active-button-bg-color);
+}
+
+.category-badge {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: rgba(0, 0, 0, 0.6);
+    color: white;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    backdrop-filter: blur(2px);
+}
+
 
 .recommendation-item:hover {
     transform: translateY(-5px);
@@ -537,32 +510,6 @@ body.dark-mode .badge-bottom {
     font-weight: 700;
 }
 
-.recommendation-item .try-on-button {
-    width: 100%;
-    padding: 10px;
-    background: linear-gradient(135deg, var(--active-button-bg-color), #0056b3);
-    color: #fff;
-    border: none;
-    border-radius: 8px;
-    font-weight: 700;
-    cursor: pointer;
-    transition: all 0.25s ease;
-    font-size: 0.9rem;
-}
-
-.recommendation-item .try-on-button:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 14px var(--success-glow);
-    opacity: 1;
-}
-
-.recommendation-item .try-on-button i {
-    margin-right: 6px;
-}
-
-.recommendation-item .try-on-button.worn {
-    background: linear-gradient(135deg, #10b981, #059669);
-}
 
 /* Visual backgrounds per category */
 .visual-outer {
@@ -730,4 +677,117 @@ body.dark-mode .visual-bottom {
     #recommendations {
         grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
     }
+}
+
+/* ===== New Features Styling ===== */
+
+/* Time Selection */
+.secondary-controls {
+    margin-top: 15px;
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+
+.time-selection {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.time-selection button {
+    padding: 8px 16px;
+    font-size: 0.9rem;
+    border-radius: 20px;
+    background-color: var(--card-bg-color);
+    border: 1px solid var(--button-border-color);
+    color: var(--text-color);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.time-selection button:hover {
+    background-color: var(--active-button-bg-color);
+    color: var(--active-button-text-color);
+    opacity: 0.8;
+}
+
+.time-selection button.active {
+    background-color: var(--active-button-bg-color);
+    color: var(--active-button-text-color);
+    border-color: var(--active-button-bg-color);
+    box-shadow: 0 2px 8px var(--success-glow);
+}
+
+/* Weather Essentials Icons */
+#weather-essentials {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.weather-icon-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 16px;
+    background-color: var(--bg-color);
+    border-radius: 12px;
+    border: 1px solid var(--card-border-color);
+    min-width: 80px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+.weather-icon-item i {
+    font-size: 1.8rem;
+    color: var(--active-button-bg-color);
+}
+
+.weather-icon-item span {
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+/* Search Keywords */
+#search-keywords-section {
+    margin: 40px 0 20px;
+    text-align: center;
+    padding-top: 20px;
+    border-top: 1px solid var(--button-border-color);
+}
+
+#search-keywords-section h3 {
+    font-size: 1.1rem;
+    color: var(--text-color);
+    margin-bottom: 15px;
+    opacity: 0.8;
+}
+
+.search-tags {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.tag {
+    background-color: var(--bg-color);
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    color: var(--text-color);
+    border: 1px solid var(--button-border-color);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.tag:hover {
+    background-color: var(--active-button-bg-color);
+    color: var(--active-button-text-color);
+    border-color: var(--active-button-bg-color);
+    transform: translateY(-2px);
 }
