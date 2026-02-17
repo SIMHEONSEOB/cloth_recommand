@@ -177,11 +177,7 @@ function generateGenericSVG(category, color = '#888') {
 
 // --- DOM Elements ---
 const darkModeToggle = document.getElementById('dark-mode-toggle');
-const useMyClosetToggle = document.getElementById('use-my-closet-toggle');
-const addToClosetButton = document.getElementById('add-to-closet');
-const closetItemNameInput = document.getElementById('closet-item-name');
-const closetItemCategorySelect = document.getElementById('closet-item-category');
-const myClosetItemsDiv = document.getElementById('my-closet-items');
+
 
 const weatherDisplay = document.getElementById('weather');
 const apparentTempDisplay = document.getElementById('apparent-temp');
@@ -202,8 +198,6 @@ const KOREA_WEATHER_BASE_URL = 'https://apis.data.go.kr/1360000/VilageFcstInfoSe
 let selectedGender = 'male';
 let selectedStyle = 'casual';
 let selectedBodyType = 'normal';
-let myCloset = [];
-let useMyCloset = false;
 
 // --- Default colors per item ---
 const itemColors = {
@@ -257,61 +251,7 @@ function toggleDarkMode() {
 
 
 
-// === My Closet ===
 
-function renderMyCloset() {
-    myClosetItemsDiv.innerHTML = '';
-    myCloset.forEach(item => {
-        const itemDiv = document.createElement('div');
-        itemDiv.className = 'closet-item';
-        const categoryLabel = item.category === 'outer' ? '아우터' : item.category === 'top' ? '상의' : '하의';
-        itemDiv.innerHTML = `
-            <span>${item.name} (${categoryLabel})</span>
-            <div class="closet-item-actions">
-                <button class="closet-item-delete" data-id="${item.id}"><i class="fas fa-trash-alt"></i></button>
-            </div>
-        `;
-        myClosetItemsDiv.appendChild(itemDiv);
-    });
-
-    document.querySelectorAll('.closet-item-delete').forEach(button => {
-        button.addEventListener('click', (e) => {
-            const itemId = parseInt(e.currentTarget.dataset.id, 10);
-            myCloset = myCloset.filter(item => item.id !== itemId);
-            renderMyCloset();
-            updateApp();
-        });
-    });
-}
-
-function addToCloset() {
-    const name = closetItemNameInput.value.trim();
-    const category = closetItemCategorySelect.value;
-    if (name) {
-        // Assign a random color for the closet item
-        const hue = Math.floor(Math.random() * 360);
-        const color = `hsl(${hue}, 50%, 45%)`;
-        // Convert HSL to hex for SVG compatibility
-        const hexColor = hslToHex(hue, 50, 45);
-
-        myCloset.push({ id: Date.now(), name, category, style: 'any', gender: 'any', color: hexColor });
-        closetItemNameInput.value = '';
-        renderMyCloset();
-        updateApp();
-    }
-}
-
-function hslToHex(h, s, l) {
-    s /= 100;
-    l /= 100;
-    const a = s * Math.min(l, 1 - l);
-    const f = n => {
-        const k = (n + h / 30) % 12;
-        const color = l - a * Math.max(Math.min(k - 3, 9 - k, 1), -1);
-        return Math.round(255 * color).toString(16).padStart(2, '0');
-    };
-    return `#${f(0)}${f(8)}${f(4)}`;
-}
 
 // === Weather Functions ===
 
@@ -474,10 +414,9 @@ function updateWeatherUI(apparentTemp, weather) {
 
 function renderRecommendations(apparentTemp) {
     recommendationsDiv.innerHTML = '';
-    const sourceData = useMyCloset ? myCloset : defaultOutfitData;
+    const sourceData = defaultOutfitData;
 
     const tempFilteredOutfits = sourceData.filter(item => {
-        if (useMyCloset) return true;
         return apparentTemp >= item.tempMin && apparentTemp <= item.tempMax;
     });
 
@@ -540,11 +479,7 @@ function updateApp() {
 });
 
 darkModeToggle.addEventListener('click', toggleDarkMode);
-addToClosetButton.addEventListener('click', addToCloset);
-useMyClosetToggle.addEventListener('change', (e) => {
-    useMyCloset = e.target.checked;
-    updateApp();
-});
+
 
 
 
@@ -557,11 +492,7 @@ async function initializeApp() {
 
     await getUserLocationAndFetchWeather();
 
-    const savedCloset = localStorage.getItem('myCloset');
-    if (savedCloset) {
-        myCloset = JSON.parse(savedCloset);
-    }
-    renderMyCloset();
+
 
     document.querySelector('.gender-selection button[data-gender="male"]').classList.add('active');
     document.querySelector('.style-selection button[data-style="casual"]').classList.add('active');
@@ -570,9 +501,7 @@ async function initializeApp() {
     updateApp();
 }
 
-window.addEventListener('beforeunload', () => {
-    localStorage.setItem('myCloset', JSON.stringify(myCloset));
-});
+
 
 async function getUserLocationAndFetchWeather() {
     let finalLocationName = '서울';
