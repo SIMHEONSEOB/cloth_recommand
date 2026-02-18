@@ -115,6 +115,19 @@ const clothingSVGs = {
             <path d="M52 20 L46 170" stroke="${adjustColor(color, 15)}" stroke-width="0.8" opacity="0.25"/>
             <path d="M118 20 L124 170" stroke="${adjustColor(color, 15)}" stroke-width="0.8" opacity="0.25"/>
         </svg>`,
+
+    // === ACCESSORIES ===
+    '마스크': (color = '#6b7280') => `
+        <svg viewBox="0 0 120 80" xmlns="http://www.w3.org/2000/svg">
+            <defs><linearGradient id="mask1" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="${adjustColor(color, 10)}"/><stop offset="100%" stop-color="${color}"/></linearGradient></defs>
+            <path d="M20 25 Q20 15 30 15 L90 15 Q100 15 100 25 L100 45 Q100 55 90 55 L30 55 Q20 55 20 45 Z" fill="url(#mask1)" stroke="${adjustColor(color, -30)}" stroke-width="1.5"/>
+            <path d="M25 30 Q25 22 32 22 L88 22 Q95 22 95 30 L95 40 Q95 48 88 48 L32 48 Q25 48 25 40 Z" fill="${adjustColor(color, -15)}" opacity="0.3"/>
+            <line x1="35" y1="30" x2="85" y2="30" stroke="${adjustColor(color, -20)}" stroke-width="1" opacity="0.5"/>
+            <line x1="35" y1="35" x2="85" y2="35" stroke="${adjustColor(color, -20)}" stroke-width="1" opacity="0.5"/>
+            <line x1="35" y1="40" x2="85" y2="40" stroke="${adjustColor(color, -20)}" stroke-width="1" opacity="0.5"/>
+            <path d="M15 25 Q10 20 10 25 L10 45 Q10 50 15 45" fill="none" stroke="${adjustColor(color, -40)}" stroke-width="2"/>
+            <path d="M105 25 Q110 20 110 25 L110 45 Q110 50 105 45" fill="none" stroke="${adjustColor(color, -40)}" stroke-width="2"/>
+        </svg>`,
 };
 
 // Color utility function
@@ -134,9 +147,24 @@ let svgIdCounter = 0;
 // Get SVG for an item, with fallback for custom closet items
 // Also supports real image URLs via the item's imageUrl property
 function getClothingSVG(itemName, color, category, imageUrl) {
-    // If the item has a real image URL, use an <img> tag
+    // If the item has a real image URL, use an <img> tag with lazy loading
     if (imageUrl) {
-        return `<img src="${imageUrl}" alt="${itemName}" style="width:100%;height:100%;object-fit:contain;border-radius:8px;">`;
+        const imageId = `img-${itemName.replace(/[^a-zA-Z0-9]/g, '-')}-${Date.now()}`;
+        return `
+            <div class="image-container">
+                <div class="skeleton skeleton-image" id="skeleton-${imageId}"></div>
+                <img 
+                    id="${imageId}"
+                    class="lazy-image" 
+                    src="${imageUrl}" 
+                    alt="${itemName}" 
+                    loading="lazy"
+                    onload="handleImageLoad('${imageId}')"
+                    onerror="handleImageError('${imageId}')"
+                    style="width:100%;height:100%;object-fit:contain;border-radius:8px;"
+                >
+            </div>
+        `;
     }
     const svgFn = clothingSVGs[itemName];
     svgIdCounter++;
@@ -151,6 +179,76 @@ function getClothingSVG(itemName, color, category, imageUrl) {
     svg = svg.replace(/id="(\w+)"/g, (match, id) => `id="${id}_${svgIdCounter}"`);
     svg = svg.replace(/url\(#(\w+)\)/g, (match, id) => `url(#${id}_${svgIdCounter})`);
     return svg;
+}
+
+// Handle image load success
+function handleImageLoad(imageId) {
+    const img = document.getElementById(imageId);
+    const skeleton = document.getElementById(`skeleton-${imageId}`);
+    
+    if (img && skeleton) {
+        img.classList.add('loaded');
+        skeleton.style.display = 'none';
+    }
+}
+
+// Handle image load error
+function handleImageError(imageId) {
+    const img = document.getElementById(imageId);
+    const skeleton = document.getElementById(`skeleton-${imageId}`);
+    
+    if (img && skeleton) {
+        // Show fallback icon on error
+        const container = img.parentElement;
+        container.innerHTML = `
+            <div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:var(--bg-color);border-radius:8px;">
+                <i class="fas fa-tshirt" style="font-size:3rem;opacity:0.4;color:var(--text-color);"></i>
+            </div>
+        `;
+    }
+}
+
+// Initialize lazy loading for all images
+function initializeLazyLoading() {
+    const images = document.querySelectorAll('img[loading="lazy"]');
+    
+    // Use Intersection Observer for better performance
+    if ('IntersectionObserver' in window) {
+        const imageObserver = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const img = entry.target;
+                    const skeleton = document.getElementById(`skeleton-${img.id}`);
+                    
+                    // Show skeleton while loading
+                    if (skeleton) {
+                        skeleton.style.display = 'block';
+                    }
+                    
+                    img.classList.add('loading');
+                    
+                    // Start loading the image
+                    if (img.dataset.src) {
+                        img.src = img.dataset.src;
+                        img.removeAttribute('data-src');
+                    }
+                    
+                    observer.unobserve(img);
+                }
+            });
+        });
+        
+        images.forEach(img => imageObserver.observe(img));
+    } else {
+        // Fallback for browsers that don't support Intersection Observer
+        images.forEach(img => {
+            const skeleton = document.getElementById(`skeleton-${img.id}`);
+            if (skeleton) {
+                skeleton.style.display = 'block';
+            }
+            img.classList.add('loading');
+        });
+    }
 }
 
 function generateGenericSVG(category, color = '#888') {
@@ -175,24 +273,19 @@ function generateGenericSVG(category, color = '#888') {
     }
 }
 
+
 // --- DOM Elements ---
-const darkModeToggle = document.getElementById('dark-mode-toggle');
-
-
-const weatherDisplay = document.getElementById('weather');
-const apparentTempDisplay = document.getElementById('apparent-temp');
-const locationDisplay = document.getElementById('location');
-const weatherComparisonDisplay = document.getElementById('weather-comparison');
-const outfitExplanationDisplay = document.getElementById('outfit-explanation');
-const contextualAdviceDisplay = document.getElementById('contextual-advice');
-const genderButtons = document.querySelectorAll('.gender-selection button');
-const styleButtons = document.querySelectorAll('.style-selection button');
-const bodyTypeButtons = document.querySelectorAll('.body-type-selection button');
-const recommendationsDiv = document.getElementById('recommendations');
-
-
-const KOREA_WEATHER_API_KEY = 'cc408361b08a3bdccaa9d4b3aa113443dd11d6ed128fdd19d059f295314bc1f5';
-const KOREA_WEATHER_BASE_URL = 'https://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getUltraSrtNcst';
+let darkModeToggle;
+let weatherDisplay;
+let apparentTempDisplay;
+let locationDisplay;
+let weatherComparisonDisplay;
+let outfitExplanationDisplay;
+let contextualAdviceDisplay;
+let genderButtons;
+let styleButtons;
+let bodyTypeButtons;
+let recommendationsDiv;
 
 // --- State ---
 let selectedGender = 'male';
@@ -214,6 +307,11 @@ const itemColors = {
     '기모 바지': '#374151',
     '면바지 또는 슬랙스': '#92400e',
 };
+
+// --- API Constants ---
+const KOREA_WEATHER_API_KEY = 'cc408361b08a3bdccaa9d4b3aa113443dd11d6ed128fdd19d059f295314bc1f5';
+const KOREA_WEATHER_BASE_URL = 'https://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getUltraSrtNcst';
+const AIR_KOREA_BASE_URL = 'https://apis.data.go.kr/B552584/ArpltnInforInqireSvc/getMsrstnAcctoRltmMesureDnsty';
 
 // --- Weather & Outfit Data ---
 let weatherData = {
@@ -247,6 +345,8 @@ const defaultOutfitData = [
     { gender: 'any', style: 'any', tempMin: 5, tempMax: 20, name: '블랙진', category: 'bottom', imageUrl: 'images/블랙진.png' },
     { gender: 'any', style: 'any', tempMin: 5, tempMax: 15, name: '파란색 스웨터', category: 'top', imageUrl: 'images/스웨터 파란색.png' },
     { gender: 'any', style: 'any', tempMin: 5, tempMax: 20, name: '청바지', category: 'bottom', imageUrl: 'images/청바지.png' },
+    // Mask item for fine dust
+    { gender: 'any', style: 'any', tempMin: -100, tempMax: 100, name: '마스크', category: 'accessory', color: '#6b7280', isMask: true },
 ];
 
 // --- Functions ---
@@ -255,7 +355,9 @@ function toggleDarkMode() {
     document.body.classList.toggle('dark-mode');
     const isDarkMode = document.body.classList.contains('dark-mode');
     localStorage.setItem('darkMode', isDarkMode);
-    darkModeToggle.innerHTML = isDarkMode ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+    if (darkModeToggle) {
+        darkModeToggle.innerHTML = isDarkMode ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+    }
 }
 
 
@@ -354,10 +456,37 @@ async function fetchWeatherData(nx, ny, locationName = '현재 위치') {
 
     try {
         const response = await fetch(url);
-        if (!response.ok) throw new Error(`날씨 정보를 가져오지 못했습니다: ${response.statusText}`);
+        // 500 에러 및 네트워크 에러 처리
+        if (!response.ok) {
+            if (response.status === 500) {
+                throw new Error('SERVER_ERROR');
+            } else if (response.status === 401) {
+                throw new Error('API_KEY_ERROR');
+            } else if (response.status === 429) {
+                throw new Error('RATE_LIMIT_ERROR');
+            } else {
+                throw new Error(`HTTP_ERROR_${response.status}`);
+            }
+        }
         const data = await response.json();
         console.log('Korea Weather API raw data:', data);
-        if (data.response.header.resultCode !== '00') throw new Error(`API 오류: ${data.response.header.resultMsg}`);
+        // API 응답 코드 확인
+        if (data.response.header.resultCode !== '00') {
+            const errorCode = data.response.header.resultCode;
+            const errorMsg = data.response.header.resultMsg;
+            if (errorCode === '03') {
+                throw new Error('NO_DATA_ERROR');
+            } else if (errorCode === '04') {
+                throw new Error('API_KEY_ERROR');
+            } else {
+                throw new Error(`API_ERROR_${errorCode}: ${errorMsg}`);
+            }
+        }
+
+        // 데이터가 비어있는지 확인
+        if (!data.response.body || !data.response.body.items || !data.response.body.items.item) {
+            throw new Error('NO_DATA_ERROR');
+        }
 
         const items = data.response.body.items.item;
         let T1H, REH, WSD, PTY, RN1;
@@ -369,12 +498,17 @@ async function fetchWeatherData(nx, ny, locationName = '현재 위치') {
             if (item.category === 'RN1') RN1 = item.obsrValue;
         });
 
+        // 필수 데이터가 없는 경우 확인
+        if (T1H === undefined) {
+            throw new Error('NO_TEMPERATURE_DATA');
+        }
+
         let isRainingValue = false;
         if (PTY && PTY !== '0') isRainingValue = true;
         else if (RN1 && parseFloat(RN1) > 0) isRainingValue = true;
 
         weatherData = {
-            currentTemperature: T1H !== undefined ? Math.round(parseFloat(T1H)) : 20,
+            currentTemperature: Math.round(parseFloat(T1H)),
             yesterdayTemperature: weatherData.yesterdayTemperature || 17,
             windSpeed: WSD !== undefined ? parseFloat(WSD) : 5,
             humidity: REH !== undefined ? parseFloat(REH) : 60,
@@ -383,14 +517,283 @@ async function fetchWeatherData(nx, ny, locationName = '현재 위치') {
             dayNightTempDiff: weatherData.dayNightTempDiff || 10,
             location: locationName,
         };
+        // 성공적으로 데이터를 가져왔을 때
+        console.log('날씨 데이터 성공적으로 로드됨:', weatherData);
     } catch (error) {
         console.error('날씨 정보를 가져오는 중 오류 발생:', error);
-        weatherData = {
-            currentTemperature: 20, yesterdayTemperature: 17, windSpeed: 5,
-            humidity: 60, isRaining: false, fineDustLevel: 'good',
-            dayNightTempDiff: 10, location: locationName,
-        };
+        let userMessage = '';
+        let shouldFallback = true;
+        // 에러 타입에 따른 사용자 메시지 설정
+        switch (error.message) {
+            case 'SERVER_ERROR':
+                userMessage = '⚠️ 기상청 서버에 일시적인 문제가 발생했습니다. 잠시 후 다시 시도해주세요.';
+                break;
+            case 'API_KEY_ERROR':
+                userMessage = '⚠️ API 인증에 문제가 발생했습니다. 관리자에게 문의해주세요.';
+                shouldFallback = false;
+                break;
+            case 'RATE_LIMIT_ERROR':
+                userMessage = '⚠️ 너무 많은 요청이 발생했습니다. 잠시 후 다시 시도해주세요.';
+                break;
+            case 'NO_DATA_ERROR':
+            case 'NO_TEMPERATURE_DATA':
+                userMessage = '⚠️ 현재 위치의 날씨 데이터를 찾을 수 없습니다.';
+                break;
+            case 'HTTP_ERROR_404':
+                userMessage = '⚠️ 날씨 정보를 찾을 수 없습니다.';
+                break;
+            default:
+                if (error.message.includes('HTTP_ERROR')) {
+                    userMessage = '⚠️ 날씨 정보를 가져오는 중 문제가 발생했습니다.';
+                } else if (error.message.includes('API_ERROR')) {
+                    userMessage = '⚠️ 기상청 API 오류가 발생했습니다.';
+                } else {
+                    userMessage = '⚠️ 날씨 정보를 가져오는 중 알 수 없는 오류가 발생했습니다.';
+                }
+        }
+        // 사용자에게 안내 메시지 표시
+        if (userMessage) {
+            showWeatherErrorNotification(userMessage, shouldFallback);
+        }
+        // 폴백 데이터 설정 (서울 기준)
+        if (shouldFallback) {
+            weatherData = {
+                currentTemperature: 20, 
+                yesterdayTemperature: 17, 
+                windSpeed: 5,
+                humidity: 60, 
+                isRaining: false, 
+                fineDustLevel: 'good',
+                dayNightTempDiff: 10, 
+                location: '서울 (기본값)',
+            };
+            console.log('서울 기준 기본 날씨 데이터로 폴백됨');
+        }
     }
+}
+
+// 에어코리아 API 호출 함수
+async function fetchAirQualityData(lat, lon) {
+    try {
+        // 가장 가까운 측정소 찾기
+        const nearestStation = await findNearestStation(lat, lon);
+        if (!nearestStation) {
+            console.log('가까운 측정소를 찾을 수 없습니다.');
+            return null;
+        }
+
+        // 현재 시간 포맷
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = String(now.getMonth() + 1).padStart(2, '0');
+        const day = String(now.getDate()).padStart(2, '0');
+        const dataTerm = `${year}-${month}-${day}`;
+
+        let url = `${AIR_KOREA_BASE_URL}?serviceKey=${KOREA_WEATHER_API_KEY}`;
+        url += `&returnType=json`;
+        url += `&numOfRows=100`;
+        url += `&pageNo=1`;
+        url += `&stationName=${encodeURIComponent(nearestStation.stationName)}`;
+        url += `&dataTerm=${dataTerm}`;
+        url += `&dataGubun=HOUR`;
+        url += `&ver=1.3`;
+
+        const response = await fetch(url);
+        if (!response.ok) {
+            throw new Error(`Air Korea API error: ${response.status}`);
+        }
+
+        const data = await response.json();
+        console.log('Air Korea API raw data:', data);
+        console.log('API Response Header:', data.response?.header);
+
+        if (data.response?.header?.resultCode !== '00') {
+            const errorCode = data.response?.header?.resultCode;
+            const errorMsg = data.response?.header?.resultMsg;
+            console.error(`API Error Details - Code: ${errorCode}, Message: ${errorMsg}`);
+            throw new Error(`Air Korea API error: ${errorMsg} (${errorCode})`);
+        }
+
+        if (!data.response.body || !data.response.body.items || data.response.body.items.length === 0) {
+            console.log('미세먼지 데이터가 없습니다.');
+            return null;
+        }
+
+        // 가장 최신 데이터 가져오기
+        const latestData = data.response.body.items[0];
+        const pm10Value = latestData.pm10Value ? parseFloat(latestData.pm10Value) : null;
+        const pm25Value = latestData.pm25Value ? parseFloat(latestData.pm25Value) : null;
+
+        // 미세먼지 등급 결정 (PM10 기준)
+        let fineDustLevel = 'good';
+        if (pm10Value !== null) {
+            if (pm10Value <= 30) {
+                fineDustLevel = 'good'; // 좋음
+            } else if (pm10Value <= 80) {
+                fineDustLevel = 'moderate'; // 보통
+            } else if (pm10Value <= 150) {
+                fineDustLevel = 'bad'; // 나쁨
+            } else {
+                fineDustLevel = 'very_bad'; // 매우 나쁨
+            }
+        }
+
+        console.log(`미세먼지 수치: PM10=${pm10Value}, PM25=${pm25Value}, 등급=${fineDustLevel}`);
+
+        return {
+            pm10: pm10Value,
+            pm25: pm25Value,
+            level: fineDustLevel,
+            stationName: nearestStation.stationName
+        };
+
+    } catch (error) {
+        console.error('미세먼지 정보를 가져오는 중 오류 발생:', error);
+        return null;
+    }
+}
+
+// 가장 가까운 측정소 찾기
+async function findNearestStation(lat, lon) {
+    try {
+        // 서울 지역의 주요 측정소 목록 (실제로는 더 많은 측정소가 있음)
+        const stations = [
+            { stationName: '중구', lat: 37.563569, lon: 126.997969 },
+            { stationName: '종로구', lat: 37.574444, lon: 126.976944 },
+            { stationName: '강남구', lat: 37.517222, lon: 127.047333 },
+            { stationName: '강동구', lat: 37.530833, lon: 127.123056 },
+            { stationName: '강북구', lat: 37.639722, lon: 127.025556 },
+            { stationName: '강서구', lat: 37.550833, lon: 126.849722 },
+            { stationName: '광진구', lat: 37.548056, lon: 127.083583 },
+            { stationName: '구로구', lat: 37.495556, lon: 126.888889 },
+            { stationName: '금천구', lat: 37.466389, lon: 126.900278 },
+            { stationName: '노원구', lat: 37.654444, lon: 127.058611 },
+            { stationName: '도봉구', lat: 37.659444, lon: 127.048889 },
+            { stationName: '동대문구', lat: 37.581111, lon: 127.055556 },
+            { stationName: '동작구', lat: 37.512778, lon: 126.939444 },
+            { stationName: '마포구', lat: 37.566389, lon: 126.908611 },
+            { stationName: '서대문구', lat: 37.579444, lon: 126.946944 },
+            { stationName: '성동구', lat: 37.544444, lon: 127.047222 },
+            { stationName: '성북구', lat: 37.589444, lon: 127.018056 },
+            { stationName: '송파구', lat: 37.504167, lon: 127.127222 },
+            { stationName: '양천구', lat: 37.516389, lon: 126.865833 },
+            { stationName: '영등포구', lat: 37.526389, lon: 126.894722 },
+            { stationName: '용산구', lat: 37.524444, lon: 126.966944 },
+            { stationName: '은평구', lat: 37.517222, lon: 126.939444 },
+            { stationName: '종로구', lat: 37.595556, lon: 126.983889 }
+        ];
+
+        // 가장 가까운 측정소 찾기
+        let nearestStation = null;
+        let minDistance = Infinity;
+
+        stations.forEach(station => {
+            const distance = calculateDistance(lat, lon, station.lat, station.lon);
+            if (distance < minDistance) {
+                minDistance = distance;
+                nearestStation = station;
+            }
+        });
+
+        return nearestStation;
+    } catch (error) {
+        console.error('측정소 찾기 오류:', error);
+        return null;
+    }
+}
+
+// 두 지점 간의 거리 계산 (Haversine 공식)
+function calculateDistance(lat1, lon1, lat2, lon2) {
+    const R = 6371; // 지구 반경 (km)
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLon = (lon2 - lon1) * Math.PI / 180;
+    const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+              Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+              Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return R * c;
+}
+
+// 날씨 에러 알림 표시 함수
+function showWeatherErrorNotification(message, canRetry = true) {
+    // 기존 알림이 있다면 제거
+    const existingNotification = document.querySelector('.weather-error-notification');
+    if (existingNotification) {
+        existingNotification.remove();
+    }
+    // 알림 요소 생성
+    const notification = document.createElement('div');
+    notification.className = 'weather-error-notification';
+    notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+        color: white;
+        padding: 15px 20px;
+        border-radius: 10px;
+        box-shadow: 0 4px 15px rgba(238, 90, 36, 0.3);
+        z-index: 10000;
+        max-width: 300px;
+        font-size: 14px;
+        line-height: 1.4;
+        animation: slideInRight 0.3s ease-out;
+    `;
+    notification.innerHTML = `
+        <div style="display: flex; align-items: flex-start; gap: 10px;">
+            <div style="font-size: 18px; margin-top: 2px;">⚠️</div>
+            <div style="flex: 1;">
+                <div style="font-weight: bold; margin-bottom: 5px;">날씨 정보 오류</div>
+                <div>${message}</div>
+                ${canRetry ? '<div style="margin-top: 8px; font-size: 12px; opacity: 0.9;">서울 기준 날씨로 표시됩니다.</div>' : ''}
+            </div>
+            <button onclick="this.parentElement.parentElement.remove()" style="
+                background: none;
+                border: none;
+                color: white;
+                font-size: 16px;
+                cursor: pointer;
+                padding: 0;
+                width: 20px;
+                height: 20px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                border-radius: 50%;
+                transition: background 0.2s;
+            " onmouseover="this.style.background='rgba(255,255,255,0.2)'" onmouseout="this.style.background='none'">×</button>
+        </div>
+    `;
+    // 애니메이션 스타일 추가
+    if (!document.querySelector('#weather-error-styles')) {
+        const style = document.createElement('style');
+        style.id = 'weather-error-styles';
+        style.textContent = `
+            @keyframes slideInRight {
+                from {
+                    transform: translateX(100%);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+    }
+    document.body.appendChild(notification);
+    // 5초 후 자동 제거
+    setTimeout(() => {
+        if (notification.parentElement) {
+            notification.style.animation = 'slideInRight 0.3s ease-out reverse';
+            setTimeout(() => {
+                if (notification.parentElement) {
+                    notification.remove();
+                }
+            }, 300);
+        }
+    }, 5000);
 }
 
 function calculateApparentTemperature(temp, wind, humidity, bodyType) {
@@ -410,19 +813,37 @@ function getAdvice(apparentTemp, weather) {
     if (weather.dayNightTempDiff >= 10) contextual += "일교차가 커요. 밤을 대비해 겉옷을 챙기세요. ";
     if (weather.isRaining) contextual += "비가 오니 방수 기능이 있는 신발이나 옷을 추천해요. ";
     if (weather.fineDustLevel === 'bad') contextual += "미세먼지가 심하니 마스크를 꼭 착용하세요.";
-    outfitExplanationDisplay.textContent = explanation;
-    contextualAdviceDisplay.textContent = contextual.trim();
+    
+    if (outfitExplanationDisplay) {
+        outfitExplanationDisplay.textContent = explanation;
+    }
+    if (contextualAdviceDisplay) {
+        contextualAdviceDisplay.textContent = contextual.trim();
+    }
 }
 
 function updateWeatherUI(apparentTemp, weather) {
-    locationDisplay.textContent = weather.location;
-    weatherDisplay.textContent = `${weather.currentTemperature}℃`;
-    apparentTempDisplay.textContent = `체감: ${apparentTemp}℃`;
-    const tempDiff = weather.currentTemperature - weather.yesterdayTemperature;
-    weatherComparisonDisplay.textContent = tempDiff > 0 ? `어제보다 ${tempDiff}℃ 높아요` : tempDiff < 0 ? `어제보다 ${Math.abs(tempDiff)}℃ 낮아요` : "어제와 기온이 비슷해요";
+    if (locationDisplay) {
+        locationDisplay.textContent = weather.location;
+    }
+    if (weatherDisplay) {
+        weatherDisplay.textContent = `${weather.currentTemperature}℃`;
+    }
+    if (apparentTempDisplay) {
+        apparentTempDisplay.textContent = `체감: ${apparentTemp}℃`;
+    }
+    if (weatherComparisonDisplay) {
+        const tempDiff = weather.currentTemperature - weather.yesterdayTemperature;
+        weatherComparisonDisplay.textContent = tempDiff > 0 ? `어제보다 ${tempDiff}℃ 높아요` : tempDiff < 0 ? `어제보다 ${Math.abs(tempDiff)}℃ 낮아요` : "어제와 기온이 비슷해요";
+    }
 }
 
 function renderRecommendations(apparentTemp) {
+    if (!recommendationsDiv) {
+        console.error('recommendationsDiv 요소를 찾을 수 없습니다.');
+        return;
+    }
+    
     recommendationsDiv.innerHTML = '';
     // Use stored custom items if available
     const customItems = JSON.parse(localStorage.getItem('customClothes')) || [];
@@ -473,6 +894,55 @@ function renderRecommendations(apparentTemp) {
             recommendationsDiv.appendChild(itemDiv);
         }
     });
+
+    // Add mask recommendation if fine dust is bad or very bad
+    if (weatherData.fineDustLevel === 'bad' || weatherData.fineDustLevel === 'very_bad') {
+        const maskItem = defaultOutfitData.find(item => item.isMask);
+        if (maskItem) {
+            const maskDiv = document.createElement('div');
+            maskDiv.className = 'recommendation-item mask-recommendation';
+            maskDiv.style.cssText = `
+                border: 2px solid #ff6b6b;
+                background: linear-gradient(135deg, rgba(255, 107, 107, 0.1), rgba(238, 90, 36, 0.1));
+                animation: pulse 2s infinite;
+            `;
+
+            const svgContent = getClothingSVG(maskItem.name, maskItem.color, 'accessory');
+
+            maskDiv.innerHTML = `
+                <div class="item-visual visual-accessory">
+                    ${svgContent}
+                </div>
+                <div class="item-info">
+                    <span class="item-category-badge badge-accessory" style="background: #ff6b6b; color: white;">액세서리</span>
+                    <p class="item-name">${maskItem.name}</p>
+                    <div style="font-size: 12px; color: #ff6b6b; font-weight: bold; margin-top: 5px;">
+                        ${weatherData.fineDustLevel === 'very_bad' ? '미세먼지 매우 나쁨!' : '미세먼지 나쁨!'}
+                    </div>
+                </div>
+            `;
+            recommendationsDiv.appendChild(maskDiv);
+
+            // Add pulse animation
+            if (!document.querySelector('#mask-pulse-styles')) {
+                const style = document.createElement('style');
+                style.id = 'mask-pulse-styles';
+                style.textContent = `
+                    @keyframes pulse {
+                        0% { transform: scale(1); }
+                        50% { transform: scale(1.02); }
+                        100% { transform: scale(1); }
+                    }
+                `;
+                document.head.appendChild(style);
+            }
+        }
+    }
+    
+    // Re-initialize lazy loading for new images
+    setTimeout(() => {
+        initializeLazyLoading();
+    }, 100);
 }
 
 function updateApp() {
@@ -482,47 +952,70 @@ function updateApp() {
     renderRecommendations(apparentTemp);
 }
 
-// --- Event Listeners ---
-
-const categoryButtons = document.querySelectorAll('.category-selection button');
-
-[...genderButtons, ...styleButtons, ...bodyTypeButtons, ...categoryButtons].forEach(button => {
-    button.addEventListener('click', (e) => {
-        const parent = e.target.closest('div');
-        parent.querySelectorAll('button').forEach(btn => btn.classList.remove('active'));
-        e.target.closest('button').classList.add('active');
-        if (parent.classList.contains('gender-selection')) selectedGender = e.target.closest('button').dataset.gender;
-        if (parent.classList.contains('style-selection')) selectedStyle = e.target.closest('button').dataset.style;
-        if (parent.classList.contains('body-type-selection')) selectedBodyType = e.target.closest('button').dataset.bodyType;
-        if (parent.classList.contains('category-selection')) selectedCategory = e.target.closest('button').dataset.category;
-        updateApp();
-    });
-});
-
-darkModeToggle.addEventListener('click', toggleDarkMode);
-
-
-
-
 // --- Initialization ---
 async function initializeApp() {
+    // Initialize DOM elements
+    darkModeToggle = document.getElementById('dark-mode-toggle');
+    weatherDisplay = document.getElementById('weather');
+    apparentTempDisplay = document.getElementById('apparent-temp');
+    locationDisplay = document.getElementById('location');
+    weatherComparisonDisplay = document.getElementById('weather-comparison');
+    outfitExplanationDisplay = document.getElementById('outfit-explanation');
+    contextualAdviceDisplay = document.getElementById('contextual-advice');
+    genderButtons = document.querySelectorAll('.gender-selection button');
+    styleButtons = document.querySelectorAll('.style-selection button');
+    bodyTypeButtons = document.querySelectorAll('.body-type-selection button');
+    recommendationsDiv = document.getElementById('recommendations');
+
     if (localStorage.getItem('darkMode') === 'true') {
         document.body.classList.add('dark-mode');
-        darkModeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+        if (darkModeToggle) {
+            darkModeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+        }
     }
 
     await getUserLocationAndFetchWeather();
 
+    // Initialize lazy loading for images
+    initializeLazyLoading();
 
-
-    document.querySelector('.gender-selection button[data-gender="male"]').classList.add('active');
-    document.querySelector('.style-selection button[data-style="casual"]').classList.add('active');
-    document.querySelector('.body-type-selection button[data-body-type="normal"]').classList.add('active');
+    const maleButton = document.querySelector('.gender-selection button[data-gender="male"]');
+    if (maleButton) {
+        maleButton.classList.add('active');
+    }
+    
+    const casualButton = document.querySelector('.style-selection button[data-style="casual"]');
+    if (casualButton) {
+        casualButton.classList.add('active');
+    }
+    
+    const normalButton = document.querySelector('.body-type-selection button[data-body-type="normal"]');
+    if (normalButton) {
+        normalButton.classList.add('active');
+    }
 
     updateApp();
+
+    // Add event listeners after DOM is ready
+    const categoryButtons = document.querySelectorAll('.category-selection button');
+    
+    [...genderButtons, ...styleButtons, ...bodyTypeButtons, ...categoryButtons].forEach(button => {
+        button.addEventListener('click', (e) => {
+            const parent = e.target.closest('div');
+            parent.querySelectorAll('button').forEach(btn => btn.classList.remove('active'));
+            e.target.closest('button').classList.add('active');
+            if (parent.classList.contains('gender-selection')) selectedGender = e.target.closest('button').dataset.gender;
+            if (parent.classList.contains('style-selection')) selectedStyle = e.target.closest('button').dataset.style;
+            if (parent.classList.contains('body-type-selection')) selectedBodyType = e.target.closest('button').dataset.bodyType;
+            if (parent.classList.contains('category-selection')) selectedCategory = e.target.closest('button').dataset.category;
+            updateApp();
+        });
+    });
+
+    if (darkModeToggle) {
+        darkModeToggle.addEventListener('click', toggleDarkMode);
+    }
 }
-
-
 
 async function getUserLocationAndFetchWeather() {
     let finalLocationName = '서울';
@@ -539,10 +1032,30 @@ async function getUserLocationAndFetchWeather() {
         } else {
             finalLocationName = '현재 위치';
         }
-        await fetchWeatherData(nx, ny, finalLocationName);
+        
+        // 날씨 데이터와 미세먼지 데이터를 병렬로 호출
+        await Promise.all([
+            fetchWeatherData(nx, ny, finalLocationName),
+            fetchAirQualityData(lat, lon)
+        ]);
+        
+        // 미세먼지 데이터가 있으면 날씨 데이터에 통합
+        const airQualityData = await fetchAirQualityData(lat, lon);
+        if (airQualityData) {
+            weatherData.fineDustLevel = airQualityData.level;
+            console.log(`미세먼지 정보 통합됨: ${airQualityData.level} (${airQualityData.pm10}μg/m³)`);
+        }
+        
     } catch (error) {
         console.error('위치 정보를 가져오는 데 실패했습니다:', error);
         await fetchWeatherData(55, 127, finalLocationName);
+        
+        // 서울 기준 미세먼지 데이터 시도
+        const seoulAirQuality = await fetchAirQualityData(37.5665, 126.9780);
+        if (seoulAirQuality) {
+            weatherData.fineDustLevel = seoulAirQuality.level;
+            console.log(`서울 기준 미세먼지 정보 통합됨: ${seoulAirQuality.level} (${seoulAirQuality.pm10}μg/m³)`);
+        }
     }
 }
 
