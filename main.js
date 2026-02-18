@@ -1,188 +1,5 @@
-// --- SVG Clothing Templates ---
-// Each function returns an SVG string for a clothing item, with customizable colors.
-
-const clothingSVGs = {
-    // === OUTERS ===
-    '두꺼운 패딩': (color = '#2d3748') => `
-        <svg viewBox="0 0 220 180" xmlns="http://www.w3.org/2000/svg">
-            <defs><linearGradient id="pd1" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="${color}"/><stop offset="100%" stop-color="${adjustColor(color, -30)}"/></linearGradient></defs>
-            <path d="M50 15 Q45 10 35 15 L10 55 Q5 65 12 70 L20 75 L18 160 Q18 170 28 170 L90 170 L90 90 L130 90 L130 170 L192 170 Q202 170 202 160 L200 75 L208 70 Q215 65 210 55 L185 15 Q175 10 170 15 L140 30 Q120 40 110 40 Q100 40 80 30 Z" fill="url(#pd1)" stroke="${adjustColor(color, -50)}" stroke-width="1.5"/>
-            <path d="M60 50 Q70 55 85 55 L90 90 L50 90 Z" fill="${adjustColor(color, 15)}" opacity="0.3"/>
-            <path d="M160 50 Q150 55 135 55 L130 90 L170 90 Z" fill="${adjustColor(color, 15)}" opacity="0.3"/>
-            <line x1="110" y1="40" x2="110" y2="170" stroke="${adjustColor(color, -40)}" stroke-width="2" stroke-dasharray="4,4"/>
-            <circle cx="110" cy="65" r="3" fill="${adjustColor(color, 40)}"/>
-            <circle cx="110" cy="85" r="3" fill="${adjustColor(color, 40)}"/>
-            <circle cx="110" cy="105" r="3" fill="${adjustColor(color, 40)}"/>
-            <circle cx="110" cy="125" r="3" fill="${adjustColor(color, 40)}"/>
-            <rect x="75" y="10" width="70" height="12" rx="3" fill="${adjustColor(color, -20)}" opacity="0.7"/>
-        </svg>`,
-
-    // 경량 패딩은 실제 이미지 사용 (images/light_padding.png)
-
-    '자켓 또는 가디건': (color = '#d97706') => `
-        <svg viewBox="0 0 220 180" xmlns="http://www.w3.org/2000/svg">
-            <defs><linearGradient id="jk1" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="${color}"/><stop offset="100%" stop-color="${adjustColor(color, -20)}"/></linearGradient></defs>
-            <path d="M58 18 Q52 12 42 18 L15 60 Q10 68 16 72 L28 75 L26 158 Q26 165 35 165 L92 165 L92 82 L128 82 L128 165 L185 165 Q194 165 194 158 L192 75 L204 72 Q210 68 205 60 L178 18 Q168 12 162 18 L140 32 Q120 42 110 42 Q100 42 80 32 Z" fill="url(#jk1)" stroke="${adjustColor(color, -40)}" stroke-width="1.5"/>
-            <path d="M92 42 L92 165" stroke="${adjustColor(color, -30)}" stroke-width="2"/>
-            <path d="M128 42 L128 165" stroke="${adjustColor(color, -30)}" stroke-width="2"/>
-            <path d="M92 42 L105 50 L110 42 L115 50 L128 42" fill="none" stroke="${adjustColor(color, -35)}" stroke-width="1.5"/>
-            <rect x="35" y="100" width="30" height="25" rx="4" fill="${adjustColor(color, -15)}" opacity="0.4"/>
-            <rect x="155" y="100" width="30" height="25" rx="4" fill="${adjustColor(color, -15)}" opacity="0.4"/>
-        </svg>`,
-
-    '블레이저': (color = '#1f2937') => `
-        <svg viewBox="0 0 220 180" xmlns="http://www.w3.org/2000/svg">
-            <defs><linearGradient id="bl1" x1="0" y1="0" x2="0.5" y2="1"><stop offset="0%" stop-color="${adjustColor(color, 15)}"/><stop offset="100%" stop-color="${color}"/></linearGradient></defs>
-            <path d="M55 15 Q48 10 38 15 L12 58 Q8 66 14 70 L28 74 L26 160 Q26 168 36 168 L94 168 L94 78 L126 78 L126 168 L184 168 Q194 168 194 160 L192 74 L206 70 Q212 66 208 58 L182 15 Q172 10 165 15 L140 32 Q122 42 110 42 Q98 42 80 32 Z" fill="url(#bl1)" stroke="${adjustColor(color, -30)}" stroke-width="1.5"/>
-            <path d="M94 42 L94 168" stroke="${adjustColor(color, -20)}" stroke-width="2"/>
-            <path d="M126 42 L126 168" stroke="${adjustColor(color, -20)}" stroke-width="2"/>
-            <path d="M94 42 L108 75 L110 42 L112 75 L126 42" fill="${adjustColor(color, 10)}" stroke="${adjustColor(color, -20)}" stroke-width="1"/>
-            <circle cx="106" cy="95" r="3" fill="${adjustColor(color, 50)}"/>
-            <circle cx="106" cy="120" r="3" fill="${adjustColor(color, 50)}"/>
-            <rect x="60" y="15" width="20" height="30" rx="2" fill="${adjustColor(color, 10)}" stroke="${adjustColor(color, -20)}" stroke-width="1" transform="rotate(-15,70,30)"/>
-            <rect x="140" y="15" width="20" height="30" rx="2" fill="${adjustColor(color, 10)}" stroke="${adjustColor(color, -20)}" stroke-width="1" transform="rotate(15,150,30)"/>
-        </svg>`,
-
-    '바람막이': (color = '#0ea5e9') => `
-        <svg viewBox="0 0 220 180" xmlns="http://www.w3.org/2000/svg">
-            <defs><linearGradient id="wk1" x1="0" y1="0" x2="1" y2="0.5"><stop offset="0%" stop-color="${color}"/><stop offset="50%" stop-color="${adjustColor(color, 15)}"/><stop offset="100%" stop-color="${color}"/></linearGradient></defs>
-            <path d="M55 18 Q48 12 38 18 L14 58 Q9 66 15 70 L26 73 L24 155 Q24 162 34 162 L92 162 L92 80 L128 80 L128 162 L186 162 Q196 162 196 155 L194 73 L205 70 Q211 66 206 58 L182 18 Q172 12 165 18 L140 33 Q120 42 110 42 Q100 42 80 33 Z" fill="url(#wk1)" stroke="${adjustColor(color, -35)}" stroke-width="1.2" opacity="0.92"/>
-            <line x1="110" y1="42" x2="110" y2="162" stroke="${adjustColor(color, -25)}" stroke-width="2"/>
-            <rect x="80" y="8" width="60" height="16" rx="8" fill="${adjustColor(color, -20)}" opacity="0.6"/>
-            <path d="M24 75 L35 80 L24 85" fill="none" stroke="${adjustColor(color, 40)}" stroke-width="1.5"/>
-            <path d="M196 75 L185 80 L196 85" fill="none" stroke="${adjustColor(color, 40)}" stroke-width="1.5"/>
-            <circle cx="110" cy="60" r="2" fill="${adjustColor(color, 50)}"/>
-            <circle cx="110" cy="78" r="2" fill="${adjustColor(color, 50)}"/>
-        </svg>`,
-
-    // === TOPS ===
-    '맨투맨 또는 후드티': (color = '#6b7280') => `
-        <svg viewBox="0 0 190 160" xmlns="http://www.w3.org/2000/svg">
-            <defs><linearGradient id="hw1" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="${adjustColor(color, 10)}"/><stop offset="100%" stop-color="${color}"/></linearGradient></defs>
-            <path d="M50 12 Q44 8 36 12 L10 48 Q6 56 12 60 L24 63 L22 145 Q22 152 32 152 L85 152 L85 75 L105 75 L105 152 L158 152 Q168 152 168 145 L166 63 L178 60 Q184 56 180 48 L154 12 Q146 8 140 12 L125 22 Q110 32 95 32 Q80 32 65 22 Z" fill="url(#hw1)" stroke="${adjustColor(color, -30)}" stroke-width="1.5"/>
-            <path d="M70 0 Q75 -5 95 -5 Q115 -5 120 0 L125 22 Q118 30 95 32 Q72 30 65 22 Z" fill="${adjustColor(color, -10)}" stroke="${adjustColor(color, -30)}" stroke-width="1"/>
-            <ellipse cx="95" cy="30" rx="18" ry="8" fill="${adjustColor(color, -25)}" opacity="0.5"/>
-            <path d="M42 95 L22 95 L22 130 L42 125 Z" fill="${adjustColor(color, -8)}" stroke="${adjustColor(color, -25)}" stroke-width="1" rx="3"/>
-        </svg>`,
-
-    '긴팔 셔츠': (color = '#e5e7eb') => `
-        <svg viewBox="0 0 190 160" xmlns="http://www.w3.org/2000/svg">
-            <defs><linearGradient id="ls1" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="${color}"/><stop offset="100%" stop-color="${adjustColor(color, -15)}"/></linearGradient></defs>
-            <path d="M52 14 Q46 8 38 14 L12 50 Q8 58 14 62 L26 65 L24 146 Q24 153 34 153 L86 153 L86 72 L104 72 L104 153 L156 153 Q166 153 166 146 L164 65 L176 62 Q182 58 178 50 L152 14 Q144 8 138 14 L122 26 Q108 35 95 35 Q82 35 68 26 Z" fill="url(#ls1)" stroke="${adjustColor(color, -40)}" stroke-width="1.2"/>
-            <path d="M72 5 L80 14 L95 18 L110 14 L118 5" fill="none" stroke="${adjustColor(color, -40)}" stroke-width="1.5"/>
-            <path d="M80 14 L95 22 L110 14" fill="${color}" stroke="${adjustColor(color, -40)}" stroke-width="1"/>
-            <line x1="95" y1="35" x2="95" y2="153" stroke="${adjustColor(color, -25)}" stroke-width="1.5"/>
-            <circle cx="95" cy="55" r="2" fill="${adjustColor(color, -50)}"/>
-            <circle cx="95" cy="75" r="2" fill="${adjustColor(color, -50)}"/>
-            <circle cx="95" cy="95" r="2" fill="${adjustColor(color, -50)}"/>
-            <circle cx="95" cy="115" r="2" fill="${adjustColor(color, -50)}"/>
-            <circle cx="95" cy="135" r="2" fill="${adjustColor(color, -50)}"/>
-            <rect x="24" y="80" width="8" height="12" rx="2" fill="${adjustColor(color, -20)}" opacity="0.4"/>
-            <rect x="158" y="80" width="8" height="12" rx="2" fill="${adjustColor(color, -20)}" opacity="0.4"/>
-        </svg>`,
-
-    '반팔 티셔츠': (color = '#3b82f6') => `
-        <svg viewBox="0 0 190 160" xmlns="http://www.w3.org/2000/svg">
-            <defs><linearGradient id="ts1" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="${adjustColor(color, 10)}"/><stop offset="100%" stop-color="${color}"/></linearGradient></defs>
-            <path d="M52 14 Q46 8 38 14 L20 42 Q16 50 22 54 L38 56 L36 146 Q36 153 46 153 L86 153 L86 68 L104 68 L104 153 L144 153 Q154 153 154 146 L152 56 L168 54 Q174 50 170 42 L152 14 Q144 8 138 14 L122 26 Q108 35 95 35 Q82 35 68 26 Z" fill="url(#ts1)" stroke="${adjustColor(color, -30)}" stroke-width="1.5"/>
-            <ellipse cx="95" cy="28" rx="22" ry="10" fill="${adjustColor(color, -15)}" opacity="0.4"/>
-        </svg>`,
-
-    '블라우스': (color = '#f9a8d4') => `
-        <svg viewBox="0 0 190 160" xmlns="http://www.w3.org/2000/svg">
-            <defs><linearGradient id="bls1" x1="0" y1="0" x2="0.5" y2="1"><stop offset="0%" stop-color="${adjustColor(color, 10)}"/><stop offset="100%" stop-color="${color}"/></linearGradient></defs>
-            <path d="M55 14 Q48 8 40 14 L14 50 Q10 58 16 62 L28 65 L26 148 Q26 155 36 155 L86 155 L86 72 L104 72 L104 155 L154 155 Q164 155 164 148 L162 65 L174 62 Q180 58 176 50 L150 14 Q142 8 135 14 L120 26 Q108 35 95 35 Q82 35 70 26 Z" fill="url(#bls1)" stroke="${adjustColor(color, -30)}" stroke-width="1.2"/>
-            <path d="M70 5 Q75 0 95 -2 Q115 0 120 5 L120 26 Q108 35 95 35 Q82 35 70 26 Z" fill="${adjustColor(color, 8)}" stroke="${adjustColor(color, -25)}" stroke-width="1"/>
-            <path d="M80 10 Q88 20 95 22 Q102 20 110 10" fill="none" stroke="${adjustColor(color, -35)}" stroke-width="1" opacity="0.5"/>
-            <path d="M86 72 L86 155" stroke="${adjustColor(color, -18)}" stroke-width="1"/>
-            <path d="M104 72 L104 155" stroke="${adjustColor(color, -18)}" stroke-width="1"/>
-            <circle cx="95" cy="50" r="2.5" fill="${adjustColor(color, -40)}"/>
-            <circle cx="95" cy="68" r="2.5" fill="${adjustColor(color, -40)}"/>
-            <circle cx="95" cy="86" r="2.5" fill="${adjustColor(color, -40)}"/>
-            <path d="M26 100 Q20 102 16 110 Q20 118 26 120" fill="none" stroke="${adjustColor(color, -15)}" stroke-width="1" opacity="0.5"/>
-            <path d="M164 100 Q170 102 174 110 Q170 118 164 120" fill="none" stroke="${adjustColor(color, -15)}" stroke-width="1" opacity="0.5"/>
-        </svg>`,
-
-    // === BOTTOMS ===
-    // 기모 바지는 실제 이미지 사용 (images/fleece_pants.png)
-
-    '면바지 또는 슬랙스': (color = '#92400e') => `
-        <svg viewBox="0 0 170 180" xmlns="http://www.w3.org/2000/svg">
-            <defs><linearGradient id="sl1" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="${adjustColor(color, 10)}"/><stop offset="100%" stop-color="${color}"/></linearGradient></defs>
-            <path d="M28 10 Q25 5 22 10 L22 15 L18 168 Q17 175 28 175 L68 175 Q72 175 72 170 L80 85 L90 85 L98 170 Q98 175 102 175 L142 175 Q153 175 152 168 L148 15 L148 10 Q145 5 142 10 Z" fill="url(#sl1)" stroke="${adjustColor(color, -30)}" stroke-width="1.2"/>
-            <path d="M22 15 L148 15" stroke="${adjustColor(color, 20)}" stroke-width="2"/>
-            <rect x="74" y="15" width="22" height="8" rx="2" fill="${adjustColor(color, -15)}" opacity="0.5"/>
-            <path d="M52 20 L46 170" stroke="${adjustColor(color, 15)}" stroke-width="0.8" opacity="0.25"/>
-            <path d="M118 20 L124 170" stroke="${adjustColor(color, 15)}" stroke-width="0.8" opacity="0.25"/>
-        </svg>`,
-
-    // === ACCESSORIES ===
-    '마스크': (color = '#6b7280') => `
-        <svg viewBox="0 0 120 80" xmlns="http://www.w3.org/2000/svg">
-            <defs><linearGradient id="mask1" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="${adjustColor(color, 10)}"/><stop offset="100%" stop-color="${color}"/></linearGradient></defs>
-            <path d="M20 25 Q20 15 30 15 L90 15 Q100 15 100 25 L100 45 Q100 55 90 55 L30 55 Q20 55 20 45 Z" fill="url(#mask1)" stroke="${adjustColor(color, -30)}" stroke-width="1.5"/>
-            <path d="M25 30 Q25 22 32 22 L88 22 Q95 22 95 30 L95 40 Q95 48 88 48 L32 48 Q25 48 25 40 Z" fill="${adjustColor(color, -15)}" opacity="0.3"/>
-            <line x1="35" y1="30" x2="85" y2="30" stroke="${adjustColor(color, -20)}" stroke-width="1" opacity="0.5"/>
-            <line x1="35" y1="35" x2="85" y2="35" stroke="${adjustColor(color, -20)}" stroke-width="1" opacity="0.5"/>
-            <line x1="35" y1="40" x2="85" y2="40" stroke="${adjustColor(color, -20)}" stroke-width="1" opacity="0.5"/>
-            <path d="M15 25 Q10 20 10 25 L10 45 Q10 50 15 45" fill="none" stroke="${adjustColor(color, -40)}" stroke-width="2"/>
-            <path d="M105 25 Q110 20 110 25 L110 45 Q110 50 105 45" fill="none" stroke="${adjustColor(color, -40)}" stroke-width="2"/>
-        </svg>`,
-};
-
-// Color utility function
-function adjustColor(hex, amount) {
-    hex = hex.replace('#', '');
-    if (hex.length === 3) hex = hex.split('').map(c => c + c).join('');
-    const num = parseInt(hex, 16);
-    let r = Math.min(255, Math.max(0, (num >> 16) + amount));
-    let g = Math.min(255, Math.max(0, ((num >> 8) & 0x00FF) + amount));
-    let b = Math.min(255, Math.max(0, (num & 0x0000FF) + amount));
-    return '#' + [r, g, b].map(c => c.toString(16).padStart(2, '0')).join('');
-}
-
-// Unique ID counter for SVG gradients to prevent ID collisions
-let svgIdCounter = 0;
-
-// Get SVG for an item, with fallback for custom closet items
-// Also supports real image URLs via the item's imageUrl property
-function getClothingSVG(itemName, color, category, imageUrl) {
-    // If the item has a real image URL, use an <img> tag with lazy loading
-    if (imageUrl) {
-        const imageId = `img-${itemName.replace(/[^a-zA-Z0-9]/g, '-')}-${Date.now()}`;
-        return `
-            <div class="image-container">
-                <div class="skeleton skeleton-image" id="skeleton-${imageId}"></div>
-                <img 
-                    id="${imageId}"
-                    class="lazy-image" 
-                    src="${imageUrl}" 
-                    alt="${itemName}" 
-                    loading="lazy"
-                    onload="handleImageLoad('${imageId}')"
-                    onerror="handleImageError('${imageId}')"
-                    style="width:100%;height:100%;object-fit:contain;border-radius:8px;"
-                >
-            </div>
-        `;
-    }
-    const svgFn = clothingSVGs[itemName];
-    svgIdCounter++;
-    let svg;
-    if (svgFn) {
-        svg = svgFn(color);
-    } else {
-        // Generate a generic SVG based on category
-        svg = generateGenericSVG(category || 'top', color);
-    }
-    // Replace all gradient IDs with unique versions to avoid DOM collisions
-    svg = svg.replace(/id="(\w+)"/g, (match, id) => `id="${id}_${svgIdCounter}"`);
-    svg = svg.replace(/url\(#(\w+)\)/g, (match, id) => `url(#${id}_${svgIdCounter})`);
-    return svg;
-}
-
-// Handle image load success
-function handleImageLoad(imageId) {
+// --- Global Functions ---
+window.handleImageLoad = function(imageId) {
     const img = document.getElementById(imageId);
     const skeleton = document.getElementById(`skeleton-${imageId}`);
     
@@ -190,15 +7,13 @@ function handleImageLoad(imageId) {
         img.classList.add('loaded');
         skeleton.style.display = 'none';
     }
-}
+};
 
-// Handle image load error
-function handleImageError(imageId) {
+window.handleImageError = function(imageId) {
     const img = document.getElementById(imageId);
     const skeleton = document.getElementById(`skeleton-${imageId}`);
     
     if (img && skeleton) {
-        // Show fallback icon on error
         const container = img.parentElement;
         container.innerHTML = `
             <div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:var(--bg-color);border-radius:8px;">
@@ -206,73 +21,221 @@ function handleImageError(imageId) {
             </div>
         `;
     }
-}
+};
 
-// Initialize lazy loading for all images
-function initializeLazyLoading() {
-    const images = document.querySelectorAll('img[loading="lazy"]');
-    
-    // Use Intersection Observer for better performance
-    if ('IntersectionObserver' in window) {
-        const imageObserver = new IntersectionObserver((entries, observer) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    const img = entry.target;
-                    const skeleton = document.getElementById(`skeleton-${img.id}`);
-                    
-                    // Show skeleton while loading
-                    if (skeleton) {
-                        skeleton.style.display = 'block';
-                    }
-                    
-                    img.classList.add('loading');
-                    
-                    // Start loading the image
-                    if (img.dataset.src) {
-                        img.src = img.dataset.src;
-                        img.removeAttribute('data-src');
-                    }
-                    
-                    observer.unobserve(img);
-                }
-            });
+// TPO 어드바이스 기능
+async function getAIAdvice(weather, selectedClothes) {
+    try {
+        // OpenAI API 호출 (실제 사용 시 API 키 필요)
+        const response = await fetch('https://api.openai.com/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer YOUR_API_KEY' // 실제 API 키로 교체 필요
+            },
+            body: JSON.stringify({
+                model: "gpt-3.5-turbo",
+                messages: [{
+                    role: "system", 
+                    content: "당신은 패션 전문가입니다. 날씨와 사용자가 고른 옷을 분석해 2문장으로 조언하세요. 한국어로 답변하고, 구체적이고 실용적인 조언을 제공해주세요."
+                }, {
+                    role: "user",
+                    content: `오늘 날씨: ${weather}, 선택한 옷: ${selectedClothes}. 이 코디가 적절할까? TPO(시간, 장소, 상황)를 고려해서 조언해주세요.` 
+                }]
+            })
         });
         
-        images.forEach(img => imageObserver.observe(img));
-    } else {
-        // Fallback for browsers that don't support Intersection Observer
-        images.forEach(img => {
-            const skeleton = document.getElementById(`skeleton-${img.id}`);
-            if (skeleton) {
-                skeleton.style.display = 'block';
-            }
-            img.classList.add('loading');
-        });
+        if (!response.ok) {
+            throw new Error('AI API 호출 실패');
+        }
+        
+        const data = await response.json();
+        return data.choices[0].message.content;
+        
+    } catch (error) {
+        console.error('AI 조언 생성 중 오류:', error);
+        // 폴백 로직: 기본 조언 생성
+        return generateFallbackAdvice(weather, selectedClothes);
     }
 }
 
-function generateGenericSVG(category, color = '#888') {
-    if (category === 'outer') {
-        return `<svg viewBox="0 0 220 180" xmlns="http://www.w3.org/2000/svg">
-            <defs><linearGradient id="gen" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="${color}"/><stop offset="100%" stop-color="${adjustColor(color, -25)}"/></linearGradient></defs>
-            <path d="M55 18 Q48 12 38 18 L14 58 Q9 66 15 70 L26 73 L24 155 Q24 162 34 162 L92 162 L92 80 L128 80 L128 162 L186 162 Q196 162 196 155 L194 73 L205 70 Q211 66 206 58 L182 18 Q172 12 165 18 L140 33 Q120 42 110 42 Q100 42 80 33 Z" fill="url(#gen)" stroke="${adjustColor(color, -35)}" stroke-width="1.2"/>
-            <line x1="110" y1="42" x2="110" y2="162" stroke="${adjustColor(color, -25)}" stroke-width="2"/>
-        </svg>`;
-    } else if (category === 'top') {
-        return `<svg viewBox="0 0 190 160" xmlns="http://www.w3.org/2000/svg">
-            <defs><linearGradient id="gen" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="${adjustColor(color, 10)}"/><stop offset="100%" stop-color="${color}"/></linearGradient></defs>
-            <path d="M52 14 Q46 8 38 14 L20 42 Q16 50 22 54 L38 56 L36 146 Q36 153 46 153 L86 153 L86 68 L104 68 L104 153 L144 153 Q154 153 154 146 L152 56 L168 54 Q174 50 170 42 L152 14 Q144 8 138 14 L122 26 Q108 35 95 35 Q82 35 68 26 Z" fill="url(#gen)" stroke="${adjustColor(color, -30)}" stroke-width="1.5"/>
-            <ellipse cx="95" cy="28" rx="22" ry="10" fill="${adjustColor(color, -15)}" opacity="0.4"/>
-        </svg>`;
+// 폴백 조언 생성 함수 (API 실패 시 사용)
+function generateFallbackAdvice(weather, selectedClothes) {
+    const temp = weather.currentTemperature;
+    // selectedClothes가 배열이 아닌 경우 처리
+    const clothes = Array.isArray(selectedClothes) 
+        ? selectedClothes.map(item => item.name).join(', ')
+        : String(selectedClothes);
+    
+    let advice = '';
+    
+    // 기온 기반 조언
+    if (temp <= 0) {
+        advice = `오늘은 ${temp}℃로 매우 추워요. ${clothes} 선택은 좋지만, 히트텍 내의나 목도리를 추가하면 더 따뜻하게 보낼 수 있어요.`;
+    } else if (temp <= 10) {
+        advice = `${temp}℃의 쌀쌀한 날씨네요. ${clothes} 조합은 적절해요. 간절기 날씨에 맞게 아우터를 준비하면 좋겠습니다.`;
+    } else if (temp <= 20) {
+        advice = `${temp}℃으로 선선한 날씨입니다. ${clothes} 선택은 딱 좋아요! 일교차가 크니 얇은 겉옷을 챙기는 걸 추천해요.`;
     } else {
-        return `<svg viewBox="0 0 170 180" xmlns="http://www.w3.org/2000/svg">
-            <defs><linearGradient id="gen" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="${color}"/><stop offset="100%" stop-color="${adjustColor(color, -20)}"/></linearGradient></defs>
-            <path d="M25 10 Q22 5 20 10 L20 15 L15 165 Q14 175 25 175 L70 175 L78 85 L92 85 L100 175 L145 175 Q156 175 155 165 L150 15 L150 10 Q148 5 145 10 Z" fill="url(#gen)" stroke="${adjustColor(color, -30)}" stroke-width="1.5"/>
-            <path d="M20 15 L150 15" stroke="${adjustColor(color, 20)}" stroke-width="2"/>
-        </svg>`;
+        advice = `오늘은 ${temp}℃으로 더워요. ${clothes} 선택은 시원하고 좋네요! 자외선 차단 모자나 선글라스를 추가하면 완벽할 거예요.`;
+    }
+    
+    // 미세먼지 조언 추가
+    if (weather.fineDustLevel === 'bad' || weather.fineDustLevel === 'very_bad') {
+        advice += ` 미세먼지가 ${weather.fineDustLevel === 'very_bad' ? '매우' : ''} 나쁘니 마스크 꼭 착용하세요!`;
+    }
+    
+    // 비 조언 추가
+    if (weather.isRaining) {
+        advice += ` 비가 오니 우산이나 방수 신발을 준비하시는 걸 잊지 마세요!`;
+    }
+    
+    return advice;
+}
+
+// 현재 선택된 의상 정보 가져오기
+function getCurrentOutfit() {
+    const outfit = [];
+    
+    const outerLayer = document.querySelector('#layer-outer .outfit-item-container .item-name');
+    const topLayer = document.querySelector('#layer-top .outfit-item-container .item-name');
+    const bottomLayer = document.querySelector('#layer-bottom .outfit-item-container .item-name');
+    
+    if (outerLayer) outfit.push({ category: '아우터', name: outerLayer.textContent });
+    if (topLayer) outfit.push({ category: '상의', name: topLayer.textContent });
+    if (bottomLayer) outfit.push({ category: '하의', name: bottomLayer.textContent });
+    
+    return outfit;
+}
+
+// TPO 어드바이스 표시 함수
+window.showTPOAdvice = async function() {
+    const currentOutfit = getCurrentOutfit();
+    
+    if (currentOutfit.length === 0) {
+        alert('먼저 의상을 선택해주세요!');
+        return;
+    }
+    
+    // 로딩 표시
+    const adviceSection = document.getElementById('contextual-advice');
+    if (adviceSection) {
+        adviceSection.innerHTML = '<div style="text-align: center;">🤖 AI가 분석 중입니다...</div>';
+    }
+    
+    try {
+        const weatherInfo = `
+            기온: ${weatherData.currentTemperature}℃
+            체감: ${calculateApparentTemperature(weatherData.currentTemperature, weatherData.windSpeed, weatherData.humidity, selectedBodyType)}℃
+            바람: ${weatherData.windSpeed}m/s
+            습도: ${weatherData.humidity}%
+            비: ${weatherData.isRaining ? '오는 중' : '안 옴'}
+            미세먼지: ${weatherData.fineDustLevel}
+        `;
+        
+        const clothesInfo = currentOutfit.map(item => `${item.category}: ${item.name}`).join(', ');
+        
+        const advice = await getAIAdvice(weatherInfo, clothesInfo);
+        
+        // 조언 표시
+        if (adviceSection) {
+            adviceSection.innerHTML = `
+                <div style="background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 15px; border-radius: 10px; margin-top: 10px;">
+                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+                        <span style="font-size: 20px;">🤖</span>
+                        <strong>AI 조언</strong>
+                    </div>
+                    <div style="line-height: 1.5;">${advice}</div>
+                </div>
+            `;
+        }
+        
+    } catch (error) {
+        console.error('TPO 어드바이스 오류:', error);
+        if (adviceSection) {
+            adviceSection.innerHTML = '<div style="color: #ff6b6b;">🤖 AI 조언을 불러오는 데 실패했습니다. 잠시 후 다시 시도해주세요.</div>';
+        }
     }
 }
 
+// Add item to outfit layer
+window.addItemToOutfit = function(itemName, imageUrl, category) {
+    const layer = document.getElementById(`layer-${category}`);
+    if (!layer) return;
+    
+    const layerContent = layer.querySelector('.layer-content');
+    if (!layerContent) return;
+    
+    // Create image element for the outfit
+    const imageId = `outfit-${itemName.replace(/[^a-zA-Z0-9]/g, '-')}-${Date.now()}`;
+    
+    layerContent.innerHTML = `
+        <div class="outfit-item-container">
+            <div class="skeleton skeleton-image" id="skeleton-${imageId}"></div>
+            <img 
+                id="${imageId}"
+                class="outfit-item-image" 
+                src="${imageUrl}" 
+                alt="${itemName}" 
+                loading="lazy"
+                onload="handleImageLoad('${imageId}')"
+                onerror="handleImageError('${imageId}')"
+                style="width:100%;height:100%;object-fit:contain;border-radius:8px;"
+            >
+            <div class="item-name">${itemName}</div>
+            <button class="remove-item-btn" onclick="removeItemFromOutfit('${category}')">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    `;
+    
+    // Add visual feedback
+    layer.classList.add('item-added');
+    setTimeout(() => {
+        layer.classList.remove('item-added');
+    }, 300);
+};
+
+// Remove item from outfit layer
+window.removeItemFromOutfit = function(category) {
+    const layer = document.getElementById(`layer-${category}`);
+    if (!layer) return;
+    
+    const layerContent = layer.querySelector('.layer-content');
+    if (!layerContent) return;
+    
+    // Restore placeholder
+    const placeholders = {
+        outer: '<i class="fas fa-vest placeholder-icon"></i><div class="placeholder-text">아우터</div>',
+        top: '<i class="fas fa-tshirt placeholder-icon"></i><div class="placeholder-text">상의</div>',
+        bottom: '<i class="fas fa-socks placeholder-icon"></i><div class="placeholder-text">하의</div>'
+    };
+    
+    layerContent.innerHTML = placeholders[category] || '';
+    
+    // Add visual feedback
+    layer.classList.add('item-removed');
+    setTimeout(() => {
+        layer.classList.remove('item-removed');
+    }, 300);
+};
+
+// --- Clothing Items Configuration ---
+// All items now use images from the images folder
+
+const defaultOutfitData = [
+    { gender: 'any', style: 'casual', tempMin: -10, tempMax: 5, name: '두꺼운패딩-모자(검은색)', category: 'outer', imageUrl: 'images/%EB%91%90%EA%BA%BC%EC%9A%B4%ED%8C%A8%EB%94%A9-%EB%AA%A8%EC%9E%90(%EA%B2%80%EC%9D%80%EC%83%89).png' },
+    { gender: 'any', style: 'modern', tempMin: -5, tempMax: 8, name: '니트-녹색', category: 'top', imageUrl: 'images/%EB%8B%88%ED%8A%B8-%EB%85%B9%EC%83%89.png' },
+    { gender: 'any', style: 'street', tempMin: 5, tempMax: 20, name: '레큘러핏진(검은색)', category: 'bottom', imageUrl: 'images/%EB%A0%88%ED%81%B4%EB%9F%AC%ED%95%8F%EC%A7%84(%EA%B2%80%EC%9D%80%EC%83%89).png' },
+    { gender: 'any', style: 'casual', tempMin: 10, tempMax: 25, name: '갈색팬츠', category: 'bottom', imageUrl: 'images/%EA%B0%88%EC%83%89%ED%8C%A8%EC%B8%A0.png' },
+    { gender: 'any', style: 'modern', tempMin: 10, tempMax: 18, name: '맨투맨-회색', category: 'top', imageUrl: 'images/%EB%A7%A8%ED%88%AC%EB%A7%A8-%ED%9A%8C%EC%83%89.png' },
+    { gender: 'any', style: 'street', tempMin: 15, tempMax: 25, name: '블랙진', category: 'bottom', imageUrl: 'images/%EB%B8%94%EB%9E%99%EC%A7%84.png' },
+    { gender: 'any', style: 'casual', tempMin: 15, tempMax: 25, name: '반팔-흰색', category: 'top', imageUrl: 'images/%EA%B8%B0%EB%AA%A8%20%EC%B6%94%EB%A6%AC%EB%8B%9D%ED%95%98%EC%9D%98-%ED%9D%AC%EC%83%89.png' },
+    { gender: 'any', style: 'modern', tempMin: 20, tempMax: 30, name: '반소매-민트', category: 'top', imageUrl: 'images/%EC%8A%A4%EC%9B%A8%ED%84%B0%20%ED%8C%8C%EB%9E%80%EC%83%89.png' },
+    { gender: 'any', style: 'street', tempMin: 20, tempMax: 35, name: '반팔-네이비', category: 'top', imageUrl: 'images/%EC%B2%AD%EB%B0%94%EC%A7%80.png' },
+    { gender: 'any', style: 'any', tempMin: -20, tempMax: 40, name: '마스크', category: 'accessory', imageUrl: 'images/마스크.svg', dustAlert: true },
+    { gender: 'any', style: 'any', tempMin: -20, tempMax: 40, name: '마스크-추천', category: 'accessory', imageUrl: 'images/마스크-추천.svg', dustAlert: true }
+];
 
 // --- DOM Elements ---
 let darkModeToggle;
@@ -293,21 +256,6 @@ let selectedStyle = 'casual';
 let selectedBodyType = 'normal';
 let selectedCategory = 'all';
 
-// --- Default colors per item ---
-const itemColors = {
-    '두꺼운 패딩': '#2d3748',
-    '경량 패딩': '#6366f1',
-    '자켓 또는 가디건': '#d97706',
-    '블레이저': '#1f2937',
-    '바람막이': '#0ea5e9',
-    '맨투맨 또는 후드티': '#6b7280',
-    '긴팔 셔츠': '#e5e7eb',
-    '반팔 티셔츠': '#3b82f6',
-    '블라우스': '#f9a8d4',
-    '기모 바지': '#374151',
-    '면바지 또는 슬랙스': '#92400e',
-};
-
 // --- API Constants ---
 const KOREA_WEATHER_API_KEY = 'cc408361b08a3bdccaa9d4b3aa113443dd11d6ed128fdd19d059f295314bc1f5';
 const KOREA_WEATHER_BASE_URL = 'https://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getUltraSrtNcst';
@@ -325,30 +273,6 @@ let weatherData = {
     location: 'Seoul'
 };
 
-const defaultOutfitData = [
-    { gender: 'any', style: 'any', tempMin: -100, tempMax: 5, name: '두꺼운 패딩', category: 'outer', color: '#2d3748' },
-    { gender: 'any', style: 'any', tempMin: 5, tempMax: 10, name: '경량 패딩', category: 'outer', color: '#2d3748' },
-    { gender: 'any', style: 'any', tempMin: 10, tempMax: 15, name: '자켓 또는 가디건', category: 'outer', color: '#d97706' },
-    { gender: 'any', style: 'any', tempMin: 10, tempMax: 17, name: '맨투맨 또는 후드티', category: 'top', color: '#6b7280' },
-    { gender: 'any', style: 'any', tempMin: 18, tempMax: 22, name: '긴팔 셔츠', category: 'top', color: '#e5e7eb' },
-    { gender: 'any', style: 'any', tempMin: 23, tempMax: 100, name: '반팔 티셔츠', category: 'top', color: '#3b82f6' },
-    { gender: 'any', style: 'any', tempMin: -100, tempMax: 15, name: '기모 바지', category: 'bottom', color: '#374151' },
-    { gender: 'any', style: 'any', tempMin: 16, tempMax: 100, name: '면바지 또는 슬랙스', category: 'bottom', color: '#92400e' },
-    { gender: 'male', style: 'modern', tempMin: 10, tempMax: 22, name: '블레이저', category: 'outer', color: '#1f2937' },
-    { gender: 'female', style: 'modern', tempMin: 10, tempMax: 22, name: '블라우스', category: 'top', color: '#f9a8d4' },
-    { gender: 'any', style: 'street', tempMin: 10, tempMax: 25, name: '바람막이', category: 'outer', color: '#0ea5e9' },
-    // New Items from Images
-    { gender: 'any', style: 'any', tempMin: 5, tempMax: 20, name: '갈색 팬츠', category: 'bottom', imageUrl: 'images/갈색팬츠.png' },
-    { gender: 'any', style: 'any', tempMin: 5, tempMax: 15, name: '녹색 니트', category: 'top', imageUrl: 'images/니트-녹색.png' },
-    { gender: 'any', style: 'any', tempMin: 5, tempMax: 20, name: '검정 레귤러핏 진', category: 'bottom', imageUrl: 'images/레큘러핏진(검은색).png' },
-    { gender: 'any', style: 'any', tempMin: 10, tempMax: 18, name: '회색 맨투맨', category: 'top', imageUrl: 'images/맨투맨-회색.png' },
-    { gender: 'any', style: 'any', tempMin: 5, tempMax: 20, name: '블랙진', category: 'bottom', imageUrl: 'images/블랙진.png' },
-    { gender: 'any', style: 'any', tempMin: 5, tempMax: 15, name: '파란색 스웨터', category: 'top', imageUrl: 'images/스웨터 파란색.png' },
-    { gender: 'any', style: 'any', tempMin: 5, tempMax: 20, name: '청바지', category: 'bottom', imageUrl: 'images/청바지.png' },
-    // Mask item for fine dust
-    { gender: 'any', style: 'any', tempMin: -100, tempMax: 100, name: '마스크', category: 'accessory', color: '#6b7280', isMask: true },
-];
-
 // --- Functions ---
 
 function toggleDarkMode() {
@@ -360,11 +284,421 @@ function toggleDarkMode() {
     }
 }
 
+// Image handling functions
+function getClothingSVG(itemName, color, category, imageUrl) {
+    if (imageUrl) {
+        const imageId = `img-${itemName.replace(/[^a-zA-Z0-9]/g, '-')}-${Date.now()}`;
+        return `
+            <div class="image-container">
+                <div class="skeleton skeleton-image" id="skeleton-${imageId}"></div>
+                <img 
+                    id="${imageId}"
+                    class="lazy-image" 
+                    src="${imageUrl}" 
+                    alt="${itemName}" 
+                    loading="lazy"
+                    onload="handleImageLoad('${imageId}')"
+                    onerror="handleImageError('${imageId}')"
+                    style="width:100%;height:100%;object-fit:contain;border-radius:8px;"
+                >
+            </div>
+        `;
+    }
+    return `<i class="fas fa-tshirt" style="font-size:3rem;opacity:0.4;"></i>`;
+}
 
+function initializeLazyLoading() {
+    const images = document.querySelectorAll('img[loading="lazy"]');
+    
+    if ('IntersectionObserver' in window) {
+        const imageObserver = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const img = entry.target;
+                    const skeleton = document.getElementById(`skeleton-${img.id}`);
+                    
+                    if (skeleton) {
+                        skeleton.style.display = 'block';
+                    }
+                    
+                    img.classList.add('loading');
+                    
+                    if (img.dataset.src) {
+                        img.src = img.dataset.src;
+                        img.removeAttribute('data-src');
+                    }
+                    
+                    observer.unobserve(img);
+                }
+            });
+        });
+        
+        images.forEach(img => imageObserver.observe(img));
+    } else {
+        images.forEach(img => {
+            const skeleton = document.getElementById(`skeleton-${img.id}`);
+            if (skeleton) {
+                skeleton.style.display = 'block';
+            }
+            img.classList.add('loading');
+        });
+    }
+}
 
+function calculateApparentTemperature(temp, wind, humidity, bodyType) {
+    let apparentTemp = 13.12 + 0.6215 * temp - 11.37 * Math.pow(wind, 0.16) + 0.3965 * temp * Math.pow(wind, 0.16);
+    if (bodyType === 'cold-sensitive') apparentTemp -= 2;
+    else if (bodyType === 'heat-sensitive') apparentTemp += 2;
+    return Math.round(apparentTemp);
+}
 
+function getAdvice(apparentTemp, weather) {
+    let explanation = '';
+    let contextual = '';
+    if (apparentTemp <= 5) explanation = "체온 유지를 위해 두꺼운 아우터는 필수예요.";
+    else if (apparentTemp <= 15) explanation = "쌀쌀한 날씨예요. 가벼운 아우터나 따뜻한 상의가 좋겠어요.";
+    else if (apparentTemp <= 22) explanation = "선선해서 활동하기 좋은 날씨네요.";
+    else explanation = "더운 날씨에 대비해 시원하게 입으세요.";
+    if (weather.dayNightTempDiff >= 10) contextual += "일교차가 커요. 밤을 대비해 겉옷을 챙기세요. ";
+    if (weather.isRaining) contextual += "비가 오니 방수 기능이 있는 신발이나 옷을 추천해요. ";
+    if (weather.fineDustLevel === 'bad') contextual += "미세먼지가 심하니 마스크를 꼭 착용하세요.";
+    
+    if (outfitExplanationDisplay) {
+        outfitExplanationDisplay.textContent = explanation;
+    }
+    if (contextualAdviceDisplay) {
+        contextualAdviceDisplay.textContent = contextual.trim();
+    }
+}
 
-// === Weather Functions ===
+function updateWeatherUI(apparentTemp, weather) {
+    if (locationDisplay) {
+        let locationText = weather.location || '위치 정보 없음';
+        
+        // 미세먼지 수준에 따른 이모지 추가
+        const dustEmojis = {
+            'good': '🟢',
+            'moderate': '🟡', 
+            'bad': '🟠',
+            'very_bad': '🔴'
+        };
+        
+        const dustEmoji = dustEmojis[weather.fineDustLevel] || '🟢';
+        const dustText = weather.fineDustLevel === 'good' ? '좋음' :
+                        weather.fineDustLevel === 'moderate' ? '보통' :
+                        weather.fineDustLevel === 'bad' ? '나쁨' : '매우 나쁨';
+        
+        locationDisplay.innerHTML = `${locationText} ${dustEmoji} 미세먼지: ${dustText}`;
+    }
+    if (weatherDisplay) {
+        let weatherText = `${weather.currentTemperature}℃`;
+        if (weather.isRaining) weatherText += ' (비)';
+        weatherDisplay.textContent = weatherText;
+    }
+
+    // 체감 온도 업데이트
+    if (apparentTempDisplay) {
+        const apparentTemp = calculateApparentTemperature(
+            weather.currentTemperature, 
+            weather.windSpeed, 
+            weather.humidity, 
+            selectedBodyType
+        );
+        apparentTempDisplay.textContent = `체감: ${apparentTemp}℃`;
+    }
+
+    // 어제와 비교 업데이트
+    if (weatherComparisonDisplay) {
+        const tempDiff = weather.currentTemperature - weather.yesterdayTemperature;
+        const diffText = tempDiff > 0 ? `어제보다 ${tempDiff}℃ 높아요` : 
+                        tempDiff < 0 ? `어제보다 ${Math.abs(tempDiff)}℃ 낮아요` : 
+                        '어제와 같아요';
+        weatherComparisonDisplay.textContent = diffText;
+    }
+}
+
+function renderRecommendations(apparentTemp) {
+    if (!recommendationsDiv) {
+        console.error('recommendationsDiv 요소를 찾을 수 없습니다.');
+        return;
+    }
+    
+    recommendationsDiv.innerHTML = '';
+    const customItems = JSON.parse(localStorage.getItem('customClothes')) || [];
+    const sourceData = [...defaultOutfitData, ...customItems];
+
+    const tempFilteredOutfits = sourceData.filter(item => {
+        // 온도 필터링을 더 넓게 설정 - 현재 온도에서 ±10℃ 범위
+        const tempRange = 10;
+        return apparentTemp >= (item.tempMin - tempRange) && apparentTemp <= (item.tempMax + tempRange);
+    });
+
+    const filteredOutfits = tempFilteredOutfits.filter(item => {
+        const genderMatch = item.gender === 'any' || item.gender === selectedGender;
+        const styleMatch = item.style === 'any' || item.style === selectedStyle;
+        return genderMatch && styleMatch;
+    });
+
+    // 필터링된 의상이 너무 적으면 스타일 필터링만 적용
+    if (filteredOutfits.length < 3) {
+        const styleFilteredOutfits = sourceData.filter(item => {
+            const genderMatch = item.gender === 'any' || item.gender === selectedGender;
+            const styleMatch = item.style === 'any' || item.style === selectedStyle;
+            return genderMatch && styleMatch;
+        });
+        
+        // 스타일 필터링만으로도 의상이 적으면 성별 필터링만 적용
+        if (styleFilteredOutfits.length < 3) {
+            const genderFilteredOutfits = sourceData.filter(item => {
+                return item.gender === 'any' || item.gender === selectedGender;
+            });
+            
+            if (genderFilteredOutfits.length > 0) {
+                // 성별 필터링된 의상 사용
+                const finalOutfits = genderFilteredOutfits.slice(0, 9); // 최대 9개 표시
+                renderOutfitItems(finalOutfits, apparentTemp);
+                return;
+            }
+        } else {
+            // 스타일 필터링된 의상 사용
+            const finalOutfits = styleFilteredOutfits.slice(0, 9);
+            renderOutfitItems(finalOutfits, apparentTemp);
+            return;
+        }
+    }
+
+    // 최종 필터링된 의상 렌더링
+    const finalOutfits = filteredOutfits.slice(0, 9); // 최대 9개 표시
+    renderOutfitItems(finalOutfits, apparentTemp);
+}
+
+function renderOutfitItems(outfits, apparentTemp) {
+    const categoryLabels = { outer: '아우터', top: '상의', bottom: '하의' };
+    
+    // "전체" 카테고리 선택 시 모든 카테고리의 의상 표시
+    if (selectedCategory === 'all') {
+        // 각 카테고리별로 최소 1개씩 보장
+        const categories = ['outer', 'top', 'bottom'];
+        categories.forEach(category => {
+            const candidates = outfits.filter(i => i.category === category);
+            if (candidates.length > 0) {
+                // 각 카테고리에서 1-3개 랜덤 선택
+                const numToShow = Math.min(candidates.length, Math.ceil(candidates.length / 2));
+                const shuffled = [...candidates].sort(() => Math.random() - 0.5);
+                const selected = shuffled.slice(0, numToShow);
+                
+                selected.forEach(item => {
+                    renderSingleOutfitItem(item, categoryLabels[category], apparentTemp);
+                });
+            }
+        });
+    } else {
+        // 특정 카테고리 선택 시 해당 카테고리 의상만 표시
+        const candidates = outfits.filter(i => i.category === selectedCategory);
+        const numToShow = Math.min(candidates.length, 6); // 최대 6개 표시
+        const shuffled = [...candidates].sort(() => Math.random() - 0.5);
+        const selected = shuffled.slice(0, numToShow);
+        
+        selected.forEach(item => {
+            renderSingleOutfitItem(item, categoryLabels[selectedCategory], apparentTemp);
+        });
+    }
+    
+    // 마스크 추천 추가
+    addMaskRecommendation();
+    
+    // 레이지 로딩 초기화
+    setTimeout(() => {
+        initializeLazyLoading();
+    }, 100);
+}
+
+function renderSingleOutfitItem(item, categoryLabel, apparentTemp) {
+    const itemDiv = document.createElement('div');
+    itemDiv.className = 'recommendation-item';
+    itemDiv.style.cursor = 'pointer';
+    itemDiv.onclick = () => addItemToOutfit(item.name, item.imageUrl, item.category);
+
+    // 스타일에 따른 시각적 구분 추가
+    const styleColors = {
+        'casual': '#4CAF50',
+        'modern': '#2196F3', 
+        'street': '#FF9800'
+    };
+    const styleColor = styleColors[item.style] || '#888';
+
+    const svgContent = getClothingSVG(item.name, styleColor, item.category, item.imageUrl);
+
+    itemDiv.innerHTML = `
+        <div class="item-visual visual-${item.category}">
+            ${svgContent}
+        </div>
+        <div class="item-info">
+            <span class="item-category-badge badge-${item.category}" style="background: ${styleColor}; color: white;">${categoryLabel}</span>
+            <p class="item-name">${item.name}</p>
+            <div style="font-size: 11px; opacity: 0.7; margin-top: 5px;">
+                <span style="color: ${styleColor};">●</span> ${item.style === 'casual' ? '캐주얼' : item.style === 'modern' ? '모던' : '스트릿'}
+            </div>
+            <div style="font-size: 12px; opacity: 0.7; margin-top: 5px;">클릭하여 착용</div>
+        </div>
+    `;
+    recommendationsDiv.appendChild(itemDiv);
+}
+
+// 마스크 추천 추가 함수
+function addMaskRecommendation() {
+    // Add mask recommendation if fine dust is bad or very bad
+    if (weatherData.fineDustLevel === 'bad' || weatherData.fineDustLevel === 'very_bad') {
+        const maskDiv = document.createElement('div');
+        maskDiv.className = 'recommendation-item mask-recommendation';
+        maskDiv.style.cursor = 'pointer';
+        maskDiv.onclick = () => addItemToOutfit('마스크', maskImageUrl, 'accessory');
+        maskDiv.style.cssText = `
+            border: 2px solid #ff6b6b;
+            background: linear-gradient(135deg, rgba(255, 107, 107, 0.1), rgba(238, 90, 36, 0.1));
+            animation: pulse 2s infinite;
+            cursor: pointer;
+        `;
+
+        const maskImageUrl = weatherData.fineDustLevel === 'very_bad' ? 'images/마스크-추천.svg' : 'images/마스크.svg';
+        const svgContent = getClothingSVG('마스크', '#ff6b6b', 'accessory', maskImageUrl);
+
+        maskDiv.innerHTML = `
+            <div class="item-visual visual-accessory">
+                ${svgContent}
+            </div>
+            <div class="item-info">
+                <span class="item-category-badge badge-accessory" style="background: #ff6b6b; color: white;">액세서리</span>
+                <p class="item-name">마스크</p>
+                <div style="font-size: 12px; color: #ff6b6b; font-weight: bold; margin-top: 5px;">
+                    ${weatherData.fineDustLevel === 'very_bad' ? '미세먼지 매우 나쁨!' : '미세먼지 나쁨!'}
+                </div>
+                <div style="font-size: 11px; opacity: 0.8; margin-top: 3px;">클릭하여 착용</div>
+            </div>
+        `;
+        recommendationsDiv.appendChild(maskDiv);
+    }
+}
+
+function updateApp() {
+    const apparentTemp = calculateApparentTemperature(weatherData.currentTemperature, weatherData.windSpeed, weatherData.humidity, selectedBodyType);
+    updateWeatherUI(apparentTemp, weatherData);
+    getAdvice(apparentTemp, weatherData);
+    renderRecommendations(apparentTemp);
+}
+
+// --- Initialization ---
+async function initializeApp() {
+    // Initialize DOM elements
+    darkModeToggle = document.getElementById('dark-mode-toggle');
+    weatherDisplay = document.getElementById('weather');
+    apparentTempDisplay = document.getElementById('apparent-temp');
+    locationDisplay = document.getElementById('location');
+    weatherComparisonDisplay = document.getElementById('weather-comparison');
+    outfitExplanationDisplay = document.getElementById('outfit-explanation');
+    contextualAdviceDisplay = document.getElementById('contextual-advice');
+    genderButtons = document.querySelectorAll('.gender-selection button');
+    styleButtons = document.querySelectorAll('.style-selection button');
+    bodyTypeButtons = document.querySelectorAll('.body-type-selection button');
+    recommendationsDiv = document.getElementById('recommendations');
+
+    if (localStorage.getItem('darkMode') === 'true') {
+        document.body.classList.add('dark-mode');
+        if (darkModeToggle) {
+            darkModeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+        }
+    }
+
+    updateApp();
+
+    // 날씨 데이터와 미세먼지 데이터 가져오기
+    await getUserLocationAndFetchWeather();
+
+    // Initialize lazy loading for images
+    initializeLazyLoading();
+
+    // Set default selections
+    const maleButton = document.querySelector('.gender-selection button[data-gender="male"]');
+    if (maleButton) {
+        maleButton.classList.add('active');
+    }
+    
+    const casualButton = document.querySelector('.style-selection button[data-style="casual"]');
+    if (casualButton) {
+        casualButton.classList.add('active');
+    }
+    
+    const normalButton = document.querySelector('.body-type-selection button[data-body-type="normal"]');
+    if (normalButton) {
+        normalButton.classList.add('active');
+    }
+
+    updateApp();
+
+    // Add event listeners after DOM is ready
+    const categoryButtons = document.querySelectorAll('.category-selection button');
+    
+    [...genderButtons, ...styleButtons, ...bodyTypeButtons, ...categoryButtons].forEach(button => {
+        button.addEventListener('click', (e) => {
+            const parent = e.target.closest('div');
+            parent.querySelectorAll('button').forEach(btn => btn.classList.remove('active'));
+            e.target.closest('button').classList.add('active');
+            if (parent.classList.contains('gender-selection')) selectedGender = e.target.closest('button').dataset.gender;
+            if (parent.classList.contains('style-selection')) selectedStyle = e.target.closest('button').dataset.style;
+            if (parent.classList.contains('body-type-selection')) selectedBodyType = e.target.closest('button').dataset.bodyType;
+            if (parent.classList.contains('category-selection')) selectedCategory = e.target.closest('button').dataset.category;
+            updateApp();
+        });
+    });
+
+    if (darkModeToggle) {
+        darkModeToggle.addEventListener('click', toggleDarkMode);
+    }
+}
+
+document.addEventListener('DOMContentLoaded', initializeApp);
+
+// === Weather and Air Quality Functions ===
+
+async function getReverseGeocodedAddress(lat, lon) {
+    try {
+        const nominatimUrl = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&zoom=18&addressdetails=1`;
+        const response = await fetch(nominatimUrl, {
+            headers: { 'User-Agent': 'ClothRecommendApp/1.0' }
+        });
+        if (!response.ok) throw new Error(`Reverse geocoding failed: ${response.statusText}`);
+        const data = await response.json();
+        if (data.address) {
+            const address = data.address;
+            if (address.neighbourhood) return address.neighbourhood;
+            if (address.suburb) return address.suburb;
+            if (address.village) return address.village;
+            if (address.town) return address.town;
+            if (address.city) return address.city;
+            if (address.county) return address.county;
+            return data.display_name;
+        }
+        return '알 수 없는 위치';
+    } catch (error) {
+        console.error('Reverse geocoding 중 오류 발생:', error);
+        return '알 수 없는 위치';
+    }
+}
+
+function getBaseDateTime() {
+    const now = new Date();
+    if (now.getMinutes() < 40) {
+        now.setHours(now.getHours() - 1);
+    }
+
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    const base_date = `${year}${month}${day}`;
+    const base_time = String(now.getHours()).padStart(2, '0') + '00';
+
+    return { base_date, base_time };
+}
 
 function convertToKMA(lat, lon) {
     const RE = 6371.00877;
@@ -404,49 +738,6 @@ function convertToKMA(lat, lon) {
     return { nx, ny };
 }
 
-async function getReverseGeocodedAddress(lat, lon) {
-    try {
-        const nominatimUrl = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&zoom=18&addressdetails=1`;
-        const response = await fetch(nominatimUrl, {
-            headers: { 'User-Agent': 'GeminiCLIWeatherApp/1.0' }
-        });
-        if (!response.ok) throw new Error(`Reverse geocoding failed: ${response.statusText}`);
-        const data = await response.json();
-        if (data.address) {
-            const address = data.address;
-            if (address.neighbourhood) return address.neighbourhood;
-            if (address.suburb) return address.suburb;
-            if (address.village) return address.village;
-            if (address.town) return address.town;
-            if (address.city) return address.city;
-            if (address.county) return address.county;
-            return data.display_name;
-        }
-        return '알 수 없는 위치';
-    } catch (error) {
-        console.error('Reverse geocoding 중 오류 발생:', error);
-        return '알 수 없는 위치';
-    }
-}
-
-function getBaseDateTime() {
-    const now = new Date();
-    // API provides updates at 40 min past each hour.
-    // So if current minutes < 40, we must use the previous hour data.
-    if (now.getMinutes() < 40) {
-        now.setHours(now.getHours() - 1);
-    }
-
-    // Formatting handles date rollback automatically via Date object
-    const year = now.getFullYear();
-    const month = String(now.getMonth() + 1).padStart(2, '0');
-    const day = String(now.getDate()).padStart(2, '0');
-    const base_date = `${year}${month}${day}`;
-    const base_time = String(now.getHours()).padStart(2, '0') + '00';
-
-    return { base_date, base_time };
-}
-
 async function fetchWeatherData(nx, ny, locationName = '현재 위치') {
     const { base_date, base_time } = getBaseDateTime();
     let url = `${KOREA_WEATHER_BASE_URL}?serviceKey=${KOREA_WEATHER_API_KEY}`;
@@ -456,21 +747,18 @@ async function fetchWeatherData(nx, ny, locationName = '현재 위치') {
 
     try {
         const response = await fetch(url);
-        // 500 에러 및 네트워크 에러 처리
         if (!response.ok) {
             if (response.status === 500) {
                 throw new Error('SERVER_ERROR');
             } else if (response.status === 401) {
                 throw new Error('API_KEY_ERROR');
-            } else if (response.status === 429) {
-                throw new Error('RATE_LIMIT_ERROR');
             } else {
                 throw new Error(`HTTP_ERROR_${response.status}`);
             }
         }
         const data = await response.json();
         console.log('Korea Weather API raw data:', data);
-        // API 응답 코드 확인
+        
         if (data.response.header.resultCode !== '00') {
             const errorCode = data.response.header.resultCode;
             const errorMsg = data.response.header.resultMsg;
@@ -483,7 +771,6 @@ async function fetchWeatherData(nx, ny, locationName = '현재 위치') {
             }
         }
 
-        // 데이터가 비어있는지 확인
         if (!data.response.body || !data.response.body.items || !data.response.body.items.item) {
             throw new Error('NO_DATA_ERROR');
         }
@@ -498,7 +785,6 @@ async function fetchWeatherData(nx, ny, locationName = '현재 위치') {
             if (item.category === 'RN1') RN1 = item.obsrValue;
         });
 
-        // 필수 데이터가 없는 경우 확인
         if (T1H === undefined) {
             throw new Error('NO_TEMPERATURE_DATA');
         }
@@ -517,86 +803,59 @@ async function fetchWeatherData(nx, ny, locationName = '현재 위치') {
             dayNightTempDiff: weatherData.dayNightTempDiff || 10,
             location: locationName,
         };
-        // 성공적으로 데이터를 가져왔을 때
+        
         console.log('날씨 데이터 성공적으로 로드됨:', weatherData);
+        updateApp();
     } catch (error) {
         console.error('날씨 정보를 가져오는 중 오류 발생:', error);
-        let userMessage = '';
-        let shouldFallback = true;
-        // 에러 타입에 따른 사용자 메시지 설정
-        switch (error.message) {
-            case 'SERVER_ERROR':
-                userMessage = '⚠️ 기상청 서버에 일시적인 문제가 발생했습니다. 잠시 후 다시 시도해주세요.';
-                break;
-            case 'API_KEY_ERROR':
-                userMessage = '⚠️ API 인증에 문제가 발생했습니다. 관리자에게 문의해주세요.';
-                shouldFallback = false;
-                break;
-            case 'RATE_LIMIT_ERROR':
-                userMessage = '⚠️ 너무 많은 요청이 발생했습니다. 잠시 후 다시 시도해주세요.';
-                break;
-            case 'NO_DATA_ERROR':
-            case 'NO_TEMPERATURE_DATA':
-                userMessage = '⚠️ 현재 위치의 날씨 데이터를 찾을 수 없습니다.';
-                break;
-            case 'HTTP_ERROR_404':
-                userMessage = '⚠️ 날씨 정보를 찾을 수 없습니다.';
-                break;
-            default:
-                if (error.message.includes('HTTP_ERROR')) {
-                    userMessage = '⚠️ 날씨 정보를 가져오는 중 문제가 발생했습니다.';
-                } else if (error.message.includes('API_ERROR')) {
-                    userMessage = '⚠️ 기상청 API 오류가 발생했습니다.';
-                } else {
-                    userMessage = '⚠️ 날씨 정보를 가져오는 중 알 수 없는 오류가 발생했습니다.';
-                }
-        }
-        // 사용자에게 안내 메시지 표시
-        if (userMessage) {
-            showWeatherErrorNotification(userMessage, shouldFallback);
-        }
-        // 폴백 데이터 설정 (서울 기준)
-        if (shouldFallback) {
-            weatherData = {
-                currentTemperature: 20, 
-                yesterdayTemperature: 17, 
-                windSpeed: 5,
-                humidity: 60, 
-                isRaining: false, 
-                fineDustLevel: 'good',
-                dayNightTempDiff: 10, 
-                location: '서울 (기본값)',
-            };
-            console.log('서울 기준 기본 날씨 데이터로 폴백됨');
-        }
+        
+        // 폴백 데이터 설정
+        weatherData = {
+            currentTemperature: 20, 
+            yesterdayTemperature: 17, 
+            windSpeed: 5,
+            humidity: 60, 
+            isRaining: false, 
+            fineDustLevel: 'good',
+            dayNightTempDiff: 10, 
+            location: locationName || '서울 (기본값)',
+        };
+        console.log('서울 기준 기본 날씨 데이터로 폴백됨');
+        updateApp();
     }
 }
 
-// 에어코리아 API 호출 함수
 async function fetchAirQualityData(lat, lon) {
     try {
-        // 가장 가까운 측정소 찾기
         const nearestStation = await findNearestStation(lat, lon);
         if (!nearestStation) {
             console.log('가까운 측정소를 찾을 수 없습니다.');
             return null;
         }
 
-        // 현재 시간 포맷
+        // 현재 시간 기반으로 searchCondition 설정
         const now = new Date();
-        const year = now.getFullYear();
-        const month = String(now.getMonth() + 1).padStart(2, '0');
-        const day = String(now.getDate()).padStart(2, '0');
-        const dataTerm = `${year}-${month}-${day}`;
+        const hour = now.getHours();
+        let searchCondition = 'HOUR';
+        
+        // 시간대에 따라 조건 설정
+        if (hour >= 6 && hour < 12) {
+            searchCondition = 'HOUR';
+        } else if (hour >= 12 && hour < 18) {
+            searchCondition = 'HOUR';
+        } else {
+            searchCondition = 'HOUR';
+        }
 
         let url = `${AIR_KOREA_BASE_URL}?serviceKey=${KOREA_WEATHER_API_KEY}`;
         url += `&returnType=json`;
         url += `&numOfRows=100`;
         url += `&pageNo=1`;
         url += `&stationName=${encodeURIComponent(nearestStation.stationName)}`;
-        url += `&dataTerm=${dataTerm}`;
-        url += `&dataGubun=HOUR`;
+        url += `&searchCondition=${searchCondition}`;
         url += `&ver=1.3`;
+
+        console.log('Air Korea API URL:', url);
 
         const response = await fetch(url);
         if (!response.ok) {
@@ -619,22 +878,20 @@ async function fetchAirQualityData(lat, lon) {
             return null;
         }
 
-        // 가장 최신 데이터 가져오기
         const latestData = data.response.body.items[0];
         const pm10Value = latestData.pm10Value ? parseFloat(latestData.pm10Value) : null;
         const pm25Value = latestData.pm25Value ? parseFloat(latestData.pm25Value) : null;
 
-        // 미세먼지 등급 결정 (PM10 기준)
         let fineDustLevel = 'good';
         if (pm10Value !== null) {
             if (pm10Value <= 30) {
-                fineDustLevel = 'good'; // 좋음
+                fineDustLevel = 'good';
             } else if (pm10Value <= 80) {
-                fineDustLevel = 'moderate'; // 보통
+                fineDustLevel = 'moderate';
             } else if (pm10Value <= 150) {
-                fineDustLevel = 'bad'; // 나쁨
+                fineDustLevel = 'bad';
             } else {
-                fineDustLevel = 'very_bad'; // 매우 나쁨
+                fineDustLevel = 'very_bad';
             }
         }
 
@@ -649,14 +906,20 @@ async function fetchAirQualityData(lat, lon) {
 
     } catch (error) {
         console.error('미세먼지 정보를 가져오는 중 오류 발생:', error);
-        return null;
+        
+        // API 실패 시 서울 기준 데이터로 폴백
+        console.log('서울 기준 미세먼지 데이터로 폴백...');
+        return {
+            pm10: 25,
+            pm25: 15,
+            level: 'good',
+            stationName: '서울'
+        };
     }
 }
 
-// 가장 가까운 측정소 찾기
 async function findNearestStation(lat, lon) {
     try {
-        // 서울 지역의 주요 측정소 목록 (실제로는 더 많은 측정소가 있음)
         const stations = [
             { stationName: '중구', lat: 37.563569, lon: 126.997969 },
             { stationName: '종로구', lat: 37.574444, lon: 126.976944 },
@@ -683,7 +946,6 @@ async function findNearestStation(lat, lon) {
             { stationName: '종로구', lat: 37.595556, lon: 126.983889 }
         ];
 
-        // 가장 가까운 측정소 찾기
         let nearestStation = null;
         let minDistance = Infinity;
 
@@ -702,9 +964,8 @@ async function findNearestStation(lat, lon) {
     }
 }
 
-// 두 지점 간의 거리 계산 (Haversine 공식)
 function calculateDistance(lat1, lon1, lat2, lon2) {
-    const R = 6371; // 지구 반경 (km)
+    const R = 6371;
     const dLat = (lat2 - lat1) * Math.PI / 180;
     const dLon = (lon2 - lon1) * Math.PI / 180;
     const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
@@ -714,319 +975,22 @@ function calculateDistance(lat1, lon1, lat2, lon2) {
     return R * c;
 }
 
-// 날씨 에러 알림 표시 함수
-function showWeatherErrorNotification(message, canRetry = true) {
-    // 기존 알림이 있다면 제거
-    const existingNotification = document.querySelector('.weather-error-notification');
-    if (existingNotification) {
-        existingNotification.remove();
-    }
-    // 알림 요소 생성
-    const notification = document.createElement('div');
-    notification.className = 'weather-error-notification';
-    notification.style.cssText = `
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        background: linear-gradient(135deg, #ff6b6b, #ee5a24);
-        color: white;
-        padding: 15px 20px;
-        border-radius: 10px;
-        box-shadow: 0 4px 15px rgba(238, 90, 36, 0.3);
-        z-index: 10000;
-        max-width: 300px;
-        font-size: 14px;
-        line-height: 1.4;
-        animation: slideInRight 0.3s ease-out;
-    `;
-    notification.innerHTML = `
-        <div style="display: flex; align-items: flex-start; gap: 10px;">
-            <div style="font-size: 18px; margin-top: 2px;">⚠️</div>
-            <div style="flex: 1;">
-                <div style="font-weight: bold; margin-bottom: 5px;">날씨 정보 오류</div>
-                <div>${message}</div>
-                ${canRetry ? '<div style="margin-top: 8px; font-size: 12px; opacity: 0.9;">서울 기준 날씨로 표시됩니다.</div>' : ''}
-            </div>
-            <button onclick="this.parentElement.parentElement.remove()" style="
-                background: none;
-                border: none;
-                color: white;
-                font-size: 16px;
-                cursor: pointer;
-                padding: 0;
-                width: 20px;
-                height: 20px;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                border-radius: 50%;
-                transition: background 0.2s;
-            " onmouseover="this.style.background='rgba(255,255,255,0.2)'" onmouseout="this.style.background='none'">×</button>
-        </div>
-    `;
-    // 애니메이션 스타일 추가
-    if (!document.querySelector('#weather-error-styles')) {
-        const style = document.createElement('style');
-        style.id = 'weather-error-styles';
-        style.textContent = `
-            @keyframes slideInRight {
-                from {
-                    transform: translateX(100%);
-                    opacity: 0;
-                }
-                to {
-                    transform: translateX(0);
-                    opacity: 1;
-                }
-            }
-        `;
-        document.head.appendChild(style);
-    }
-    document.body.appendChild(notification);
-    // 5초 후 자동 제거
-    setTimeout(() => {
-        if (notification.parentElement) {
-            notification.style.animation = 'slideInRight 0.3s ease-out reverse';
-            setTimeout(() => {
-                if (notification.parentElement) {
-                    notification.remove();
-                }
-            }, 300);
-        }
-    }, 5000);
-}
-
-function calculateApparentTemperature(temp, wind, humidity, bodyType) {
-    let apparentTemp = 13.12 + 0.6215 * temp - 11.37 * Math.pow(wind, 0.16) + 0.3965 * temp * Math.pow(wind, 0.16);
-    if (bodyType === 'cold-sensitive') apparentTemp -= 2;
-    else if (bodyType === 'heat-sensitive') apparentTemp += 2;
-    return Math.round(apparentTemp);
-}
-
-function getAdvice(apparentTemp, weather) {
-    let explanation = '';
-    let contextual = '';
-    if (apparentTemp <= 5) explanation = "체온 유지를 위해 두꺼운 아우터는 필수예요.";
-    else if (apparentTemp <= 15) explanation = "쌀쌀한 날씨예요. 가벼운 아우터나 따뜻한 상의가 좋겠어요.";
-    else if (apparentTemp <= 22) explanation = "선선해서 활동하기 좋은 날씨네요.";
-    else explanation = "더운 날씨에 대비해 시원하게 입으세요.";
-    if (weather.dayNightTempDiff >= 10) contextual += "일교차가 커요. 밤을 대비해 겉옷을 챙기세요. ";
-    if (weather.isRaining) contextual += "비가 오니 방수 기능이 있는 신발이나 옷을 추천해요. ";
-    if (weather.fineDustLevel === 'bad') contextual += "미세먼지가 심하니 마스크를 꼭 착용하세요.";
-    
-    if (outfitExplanationDisplay) {
-        outfitExplanationDisplay.textContent = explanation;
-    }
-    if (contextualAdviceDisplay) {
-        contextualAdviceDisplay.textContent = contextual.trim();
-    }
-}
-
-function updateWeatherUI(apparentTemp, weather) {
-    if (locationDisplay) {
-        locationDisplay.textContent = weather.location;
-    }
-    if (weatherDisplay) {
-        weatherDisplay.textContent = `${weather.currentTemperature}℃`;
-    }
-    if (apparentTempDisplay) {
-        apparentTempDisplay.textContent = `체감: ${apparentTemp}℃`;
-    }
-    if (weatherComparisonDisplay) {
-        const tempDiff = weather.currentTemperature - weather.yesterdayTemperature;
-        weatherComparisonDisplay.textContent = tempDiff > 0 ? `어제보다 ${tempDiff}℃ 높아요` : tempDiff < 0 ? `어제보다 ${Math.abs(tempDiff)}℃ 낮아요` : "어제와 기온이 비슷해요";
-    }
-}
-
-function renderRecommendations(apparentTemp) {
-    if (!recommendationsDiv) {
-        console.error('recommendationsDiv 요소를 찾을 수 없습니다.');
-        return;
-    }
-    
-    recommendationsDiv.innerHTML = '';
-    // Use stored custom items if available
-    const customItems = JSON.parse(localStorage.getItem('customClothes')) || [];
-    const sourceData = [...defaultOutfitData, ...customItems];
-
-    const tempFilteredOutfits = sourceData.filter(item => {
-        return apparentTemp >= item.tempMin && apparentTemp <= item.tempMax;
-    });
-
-    const filteredOutfits = tempFilteredOutfits.filter(item => {
-        const genderMatch = item.gender === 'any' || item.gender === selectedGender;
-        const styleMatch = item.style === 'any' || item.style === selectedStyle;
-        return genderMatch && styleMatch;
-    });
-
-    if (filteredOutfits.length === 0) {
-        recommendationsDiv.innerHTML = `<p style="text-align: center; grid-column: 1 / -1; opacity: 0.6;">추천 의상이 없습니다</p>`;
-        return;
-    }
-
-    const categoryLabels = { outer: '아우터', top: '상의', bottom: '하의' };
-
-    // Filter categories based on selection
-    const availableCategories = ['outer', 'top', 'bottom'];
-    const uniqueCategories = selectedCategory === 'all' ? availableCategories : [selectedCategory];
-
-    uniqueCategories.forEach(category => {
-        // Randomly select one item from valid candidates to ensure variety
-        const candidates = filteredOutfits.filter(i => i.category === category);
-        const item = candidates.length > 0 ? candidates[Math.floor(Math.random() * candidates.length)] : null;
-
-        if (item) {
-            const itemDiv = document.createElement('div');
-            itemDiv.className = 'recommendation-item';
-
-            // Get SVG visual
-            const svgContent = getClothingSVG(item.name, item.color || itemColors[item.name] || '#888', category, item.imageUrl);
-
-            itemDiv.innerHTML = `
-                <div class="item-visual visual-${category}">
-                    ${svgContent || `<i class="fas fa-${category === 'outer' ? 'vest-patches' : category === 'top' ? 'shirt' : 'socks'}" style="font-size:3rem;opacity:0.4;"></i>`}
-                </div>
-                <div class="item-info">
-                    <span class="item-category-badge badge-${category}">${categoryLabels[category]}</span>
-                    <p class="item-name">${item.name}</p>
-                </div>
-            `;
-            recommendationsDiv.appendChild(itemDiv);
-        }
-    });
-
-    // Add mask recommendation if fine dust is bad or very bad
-    if (weatherData.fineDustLevel === 'bad' || weatherData.fineDustLevel === 'very_bad') {
-        const maskItem = defaultOutfitData.find(item => item.isMask);
-        if (maskItem) {
-            const maskDiv = document.createElement('div');
-            maskDiv.className = 'recommendation-item mask-recommendation';
-            maskDiv.style.cssText = `
-                border: 2px solid #ff6b6b;
-                background: linear-gradient(135deg, rgba(255, 107, 107, 0.1), rgba(238, 90, 36, 0.1));
-                animation: pulse 2s infinite;
-            `;
-
-            const svgContent = getClothingSVG(maskItem.name, maskItem.color, 'accessory');
-
-            maskDiv.innerHTML = `
-                <div class="item-visual visual-accessory">
-                    ${svgContent}
-                </div>
-                <div class="item-info">
-                    <span class="item-category-badge badge-accessory" style="background: #ff6b6b; color: white;">액세서리</span>
-                    <p class="item-name">${maskItem.name}</p>
-                    <div style="font-size: 12px; color: #ff6b6b; font-weight: bold; margin-top: 5px;">
-                        ${weatherData.fineDustLevel === 'very_bad' ? '미세먼지 매우 나쁨!' : '미세먼지 나쁨!'}
-                    </div>
-                </div>
-            `;
-            recommendationsDiv.appendChild(maskDiv);
-
-            // Add pulse animation
-            if (!document.querySelector('#mask-pulse-styles')) {
-                const style = document.createElement('style');
-                style.id = 'mask-pulse-styles';
-                style.textContent = `
-                    @keyframes pulse {
-                        0% { transform: scale(1); }
-                        50% { transform: scale(1.02); }
-                        100% { transform: scale(1); }
-                    }
-                `;
-                document.head.appendChild(style);
-            }
-        }
-    }
-    
-    // Re-initialize lazy loading for new images
-    setTimeout(() => {
-        initializeLazyLoading();
-    }, 100);
-}
-
-function updateApp() {
-    const apparentTemp = calculateApparentTemperature(weatherData.currentTemperature, weatherData.windSpeed, weatherData.humidity, selectedBodyType);
-    updateWeatherUI(apparentTemp, weatherData);
-    getAdvice(apparentTemp, weatherData);
-    renderRecommendations(apparentTemp);
-}
-
-// --- Initialization ---
-async function initializeApp() {
-    // Initialize DOM elements
-    darkModeToggle = document.getElementById('dark-mode-toggle');
-    weatherDisplay = document.getElementById('weather');
-    apparentTempDisplay = document.getElementById('apparent-temp');
-    locationDisplay = document.getElementById('location');
-    weatherComparisonDisplay = document.getElementById('weather-comparison');
-    outfitExplanationDisplay = document.getElementById('outfit-explanation');
-    contextualAdviceDisplay = document.getElementById('contextual-advice');
-    genderButtons = document.querySelectorAll('.gender-selection button');
-    styleButtons = document.querySelectorAll('.style-selection button');
-    bodyTypeButtons = document.querySelectorAll('.body-type-selection button');
-    recommendationsDiv = document.getElementById('recommendations');
-
-    if (localStorage.getItem('darkMode') === 'true') {
-        document.body.classList.add('dark-mode');
-        if (darkModeToggle) {
-            darkModeToggle.innerHTML = '<i class="fas fa-sun"></i>';
-        }
-    }
-
-    await getUserLocationAndFetchWeather();
-
-    // Initialize lazy loading for images
-    initializeLazyLoading();
-
-    const maleButton = document.querySelector('.gender-selection button[data-gender="male"]');
-    if (maleButton) {
-        maleButton.classList.add('active');
-    }
-    
-    const casualButton = document.querySelector('.style-selection button[data-style="casual"]');
-    if (casualButton) {
-        casualButton.classList.add('active');
-    }
-    
-    const normalButton = document.querySelector('.body-type-selection button[data-body-type="normal"]');
-    if (normalButton) {
-        normalButton.classList.add('active');
-    }
-
-    updateApp();
-
-    // Add event listeners after DOM is ready
-    const categoryButtons = document.querySelectorAll('.category-selection button');
-    
-    [...genderButtons, ...styleButtons, ...bodyTypeButtons, ...categoryButtons].forEach(button => {
-        button.addEventListener('click', (e) => {
-            const parent = e.target.closest('div');
-            parent.querySelectorAll('button').forEach(btn => btn.classList.remove('active'));
-            e.target.closest('button').classList.add('active');
-            if (parent.classList.contains('gender-selection')) selectedGender = e.target.closest('button').dataset.gender;
-            if (parent.classList.contains('style-selection')) selectedStyle = e.target.closest('button').dataset.style;
-            if (parent.classList.contains('body-type-selection')) selectedBodyType = e.target.closest('button').dataset.bodyType;
-            if (parent.classList.contains('category-selection')) selectedCategory = e.target.closest('button').dataset.category;
-            updateApp();
-        });
-    });
-
-    if (darkModeToggle) {
-        darkModeToggle.addEventListener('click', toggleDarkMode);
-    }
-}
-
 async function getUserLocationAndFetchWeather() {
     let finalLocationName = '서울';
     try {
         const position = await new Promise((resolve, reject) => {
-            navigator.geolocation.getCurrentPosition(resolve, reject, { enableHighAccuracy: false, timeout: 10000, maximumAge: 0 });
+            navigator.geolocation.getCurrentPosition(resolve, reject, { 
+                enableHighAccuracy: false, 
+                timeout: 10000, 
+                maximumAge: 0 
+            });
         });
+        
         const lat = position.coords.latitude;
         const lon = position.coords.longitude;
         const { nx, ny } = convertToKMA(lat, lon);
         const geocodedLocation = await getReverseGeocodedAddress(lat, lon);
+        
         if (geocodedLocation && geocodedLocation !== '알 수 없는 위치') {
             finalLocationName = geocodedLocation;
         } else {
@@ -1044,6 +1008,7 @@ async function getUserLocationAndFetchWeather() {
         if (airQualityData) {
             weatherData.fineDustLevel = airQualityData.level;
             console.log(`미세먼지 정보 통합됨: ${airQualityData.level} (${airQualityData.pm10}μg/m³)`);
+            updateApp();
         }
         
     } catch (error) {
@@ -1055,84 +1020,7 @@ async function getUserLocationAndFetchWeather() {
         if (seoulAirQuality) {
             weatherData.fineDustLevel = seoulAirQuality.level;
             console.log(`서울 기준 미세먼지 정보 통합됨: ${seoulAirQuality.level} (${seoulAirQuality.pm10}μg/m³)`);
+            updateApp();
         }
     }
-}
-
-document.addEventListener('DOMContentLoaded', initializeApp);
-
-// --- Custom Clothes Logic ---
-const modal = document.getElementById('add-clothes-modal');
-const openModalBtn = document.getElementById('open-add-clothes-modal');
-const closeModalBtn = document.querySelector('.close-modal');
-const addClothesForm = document.getElementById('add-clothes-form');
-
-if (openModalBtn) {
-    openModalBtn.addEventListener('click', () => {
-        modal.classList.remove('hidden');
-    });
-}
-
-if (closeModalBtn) {
-    closeModalBtn.addEventListener('click', () => {
-        modal.classList.add('hidden');
-    });
-}
-
-window.addEventListener('click', (e) => {
-    if (e.target === modal) {
-        modal.classList.add('hidden');
-    }
-});
-
-if (addClothesForm) {
-    addClothesForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-
-        const name = document.getElementById('new-item-name').value;
-        const category = document.getElementById('new-item-category').value;
-        const imageFile = document.getElementById('new-item-image').files[0];
-
-        const newItem = {
-            id: Date.now(),
-            name: name,
-            category: category,
-            tempMin: -100, // Default valid for all temps
-            tempMax: 100,
-            gender: 'any',
-            style: 'any',
-            imageUrl: null // Default
-        };
-
-        const saveAndRender = (item) => {
-            try {
-                const customItems = JSON.parse(localStorage.getItem('customClothes')) || [];
-                customItems.push(item);
-                localStorage.setItem('customClothes', JSON.stringify(customItems));
-
-                modal.classList.add('hidden');
-                addClothesForm.reset();
-                updateApp();
-                alert('의상이 추가되었습니다!');
-            } catch (e) {
-                alert('저장 공간이 부족하여 의상을 추가할 수 없습니다. (이미지 크기를 줄여주세요)');
-                console.error(e);
-            }
-        };
-
-        if (imageFile) {
-            if (imageFile.size > 1024 * 1024) {
-                alert('이미지 파일이 너무 큽니다. 1MB 이하로 선택해주세요.');
-                return;
-            }
-            const reader = new FileReader();
-            reader.onload = function (event) {
-                newItem.imageUrl = event.target.result;
-                saveAndRender(newItem);
-            };
-            reader.readAsDataURL(imageFile);
-        } else {
-            saveAndRender(newItem);
-        }
-    });
 }
