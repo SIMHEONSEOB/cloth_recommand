@@ -1164,3 +1164,144 @@ body.dark-mode .visual-bottom {
     background: linear-gradient(135deg, #E65100, #FF9800);
     box-shadow: 0 4px 15px rgba(255, 152, 0, 0.4);
 }
+
+/* Fixed Add Clothes Button */
+.custom-clothes-fixed {
+    position: fixed;
+    top: 50%;
+    right: 20px;
+    transform: translateY(-50%);
+    z-index: 1000;
+}
+
+.action-btn-fixed {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    border: none;
+    padding: 15px;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    font-size: 24px;
+    cursor: pointer;
+    box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4);
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.action-btn-fixed span {
+    position: absolute;
+    bottom: -30px;
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 5px 10px;
+    border-radius: 15px;
+    font-size: 12px;
+    white-space: nowrap;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+}
+
+.action-btn-fixed:hover {
+    transform: translateY(-50%) scale(1.1);
+    box-shadow: 0 6px 25px rgba(102, 126, 234, 0.6);
+}
+
+.action-btn-fixed:hover span {
+    opacity: 1;
+}
+
+.action-btn-fixed:active {
+    transform: translateY(-50%) scale(0.95);
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+    .custom-clothes-fixed {
+        right: 10px;
+    }
+    
+    .action-btn-fixed {
+        width: 50px;
+        height: 50px;
+        font-size: 20px;
+    }
+    
+    .action-btn-fixed span {
+        bottom: -25px;
+        font-size: 11px;
+    }
+    
+    .ai-advice-fixed {
+        right: 10px;
+    }
+    
+    .ai-btn-fixed {
+        width: 50px;
+        height: 50px;
+        font-size: 20px;
+    }
+    
+    .ai-btn-fixed span {
+        bottom: -25px;
+        font-size: 11px;
+    }
+}
+
+/* AI Advice Fixed Button */
+.ai-advice-fixed {
+    position: fixed;
+    top: calc(50% + 80px);
+    right: 20px;
+    transform: translateY(-50%);
+    z-index: 1000;
+}
+
+.ai-btn-fixed {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    border: none;
+    padding: 15px;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    font-size: 24px;
+    cursor: pointer;
+    box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4);
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.ai-btn-fixed span {
+    position: absolute;
+    bottom: -30px;
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 5px 10px;
+    border-radius: 15px;
+    font-size: 12px;
+    white-space: nowrap;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+}
+
+.ai-btn-fixed:hover {
+    transform: translateY(-50%) scale(1.1);
+    box-shadow: 0 6px 25px rgba(102, 126, 234, 0.6);
+}
+
+.ai-btn-fixed:hover span {
+    opacity: 1;
+}
+
+.ai-btn-fixed:active {
+    transform: translateY(-50%) scale(0.95);
+}

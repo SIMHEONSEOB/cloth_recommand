@@ -169,13 +169,19 @@ window.addItemToOutfit = function(itemName, imageUrl, category) {
     // Create image element for the outfit
     const imageId = `outfit-${itemName.replace(/[^a-zA-Z0-9]/g, '-')}-${Date.now()}`;
     
+    // 한글 파일 이름을 URL 인코딩
+    const encodedImageUrl = imageUrl.includes('.png') ? 
+        imageUrl.split('/').map(part => 
+            part.includes('.png') ? encodeURIComponent(part) : part
+        ).join('/') : imageUrl;
+    
     layerContent.innerHTML = `
         <div class="outfit-item-container">
             <div class="skeleton skeleton-image" id="skeleton-${imageId}"></div>
             <img 
                 id="${imageId}"
                 class="outfit-item-image" 
-                src="${imageUrl}" 
+                src="${encodedImageUrl}" 
                 alt="${itemName}" 
                 loading="lazy"
                 onload="handleImageLoad('${imageId}')"
@@ -224,15 +230,15 @@ window.removeItemFromOutfit = function(category) {
 // All items now use images from the images folder
 
 const defaultOutfitData = [
-    { gender: 'any', style: 'casual', tempMin: -10, tempMax: 5, name: '두꺼운패딩-모자(검은색)', category: 'outer', imageUrl: 'images/%EB%91%90%EA%BA%BC%EC%9A%B4%ED%8C%A8%EB%94%A9-%EB%AA%A8%EC%9E%90(%EA%B2%80%EC%9D%80%EC%83%89).png' },
-    { gender: 'any', style: 'modern', tempMin: -5, tempMax: 8, name: '니트-녹색', category: 'top', imageUrl: 'images/%EB%8B%88%ED%8A%B8-%EB%85%B9%EC%83%89.png' },
-    { gender: 'any', style: 'street', tempMin: 5, tempMax: 20, name: '레큘러핏진(검은색)', category: 'bottom', imageUrl: 'images/%EB%A0%88%ED%81%B4%EB%9F%AC%ED%95%8F%EC%A7%84(%EA%B2%80%EC%9D%80%EC%83%89).png' },
-    { gender: 'any', style: 'casual', tempMin: 10, tempMax: 25, name: '갈색팬츠', category: 'bottom', imageUrl: 'images/%EA%B0%88%EC%83%89%ED%8C%A8%EC%B8%A0.png' },
-    { gender: 'any', style: 'modern', tempMin: 10, tempMax: 18, name: '맨투맨-회색', category: 'top', imageUrl: 'images/%EB%A7%A8%ED%88%AC%EB%A7%A8-%ED%9A%8C%EC%83%89.png' },
-    { gender: 'any', style: 'street', tempMin: 15, tempMax: 25, name: '블랙진', category: 'bottom', imageUrl: 'images/%EB%B8%94%EB%9E%99%EC%A7%84.png' },
-    { gender: 'any', style: 'casual', tempMin: 15, tempMax: 25, name: '반팔-흰색', category: 'top', imageUrl: 'images/%EA%B8%B0%EB%AA%A8%20%EC%B6%94%EB%A6%AC%EB%8B%9D%ED%95%98%EC%9D%98-%ED%9D%AC%EC%83%89.png' },
-    { gender: 'any', style: 'modern', tempMin: 20, tempMax: 30, name: '반소매-민트', category: 'top', imageUrl: 'images/%EC%8A%A4%EC%9B%A8%ED%84%B0%20%ED%8C%8C%EB%9E%80%EC%83%89.png' },
-    { gender: 'any', style: 'street', tempMin: 20, tempMax: 35, name: '반팔-네이비', category: 'top', imageUrl: 'images/%EC%B2%AD%EB%B0%94%EC%A7%80.png' },
+    { gender: 'any', style: 'casual', tempMin: -10, tempMax: 5, name: '두꺼운패딩-모자(검은색)', category: 'outer', imageUrl: 'images/두꺼운패딩-모자(검은색).png' },
+    { gender: 'any', style: 'modern', tempMin: -5, tempMax: 8, name: '니트-녹색', category: 'top', imageUrl: 'images/니트-녹색.png' },
+    { gender: 'any', style: 'street', tempMin: 5, tempMax: 20, name: '레큘러핏진(검은색)', category: 'bottom', imageUrl: 'images/레큘러핏진(검은색).png' },
+    { gender: 'any', style: 'casual', tempMin: 10, tempMax: 25, name: '갈색팬츠', category: 'bottom', imageUrl: 'images/갈색팬츠.png' },
+    { gender: 'any', style: 'modern', tempMin: 10, tempMax: 18, name: '맨투맨-회색', category: 'top', imageUrl: 'images/맨투맨-회색.png' },
+    { gender: 'any', style: 'street', tempMin: 15, tempMax: 25, name: '블랙진', category: 'bottom', imageUrl: 'images/블랙진.png' },
+    { gender: 'any', style: 'casual', tempMin: 15, tempMax: 25, name: '반팔-흰색', category: 'top', imageUrl: 'images/기모 추리닝하의-흰색.png' },
+    { gender: 'any', style: 'modern', tempMin: 20, tempMax: 30, name: '반소매-민트', category: 'top', imageUrl: 'images/스웨터 파란색.png' },
+    { gender: 'any', style: 'street', tempMin: 20, tempMax: 35, name: '반팔-네이비', category: 'top', imageUrl: 'images/청바지.png' },
     { gender: 'any', style: 'any', tempMin: -20, tempMax: 40, name: '마스크', category: 'accessory', imageUrl: 'images/마스크.svg', dustAlert: true },
     { gender: 'any', style: 'any', tempMin: -20, tempMax: 40, name: '마스크-추천', category: 'accessory', imageUrl: 'images/마스크-추천.svg', dustAlert: true }
 ];
@@ -288,13 +294,20 @@ function toggleDarkMode() {
 function getClothingSVG(itemName, color, category, imageUrl) {
     if (imageUrl) {
         const imageId = `img-${itemName.replace(/[^a-zA-Z0-9]/g, '-')}-${Date.now()}`;
+        
+        // 한글 파일 이름을 URL 인코딩
+        const encodedImageUrl = imageUrl.includes('.png') ? 
+            imageUrl.split('/').map(part => 
+                part.includes('.png') ? encodeURIComponent(part) : part
+            ).join('/') : imageUrl;
+        
         return `
             <div class="image-container">
                 <div class="skeleton skeleton-image" id="skeleton-${imageId}"></div>
                 <img 
                     id="${imageId}"
                     class="lazy-image" 
-                    src="${imageUrl}" 
+                    src="${encodedImageUrl}" 
                     alt="${itemName}" 
                     loading="lazy"
                     onload="handleImageLoad('${imageId}')"

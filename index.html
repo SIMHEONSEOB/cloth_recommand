@@ -52,10 +52,20 @@
                 </div>
             </div>
 
-            <!-- Add Clothes Section -->
-            <div class="custom-clothes-controls">
-                <button id="open-add-clothes-modal" class="action-btn"><i class="fas fa-plus-circle"></i> 의상 직접
-                    추가하기</button>
+            <!-- Add Clothes Section - Fixed Right Side -->
+            <div class="custom-clothes-fixed">
+                <button id="open-add-clothes-modal" class="action-btn-fixed">
+                    <i class="fas fa-plus-circle"></i>
+                    <span>의상 추가</span>
+                </button>
+            </div>
+
+            <!-- AI Advice Button - Fixed Right Side -->
+            <div class="ai-advice-fixed">
+                <button id="tpo-advice-btn" class="ai-btn-fixed" onclick="showTPOAdvice()">
+                    <i class="fas fa-robot"></i>
+                    <span>AI 조언</span>
+                </button>
             </div>
 
             <div id="add-clothes-modal" class="modal hidden">
@@ -82,36 +92,6 @@
                         <button type="submit" class="submit-btn full-width">추가하기</button>
                     </form>
                 </div>
-            </div>
-
-
-
-            <div id="advice-section">
-                <p id="outfit-explanation"></p>
-                <p id="contextual-advice"></p>
-                <button id="tpo-advice-btn" onclick="showTPOAdvice()" style="
-                    background: linear-gradient(135deg, #667eea, #764ba2);
-                    color: white;
-                    border: none;
-                    padding: 12px 20px;
-                    border-radius: 25px;
-                    font-size: 14px;
-                    font-weight: 600;
-                    cursor: pointer;
-                    margin-top: 15px;
-                    display: flex;
-                    align-items: center;
-                    gap: 8px;
-                    transition: transform 0.2s, box-shadow 0.2s;
-                    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
-                " onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.3)'">
-                    <span>🤖</span>
-                    AI 조언 받기
-                </button>
-            </div>
-
-            <div id="recommendations" class="recommendations-grid">
-                <!-- Recommendations will be dynamically added here -->
             </div>
 
             <div id="outfit-display-section">
@@ -145,7 +125,14 @@
                 </div>
             </div>
 
+            <div id="advice-section">
+                <p id="outfit-explanation"></p>
+                <p id="contextual-advice"></p>
+            </div>
 
+            <div id="recommendations" class="recommendations-grid">
+                <!-- Recommendations will be dynamically added here -->
+            </div>
         </main>
     </div>
     <script src="main.js" type="module"></script>
