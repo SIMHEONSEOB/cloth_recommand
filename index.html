@@ -4,98 +4,55 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>날씨 기반 의상 추천 — 오늘 뭐 입지?</title>
-    <meta name="description" content="실시간 날씨 정보를 기반으로 오늘의 최적 의상을 추천해주는 스마트 웹 애플리케이션">
+    <title>오늘 뭐 입지? - 날씨 기반 의상 추천</title>
+    <meta name="description" content="실시간 날씨 정보를 기반으로 오늘의 최적 의상을 추천해주는 스마트 웹 애플리케이션. 개인 맞춤 스타일, 온도, 상황별 의상 추천으로 완벽한 코디를 제안합니다.">
+    <meta name="keywords" content="날씨, 의상, 추천, 코디, 패션, 스타일, 옷차림, 날씨 정보, AI 추천, 개인화">
+    <meta name="author" content="오늘 뭐 입지?">
+    <meta name="robots" content="index, follow">
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>👕</text></svg>">
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
 </head>
 
 <body>
     <div id="app">
         <header>
-            <div class="header-top">
-                <h1>오늘 뭐 입지?</h1>
-                <button id="dark-mode-toggle"><i class="fas fa-moon"></i></button>
-            </div>
-            <p class="subtitle">날씨에 맞는 똑똑한 의상 추천</p>
-            <div class="weather-info">
-                <p><span id="location">위치 불러오는 중...</span></p>
-                <p>현재 날씨: <span id="weather"></span></p>
-                <p id="weather-comparison">어제보다 3℃ 높아요</p>
+            <div class="header-container">
+                <div class="header-left">
+                    <h1>오늘 뭐 입지?</h1>
+                    <p class="subtitle">날씨에 맞는 똑똑한 의상 추천</p>
+                </div>
+                <div class="header-right">
+                    <div class="weather-info">
+                        <p><span id="location">위치 불러오는 중...</span></p>
+                        <p>현재 날씨: <span id="weather"></span></p>
+                        <p id="weather-comparison">어제보다 3℃ 높아요</p>
+                    </div>
+                    <button id="dark-mode-toggle"><i class="fas fa-moon"></i></button>
+                </div>
             </div>
         </header>
+        
         <main>
             <div class="controls">
-                <div class="gender-selection">
-                    <button data-gender="male" class="active"><i class="fas fa-mars"></i> 남성</button>
-                    <button data-gender="female"><i class="fas fa-venus"></i> 여성</button>
+                <div class="control-group">
+                    <div class="control-label">성별 선택</div>
+                    <div class="gender-selection">
+                        <button data-gender="male" class="active"><i class="fas fa-mars"></i> 남성</button>
+                        <button data-gender="female"><i class="fas fa-venus"></i> 여성</button>
+                    </div>
                 </div>
-                <div class="style-selection">
-                    <button data-style="casual" class="active"><i class="fas fa-tshirt"></i> 캐주얼</button>
-                    <button data-style="modern"><i class="fas fa-user-tie"></i> 모던</button>
-                    <button data-style="street"><i class="fas fa-running"></i> 스트리트</button>
-                </div>
-                <div class="category-selection">
-                    <button data-category="all" class="active"><i class="fas fa-layer-group"></i> 전체</button>
-                    <button data-category="outer"><i class="fas fa-vest"></i> 아우터</button>
-                    <button data-category="top"><i class="fas fa-tshirt"></i> 상의</button>
-                    <button data-category="bottom"><i class="fas fa-socks"></i> 바지</button>
-                </div>
-            </div>
-
-            <!-- Add Clothes Section - Fixed Right Side -->
-            <div class="custom-clothes-fixed">
-                <button id="open-add-clothes-modal" class="action-btn-fixed">
-                    <i class="fas fa-plus-circle"></i>
-                    <span>의상 추가</span>
-                </button>
-            </div>
-
-            <!-- AI Advice Button - Fixed Right Side -->
-            <div class="ai-advice-fixed">
-                <button id="tpo-advice-btn" class="ai-btn-fixed" onclick="showTPOAdvice()">
-                    <i class="fas fa-robot"></i>
-                    <span>AI 조언</span>
-                </button>
-            </div>
-
-            <div id="add-clothes-modal" class="modal hidden">
-                <div class="modal-content">
-                    <span class="close-modal">&times;</span>
-                    <h2>새 의상 추가</h2>
-                    <form id="add-clothes-form">
-                        <div class="form-group">
-                            <label for="new-item-name">이름</label>
-                            <input type="text" id="new-item-name" required placeholder="예: 파란 셔츠">
-                        </div>
-                        <div class="form-group">
-                            <label for="new-item-category">카테고리</label>
-                            <select id="new-item-category">
-                                <option value="top">상의</option>
-                                <option value="bottom">하의</option>
-                                <option value="outer">아우터</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="new-item-image">이미지 (선택)</label>
-                            <input type="file" id="new-item-image" accept="image/*">
-                        </div>
-                        <button type="submit" class="submit-btn full-width">추가하기</button>
-                    </form>
-                </div>
-            </div>
-
-            <!-- TPO Situation Selection -->
-            <div class="tpo-situation-selection">
-                <h3>상황별 추천</h3>
-                <div class="tpo-buttons">
-                    <button data-situation="daily" class="active"><i class="fas fa-home"></i> 일상</button>
-                    <button data-situation="date"><i class="fas fa-heart"></i> 데이트</button>
-                    <button data-situation="work"><i class="fas fa-briefcase"></i> 출근</button>
+                
+                <div class="control-group">
+                    <div class="control-label">스타일 선택</div>
+                    <div class="style-selection">
+                        <button data-style="casual" class="active"><i class="fas fa-tshirt"></i> 캐주얼</button>
+                        <button data-style="modern"><i class="fas fa-user-tie"></i> 모던</button>
+                        <button data-style="street"><i class="fas fa-running"></i> 스트리트</button>
+                    </div>
                 </div>
             </div>
 
@@ -135,11 +92,35 @@
                 <p id="contextual-advice"></p>
             </div>
 
+            <!-- AI Advisor Section -->
+            <div id="ai-advisor-section">
+                <div class="ai-advisor-header">
+                    <h3><i class="fas fa-robot"></i> AI 코디네이터</h3>
+                    <p>전문적인 패션 조언을 받아보세요</p>
+                </div>
+                <button id="get-ai-advice" class="ai-advice-btn">
+                    <i class="fas fa-magic"></i>
+                    <span>TPO 어드바이스 받기</span>
+                </button>
+                <div id="ai-advice-result" class="ai-advice-result hidden">
+                    <div class="ai-advice-content">
+                        <i class="fas fa-quote-left"></i>
+                        <p id="ai-advice-text"></p>
+                        <i class="fas fa-quote-right"></i>
+                    </div>
+                    <div class="ai-advice-meta">
+                        <span class="ai-badge">AI 전문가 조언</span>
+                        <span id="ai-advice-time"></span>
+                    </div>
+                </div>
+            </div>
+
             <div id="recommendations" class="recommendations-grid">
                 <!-- Recommendations will be dynamically added here -->
             </div>
         </main>
     </div>
+    <script src="ai-advisor.js" type="module"></script>
     <script src="main.js" type="module"></script>
 </body>
 
