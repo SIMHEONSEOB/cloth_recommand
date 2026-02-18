@@ -97,15 +97,131 @@ function generateFallbackAdvice(weather, selectedClothes) {
 function getCurrentOutfit() {
     const outfit = [];
     
-    const outerLayer = document.querySelector('#layer-outer .outfit-item-container .item-name');
-    const topLayer = document.querySelector('#layer-top .outfit-item-container .item-name');
-    const bottomLayer = document.querySelector('#layer-bottom .outfit-item-container .item-name');
+    // 각 레이어에 의상 이미지가 있는지 확인
+    const outerLayer = document.querySelector('#layer-outer .outfit-item-image');
+    const topLayer = document.querySelector('#layer-top .outfit-item-image');
+    const bottomLayer = document.querySelector('#layer-bottom .outfit-item-image');
     
-    if (outerLayer) outfit.push({ category: '아우터', name: outerLayer.textContent });
-    if (topLayer) outfit.push({ category: '상의', name: topLayer.textContent });
-    if (bottomLayer) outfit.push({ category: '하의', name: bottomLayer.textContent });
+    if (outerLayer && outerLayer.src && !outerLayer.src.includes('data:image')) {
+        outfit.push({ category: '아우터', name: outerLayer.alt || '아우터' });
+    }
+    if (topLayer && topLayer.src && !topLayer.src.includes('data:image')) {
+        outfit.push({ category: '상의', name: topLayer.alt || '상의' });
+    }
+    if (bottomLayer && bottomLayer.src && !bottomLayer.src.includes('data:image')) {
+        outfit.push({ category: '하의', name: bottomLayer.alt || '하의' });
+    }
     
     return outfit;
+}
+
+// AI 스타일리스트 기능
+async function getAIStyleRating(weather, selectedClothes) {
+    try {
+        // OpenAI API 호출 (실제 사용 시 API 키 필요)
+        const response = await fetch('https://api.openai.com/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer YOUR_API_KEY' // 실제 API 키로 교체 필요
+            },
+            body: JSON.stringify({
+                model: "gpt-3.5-turbo",
+                messages: [{
+                    role: "system", 
+                    content: "당신은 패션 전문가입니다. 현재 날씨와 사용자가 선택한 옷을 보고 코디 점수를 매겨주세요. 100점 만점에 따라 점수를 매기고, 한 줄로 간결하게 평가해주세요. 예: '오늘 코디 점수: 85점 - 완벽한 데이트룩!'"
+                }, {
+                    role: "user",
+                    content: `현재 기온은 ${weather.currentTemperature}도이고 사용자는 ${selectedClothes}를 골랐어. 이 코디에 대해 패션 전문가로서 따끔하지만 위트 있게 한 줄 평을 해줘.` 
+                }]
+            })
+        });
+        
+        if (!response.ok) {
+            throw new Error('AI 스타일리스트 API 호출 실패');
+        }
+        
+        const data = await response.json();
+        return data.choices[0].message.content;
+        
+    } catch (error) {
+        console.error('AI 스타일리스트 생성 중 오류:', error);
+        // 폴백 로직: 기본 스타일리스트 생성
+        return generateStyleRatingFallback(weather, selectedClothes);
+    }
+}
+
+// 폴백 스타일리스트 생성 함수
+function generateStyleRatingFallback(weather, selectedClothes) {
+    const temp = weather.currentTemperature;
+    const clothes = Array.isArray(selectedClothes) 
+        ? selectedClothes.map(item => item.name).join(', ')
+        : String(selectedClothes);
+    
+    let rating = 75; // 기본 점수
+    let comment = '';
+    
+    // 온도 기반 점수 조정
+    if (temp <= 0) {
+        rating = weatherData.fineDustLevel === 'very_bad' ? 95 : 90;
+        comment = '추위에 맞는 완벽한 방한 코디!';
+    } else if (temp <= 10) {
+        rating = 85;
+        comment = '계절기에 어울리는 세련된 코디!';
+    } else if (temp <= 20) {
+        rating = 80;
+        comment = '쾌적한 날씨에 어울리는 자연스러운 코디!';
+    } else {
+        rating = 75;
+        comment = '시원한 날씨에 적합한 가벽운 코디!';
+    }
+    
+    // 미세먼지 조정
+    if (weather.fineDustLevel === 'very_bad') {
+        rating += 5;
+        comment = comment.replace('!', ' + 마스크까지 완벽!');
+    }
+    
+    // 의상 다양성 보너스
+    const clothesCount = clothes.split(',').length;
+    if (clothesCount >= 3) rating += 5;
+    
+    return `오늘 코디 점수: ${rating}점 - ${comment}`;
+}
+
+// 현재 코디 점수 표시 함수
+async function displayStyleRating() {
+    const currentOutfit = getCurrentOutfit();
+    
+    if (currentOutfit.length === 0) {
+        // 의상이 없으면 기본 메시지
+        const weatherComparisonDisplay = document.getElementById('weather-comparison');
+        if (weatherComparisonDisplay) {
+            weatherComparisonDisplay.textContent = '의상을 선택해 코디 점수를 받아보세요';
+        }
+        return;
+    }
+    
+    // 로딩 표시
+    const weatherComparisonDisplay = document.getElementById('weather-comparison');
+    if (weatherComparisonDisplay) {
+        weatherComparisonDisplay.innerHTML = '🤖 AI가 코디를 분석 중입니다...';
+    }
+    
+    try {
+        const clothesInfo = currentOutfit.map(item => item.name).join(', ');
+        const rating = await getAIStyleRating(weatherData, clothesInfo);
+        
+        if (weatherComparisonDisplay) {
+            weatherComparisonDisplay.innerHTML = rating;
+        }
+        
+    } catch (error) {
+        console.error('스타일 점수 표시 오류:', error);
+        if (weatherComparisonDisplay) {
+            weatherComparisonDisplay.textContent = '코디 점수 분석에 실패했습니다.';
+        }
+    }
 }
 
 // TPO 어드바이스 표시 함수
@@ -126,7 +242,6 @@ window.showTPOAdvice = async function() {
     try {
         const weatherInfo = `
             기온: ${weatherData.currentTemperature}℃
-            체감: ${calculateApparentTemperature(weatherData.currentTemperature, weatherData.windSpeed, weatherData.humidity, selectedBodyType)}℃
             바람: ${weatherData.windSpeed}m/s
             습도: ${weatherData.humidity}%
             비: ${weatherData.isRaining ? '오는 중' : '안 옴'}
@@ -182,13 +297,12 @@ window.addItemToOutfit = function(itemName, imageUrl, category) {
                 id="${imageId}"
                 class="outfit-item-image" 
                 src="${encodedImageUrl}" 
-                alt="${itemName}" 
+                alt="${itemName}"
                 loading="lazy"
                 onload="handleImageLoad('${imageId}')"
                 onerror="handleImageError('${imageId}')"
                 style="width:100%;height:100%;object-fit:contain;border-radius:8px;"
             >
-            <div class="item-name">${itemName}</div>
             <button class="remove-item-btn" onclick="removeItemFromOutfit('${category}')">
                 <i class="fas fa-times"></i>
             </button>
@@ -200,6 +314,9 @@ window.addItemToOutfit = function(itemName, imageUrl, category) {
     setTimeout(() => {
         layer.classList.remove('item-added');
     }, 300);
+    
+    // AI 스타일리스트 점수 자동 업데이트
+    displayStyleRating();
 };
 
 // Remove item from outfit layer
@@ -224,21 +341,55 @@ window.removeItemFromOutfit = function(category) {
     setTimeout(() => {
         layer.classList.remove('item-removed');
     }, 300);
+    
+    // AI 스타일리스트 점수 자동 업데이트
+    displayStyleRating();
 };
 
 // --- Clothing Items Configuration ---
 // All items now use images from the images folder
 
 const defaultOutfitData = [
+    // 남성 의상
     { gender: 'any', style: 'casual', tempMin: -10, tempMax: 5, name: '두꺼운패딩-모자(검은색)', category: 'outer', imageUrl: 'images/두꺼운패딩-모자(검은색).png' },
     { gender: 'any', style: 'modern', tempMin: -5, tempMax: 8, name: '니트-녹색', category: 'top', imageUrl: 'images/니트-녹색.png' },
     { gender: 'any', style: 'street', tempMin: 5, tempMax: 20, name: '레큘러핏진(검은색)', category: 'bottom', imageUrl: 'images/레큘러핏진(검은색).png' },
     { gender: 'any', style: 'casual', tempMin: 10, tempMax: 25, name: '갈색팬츠', category: 'bottom', imageUrl: 'images/갈색팬츠.png' },
     { gender: 'any', style: 'modern', tempMin: 10, tempMax: 18, name: '맨투맨-회색', category: 'top', imageUrl: 'images/맨투맨-회색.png' },
     { gender: 'any', style: 'street', tempMin: 15, tempMax: 25, name: '블랙진', category: 'bottom', imageUrl: 'images/블랙진.png' },
-    { gender: 'any', style: 'casual', tempMin: 15, tempMax: 25, name: '반팔-흰색', category: 'top', imageUrl: 'images/기모 추리닝하의-흰색.png' },
-    { gender: 'any', style: 'modern', tempMin: 20, tempMax: 30, name: '반소매-민트', category: 'top', imageUrl: 'images/스웨터 파란색.png' },
-    { gender: 'any', style: 'street', tempMin: 20, tempMax: 35, name: '반팔-네이비', category: 'top', imageUrl: 'images/청바지.png' },
+    { gender: 'any', style: 'casual', tempMin: 15, tempMax: 25, name: '기모 추리닝하의-흰색', category: 'bottom', imageUrl: 'images/기모 추리닝하의-흰색.png' },
+    { gender: 'any', style: 'modern', tempMin: 20, tempMax: 30, name: '스웨터 파란색', category: 'top', imageUrl: 'images/스웨터 파란색.png' },
+    { gender: 'any', style: 'street', tempMin: 20, tempMax: 35, name: '청바지', category: 'bottom', imageUrl: 'images/청바지.png' },
+    
+    // 추가 남성 의상
+    { gender: 'male', style: 'modern', tempMin: -5, tempMax: 8, name: '남성 맨투맨 남색', category: 'top', imageUrl: 'images/남성 맨투맨 남색.png' },
+    { gender: 'male', style: 'casual', tempMin: 5, tempMax: 15, name: '남성 반집업 흰색', category: 'top', imageUrl: 'images/남성 반집업 흰색.png' },
+    { gender: 'male', style: 'modern', tempMin: -5, tempMax: 8, name: '남성 스웨터 갈색', category: 'top', imageUrl: 'images/남성 스웨터 갈색.png' },
+    { gender: 'male', style: 'casual', tempMin: -5, tempMax: 8, name: '남성 스웨터 스트라이프 회색', category: 'top', imageUrl: 'images/남성 스웨터 스트라이프 회색.png' },
+    { gender: 'male', style: 'modern', tempMin: 10, tempMax: 20, name: '남성 검은바지 1', category: 'bottom', imageUrl: 'images/남성 검은바지 1.png' },
+    { gender: 'male', style: 'casual', tempMin: 10, tempMax: 20, name: '남성 검은바지 2', category: 'bottom', imageUrl: 'images/남성 검은바지 2.png' },
+    { gender: 'male', style: 'modern', tempMin: 10, tempMax: 20, name: '남성 연갈색 바지', category: 'bottom', imageUrl: 'images/남성 연갈색 바지.png' },
+    { gender: 'male', style: 'casual', tempMin: 15, tempMax: 25, name: '남성 하얀바지', category: 'bottom', imageUrl: 'images/남성 하얀바지.png' },
+    
+    // 여성 의상 추가
+    { gender: 'female', style: 'modern', tempMin: -10, tempMax: 5, name: '여성 롱치마 검정', category: 'outer', imageUrl: 'images/여성 롱치마 검정.png' },
+    { gender: 'female', style: 'casual', tempMin: -10, tempMax: 5, name: '여성 패딩', category: 'outer', imageUrl: 'images/여성 패딩.png' },
+    { gender: 'female', style: 'modern', tempMin: -5, tempMax: 8, name: '여성 스웨터-아이보리', category: 'top', imageUrl: 'images/여성 스웨터-아이보리.png' },
+    { gender: 'female', style: 'casual', tempMin: -5, tempMax: 8, name: '여성 스웨터-초록', category: 'top', imageUrl: 'images/여성 스웨터-초록.png' },
+    { gender: 'female', style: 'modern', tempMin: 5, tempMax: 15, name: '여성 셔츠', category: 'top', imageUrl: 'images/여성 셔츠.png' },
+    { gender: 'female', style: 'casual', tempMin: 5, tempMax: 15, name: '여성 추리닝', category: 'top', imageUrl: 'images/여성 추리닝.png' },
+    { gender: 'female', style: 'modern', tempMin: 10, tempMax: 20, name: '여성 갈색바지1', category: 'bottom', imageUrl: 'images/여성 갈색바지1.png' },
+    { gender: 'female', style: 'casual', tempMin: 10, tempMax: 20, name: '여성 데님바지', category: 'bottom', imageUrl: 'images/여성 데님바지.png' },
+    { gender: 'female', style: 'street', tempMin: 10, tempMax: 20, name: '여성 청바지', category: 'bottom', imageUrl: 'images/여성 청바지.png' },
+    { gender: 'female', style: 'modern', tempMin: 15, tempMax: 25, name: '여성 반집업', category: 'top', imageUrl: 'images/여성 반집업.png' },
+    { gender: 'female', style: 'casual', tempMin: 15, tempMax: 25, name: '여성 쇼트재킷 연갈색', category: 'outer', imageUrl: 'images/여성 쇼트재킷 연갈색.png' },
+    { gender: 'female', style: 'street', tempMin: 15, tempMax: 25, name: '여성 집업 스웨터 연두', category: 'top', imageUrl: 'images/여성 집업 스웨터 연두.png' },
+    { gender: 'female', style: 'modern', tempMin: 20, tempMax: 30, name: '여성 스웨터-빨강', category: 'top', imageUrl: 'images/여성 스웨터-빨강.png' },
+    { gender: 'female', style: 'casual', tempMin: 20, tempMax: 30, name: '여성 갈색바지2', category: 'bottom', imageUrl: 'images/여성 갈색바지2.png' },
+    { gender: 'female', style: 'street', tempMin: 20, tempMax: 35, name: '여성 데님 스커트', category: 'bottom', imageUrl: 'images/여성 데님 스커트.png' },
+    { gender: 'female', style: 'modern', tempMin: 25, tempMax: 35, name: '여성 데님바지', category: 'bottom', imageUrl: 'images/여성 데님바지.png' },
+    
+    // 액세서리
     { gender: 'any', style: 'any', tempMin: -20, tempMax: 40, name: '마스크', category: 'accessory', imageUrl: 'images/마스크.svg', dustAlert: true },
     { gender: 'any', style: 'any', tempMin: -20, tempMax: 40, name: '마스크-추천', category: 'accessory', imageUrl: 'images/마스크-추천.svg', dustAlert: true }
 ];
@@ -246,21 +397,19 @@ const defaultOutfitData = [
 // --- DOM Elements ---
 let darkModeToggle;
 let weatherDisplay;
-let apparentTempDisplay;
 let locationDisplay;
 let weatherComparisonDisplay;
 let outfitExplanationDisplay;
 let contextualAdviceDisplay;
 let genderButtons;
 let styleButtons;
-let bodyTypeButtons;
 let recommendationsDiv;
 
 // --- State ---
 let selectedGender = 'male';
 let selectedStyle = 'casual';
-let selectedBodyType = 'normal';
 let selectedCategory = 'all';
+let selectedSituation = 'daily';
 
 // --- API Constants ---
 const KOREA_WEATHER_API_KEY = 'cc408361b08a3bdccaa9d4b3aa113443dd11d6ed128fdd19d059f295314bc1f5';
@@ -358,19 +507,12 @@ function initializeLazyLoading() {
     }
 }
 
-function calculateApparentTemperature(temp, wind, humidity, bodyType) {
-    let apparentTemp = 13.12 + 0.6215 * temp - 11.37 * Math.pow(wind, 0.16) + 0.3965 * temp * Math.pow(wind, 0.16);
-    if (bodyType === 'cold-sensitive') apparentTemp -= 2;
-    else if (bodyType === 'heat-sensitive') apparentTemp += 2;
-    return Math.round(apparentTemp);
-}
-
-function getAdvice(apparentTemp, weather) {
+function getAdvice(weather) {
     let explanation = '';
     let contextual = '';
-    if (apparentTemp <= 5) explanation = "체온 유지를 위해 두꺼운 아우터는 필수예요.";
-    else if (apparentTemp <= 15) explanation = "쌀쌀한 날씨예요. 가벼운 아우터나 따뜻한 상의가 좋겠어요.";
-    else if (apparentTemp <= 22) explanation = "선선해서 활동하기 좋은 날씨네요.";
+    if (weather.currentTemperature <= 5) explanation = "체온 유지를 위해 두꺼운 아우터는 필수예요.";
+    else if (weather.currentTemperature <= 15) explanation = "쌀쌀한 날씨예요. 가벼운 아우터나 따뜻한 상의가 좋겠어요.";
+    else if (weather.currentTemperature <= 22) explanation = "선선해서 활동하기 좋은 날씨네요.";
     else explanation = "더운 날씨에 대비해 시원하게 입으세요.";
     if (weather.dayNightTempDiff >= 10) contextual += "일교차가 커요. 밤을 대비해 겉옷을 챙기세요. ";
     if (weather.isRaining) contextual += "비가 오니 방수 기능이 있는 신발이나 옷을 추천해요. ";
@@ -384,22 +526,29 @@ function getAdvice(apparentTemp, weather) {
     }
 }
 
-function updateWeatherUI(apparentTemp, weather) {
+function updateWeatherUI(weather) {
     if (locationDisplay) {
-        let locationText = weather.location || '위치 정보 없음';
+        let locationText = weather.location;
+        let dustEmoji = '';
+        let dustText = '';
         
-        // 미세먼지 수준에 따른 이모지 추가
-        const dustEmojis = {
-            'good': '🟢',
-            'moderate': '🟡', 
-            'bad': '🟠',
-            'very_bad': '🔴'
-        };
-        
-        const dustEmoji = dustEmojis[weather.fineDustLevel] || '🟢';
-        const dustText = weather.fineDustLevel === 'good' ? '좋음' :
-                        weather.fineDustLevel === 'moderate' ? '보통' :
-                        weather.fineDustLevel === 'bad' ? '나쁨' : '매우 나쁨';
+        switch(weather.fineDustLevel) {
+            case 'good':
+                dustEmoji = '😊';
+                dustText = '좋음';
+                break;
+            case 'moderate':
+                dustEmoji = '�';
+                dustText = '보통';
+                break;
+            case 'bad':
+                dustEmoji = '�';
+                dustText = '나쁨';
+                break;
+            case 'very_bad':
+                dustEmoji = '😷';
+                dustText = '매우 나쁨';
+        }
         
         locationDisplay.innerHTML = `${locationText} ${dustEmoji} 미세먼지: ${dustText}`;
     }
@@ -407,17 +556,6 @@ function updateWeatherUI(apparentTemp, weather) {
         let weatherText = `${weather.currentTemperature}℃`;
         if (weather.isRaining) weatherText += ' (비)';
         weatherDisplay.textContent = weatherText;
-    }
-
-    // 체감 온도 업데이트
-    if (apparentTempDisplay) {
-        const apparentTemp = calculateApparentTemperature(
-            weather.currentTemperature, 
-            weather.windSpeed, 
-            weather.humidity, 
-            selectedBodyType
-        );
-        apparentTempDisplay.textContent = `체감: ${apparentTemp}℃`;
     }
 
     // 어제와 비교 업데이트
@@ -430,7 +568,7 @@ function updateWeatherUI(apparentTemp, weather) {
     }
 }
 
-function renderRecommendations(apparentTemp) {
+function renderRecommendations(weather) {
     if (!recommendationsDiv) {
         console.error('recommendationsDiv 요소를 찾을 수 없습니다.');
         return;
@@ -440,10 +578,10 @@ function renderRecommendations(apparentTemp) {
     const customItems = JSON.parse(localStorage.getItem('customClothes')) || [];
     const sourceData = [...defaultOutfitData, ...customItems];
 
+    const tempMin = weather.currentTemperature - 10;
+    const tempMax = weather.currentTemperature + 10;
     const tempFilteredOutfits = sourceData.filter(item => {
-        // 온도 필터링을 더 넓게 설정 - 현재 온도에서 ±10℃ 범위
-        const tempRange = 10;
-        return apparentTemp >= (item.tempMin - tempRange) && apparentTemp <= (item.tempMax + tempRange);
+        return item.tempMin <= tempMax && item.tempMax >= tempMin;
     });
 
     const filteredOutfits = tempFilteredOutfits.filter(item => {
@@ -469,23 +607,23 @@ function renderRecommendations(apparentTemp) {
             if (genderFilteredOutfits.length > 0) {
                 // 성별 필터링된 의상 사용
                 const finalOutfits = genderFilteredOutfits.slice(0, 9); // 최대 9개 표시
-                renderOutfitItems(finalOutfits, apparentTemp);
+                renderOutfitItems(finalOutfits, weatherData);
                 return;
             }
         } else {
             // 스타일 필터링된 의상 사용
             const finalOutfits = styleFilteredOutfits.slice(0, 9);
-            renderOutfitItems(finalOutfits, apparentTemp);
+            renderOutfitItems(finalOutfits, weatherData);
             return;
         }
     }
 
     // 최종 필터링된 의상 렌더링
     const finalOutfits = filteredOutfits.slice(0, 9); // 최대 9개 표시
-    renderOutfitItems(finalOutfits, apparentTemp);
+    renderOutfitItems(finalOutfits, weatherData);
 }
 
-function renderOutfitItems(outfits, apparentTemp) {
+function renderOutfitItems(outfits, weather) {
     const categoryLabels = { outer: '아우터', top: '상의', bottom: '하의' };
     
     // "전체" 카테고리 선택 시 모든 카테고리의 의상 표시
@@ -501,7 +639,7 @@ function renderOutfitItems(outfits, apparentTemp) {
                 const selected = shuffled.slice(0, numToShow);
                 
                 selected.forEach(item => {
-                    renderSingleOutfitItem(item, categoryLabels[category], apparentTemp);
+                    renderSingleOutfitItem(item, categoryLabels[category], weather);
                 });
             }
         });
@@ -513,7 +651,7 @@ function renderOutfitItems(outfits, apparentTemp) {
         const selected = shuffled.slice(0, numToShow);
         
         selected.forEach(item => {
-            renderSingleOutfitItem(item, categoryLabels[selectedCategory], apparentTemp);
+            renderSingleOutfitItem(item, categoryLabels[selectedCategory], weather);
         });
     }
     
@@ -526,7 +664,7 @@ function renderOutfitItems(outfits, apparentTemp) {
     }, 100);
 }
 
-function renderSingleOutfitItem(item, categoryLabel, apparentTemp) {
+function renderSingleOutfitItem(item, categoryLabel, weather) {
     const itemDiv = document.createElement('div');
     itemDiv.className = 'recommendation-item';
     itemDiv.style.cursor = 'pointer';
@@ -543,7 +681,7 @@ function renderSingleOutfitItem(item, categoryLabel, apparentTemp) {
     const svgContent = getClothingSVG(item.name, styleColor, item.category, item.imageUrl);
 
     itemDiv.innerHTML = `
-        <div class="item-visual visual-${item.category}">
+        <div class="item-visual">
             ${svgContent}
         </div>
         <div class="item-info">
@@ -577,7 +715,7 @@ function addMaskRecommendation() {
         const svgContent = getClothingSVG('마스크', '#ff6b6b', 'accessory', maskImageUrl);
 
         maskDiv.innerHTML = `
-            <div class="item-visual visual-accessory">
+            <div class="item-visual">
                 ${svgContent}
             </div>
             <div class="item-info">
@@ -594,10 +732,9 @@ function addMaskRecommendation() {
 }
 
 function updateApp() {
-    const apparentTemp = calculateApparentTemperature(weatherData.currentTemperature, weatherData.windSpeed, weatherData.humidity, selectedBodyType);
-    updateWeatherUI(apparentTemp, weatherData);
-    getAdvice(apparentTemp, weatherData);
-    renderRecommendations(apparentTemp);
+    updateWeatherUI(weatherData);
+    getAdvice(weatherData);
+    renderRecommendations(weatherData);
 }
 
 // --- Initialization ---
@@ -605,14 +742,12 @@ async function initializeApp() {
     // Initialize DOM elements
     darkModeToggle = document.getElementById('dark-mode-toggle');
     weatherDisplay = document.getElementById('weather');
-    apparentTempDisplay = document.getElementById('apparent-temp');
     locationDisplay = document.getElementById('location');
     weatherComparisonDisplay = document.getElementById('weather-comparison');
     outfitExplanationDisplay = document.getElementById('outfit-explanation');
     contextualAdviceDisplay = document.getElementById('contextual-advice');
     genderButtons = document.querySelectorAll('.gender-selection button');
     styleButtons = document.querySelectorAll('.style-selection button');
-    bodyTypeButtons = document.querySelectorAll('.body-type-selection button');
     recommendationsDiv = document.getElementById('recommendations');
 
     if (localStorage.getItem('darkMode') === 'true') {
@@ -640,29 +775,38 @@ async function initializeApp() {
     if (casualButton) {
         casualButton.classList.add('active');
     }
-    
-    const normalButton = document.querySelector('.body-type-selection button[data-body-type="normal"]');
-    if (normalButton) {
-        normalButton.classList.add('active');
-    }
 
     updateApp();
 
     // Add event listeners after DOM is ready
     const categoryButtons = document.querySelectorAll('.category-selection button');
     
-    [...genderButtons, ...styleButtons, ...bodyTypeButtons, ...categoryButtons].forEach(button => {
+    [...genderButtons, ...styleButtons, ...categoryButtons].forEach(button => {
         button.addEventListener('click', (e) => {
             const parent = e.target.closest('div');
             parent.querySelectorAll('button').forEach(btn => btn.classList.remove('active'));
             e.target.closest('button').classList.add('active');
             if (parent.classList.contains('gender-selection')) selectedGender = e.target.closest('button').dataset.gender;
             if (parent.classList.contains('style-selection')) selectedStyle = e.target.closest('button').dataset.style;
-            if (parent.classList.contains('body-type-selection')) selectedBodyType = e.target.closest('button').dataset.bodyType;
             if (parent.classList.contains('category-selection')) selectedCategory = e.target.closest('button').dataset.category;
             updateApp();
         });
     });
+
+    // TPO 상황별 추천 버튼 이벤트 리스너 추가
+    const tpoButtons = document.querySelectorAll('.tpo-buttons button');
+    tpoButtons.forEach(button => {
+        button.addEventListener('click', (e) => {
+            const situation = e.target.closest('button').dataset.situation;
+            handleTPOSelection(situation);
+        });
+    });
+
+    // 기본 상황 선택
+    const dailyButton = document.querySelector('.tpo-buttons button[data-situation="daily"]');
+    if (dailyButton) {
+        dailyButton.classList.add('active');
+    }
 
     if (darkModeToggle) {
         darkModeToggle.addEventListener('click', toggleDarkMode);
@@ -672,6 +816,78 @@ async function initializeApp() {
 document.addEventListener('DOMContentLoaded', initializeApp);
 
 // === Weather and Air Quality Functions ===
+
+// TPO 상황별 추천 처리 함수
+function handleTPOSelection(situation) {
+    // 활성 버튼 업데이트
+    const tpoButtons = document.querySelectorAll('.tpo-buttons button');
+    tpoButtons.forEach(btn => btn.classList.remove('active'));
+    const activeButton = document.querySelector(`.tpo-buttons button[data-situation="${situation}"]`);
+    if (activeButton) {
+        activeButton.classList.add('active');
+    }
+    
+    // 선택된 상황 업데이트
+    selectedSituation = situation;
+    
+    // 상황별 추천 로직 적용
+    applyTPORecommendations(situation);
+}
+
+// 상황별 추천 적용 함수
+function applyTPORecommendations(situation) {
+    const temp = weatherData.currentTemperature;
+    const gender = selectedGender;
+    
+    let filteredData = [...defaultOutfitData];
+    
+    // 상황별 필터링
+    switch(situation) {
+        case 'daily':
+            // 일상: 모든 스타일 허용
+            break;
+        case 'date':
+            // 데이트: 모던, 캐주얼 스타일 우선, 깔끔한 의상
+            filteredData = filteredData.filter(item => 
+                item.style === 'modern' || item.style === 'casual'
+            );
+            // 데이트에 적합한 의상만 남기기
+            filteredData = filteredData.filter(item => 
+                !item.name.includes('운동') && 
+                !item.name.includes('트레이닝') &&
+                !item.name.includes('후드')
+            );
+            break;
+        case 'work':
+            // 출근: 모던 스타일, 격식 있는 의상
+            filteredData = filteredData.filter(item => 
+                item.style === 'modern'
+            );
+            // 출근에 적합한 의상만 남기기
+            filteredData = filteredData.filter(item => 
+                !item.name.includes('반팔') && 
+                !item.name.includes('반소매') &&
+                !item.name.includes('트레이닝') &&
+                !item.name.includes('운동')
+            );
+            break;
+    }
+    
+    // 온도 필터링 적용
+    filteredData = filteredData.filter(item => 
+        temp >= item.tempMin && temp <= item.tempMax
+    );
+    
+    // 성별 필터링 적용
+    if (gender !== 'any') {
+        filteredData = filteredData.filter(item => 
+            item.gender === 'any' || item.gender === gender
+        );
+    }
+    
+    // 추천 업데이트
+    renderRecommendations(filteredData);
+}
 
 async function getReverseGeocodedAddress(lat, lon) {
     try {

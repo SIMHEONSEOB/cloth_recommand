@@ -176,15 +176,17 @@ button.active {
 
 .outfit-visualization {
     display: flex;
-    justify-content: center;
-    gap: 30px;
-    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 15px;
+    flex-wrap: nowrap;
     margin-bottom: 30px;
+    width: 100%;
 }
 
 .outfit-layer {
-    width: 220px;
-    height: 280px;
+    flex: 1;
+    width: auto;
+    height: 400px;
     background: var(--bg-color);
     border: 2px dashed var(--button-border-color);
     border-radius: 16px;
@@ -196,12 +198,12 @@ button.active {
     transition: all 0.3s ease;
     overflow: hidden;
     cursor: pointer;
+    max-width: 350px;
 }
 
 .outfit-layer:hover {
     border-color: var(--active-button-bg-color);
-    transform: translateY(-5px);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
 .outfit-layer.filled {
@@ -218,12 +220,6 @@ button.active {
     object-fit: contain;
     filter: drop-shadow(0 5px 10px rgba(0, 0, 0, 0.1));
     margin-bottom: 10px;
-    transition: transform 0.3s ease;
-}
-
-.outfit-layer:hover svg,
-.outfit-layer:hover img {
-    transform: scale(1.05);
 }
 
 .placeholder-icon {
@@ -365,11 +361,15 @@ button.active {
 .item-visual-container {
     width: 100%;
     height: 180px;
-    background: #f3f4f6;
+    background: transparent;
     display: flex;
     align-items: center;
     justify-content: center;
     position: relative;
+}
+
+body.dark-mode .item-visual-container {
+    background: transparent;
 }
 
 .product-image {
@@ -517,27 +517,27 @@ body.dark-mode .badge-bottom {
 
 /* Visual backgrounds per category */
 .visual-outer {
-    background: linear-gradient(135deg, #ede9fe, #ddd6fe);
+    background: transparent;
 }
 
 .visual-top {
-    background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+    background: transparent;
 }
 
 .visual-bottom {
-    background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+    background: transparent;
 }
 
 body.dark-mode .visual-outer {
-    background: linear-gradient(135deg, #2e1065, #3b0764);
+    background: transparent;
 }
 
 body.dark-mode .visual-top {
-    background: linear-gradient(135deg, #1e3a5f, #1e40af);
+    background: transparent;
 }
 
 body.dark-mode .visual-bottom {
-    background: linear-gradient(135deg, #064e3b, #065f46);
+    background: transparent;
 }
 
 
@@ -954,19 +954,10 @@ body.dark-mode .visual-bottom {
 
 /* ===== Skeleton Loading UI ===== */
 .skeleton {
-    background: linear-gradient(90deg, var(--skeleton-base) 25%, var(--skeleton-shine) 50%, var(--skeleton-base) 75%);
-    background-size: 200% 100%;
-    animation: skeleton-loading 1.5s infinite;
+    background: var(--skeleton-base);
     border-radius: 8px;
-}
-
-@keyframes skeleton-loading {
-    0% {
-        background-position: 200% 0;
-    }
-    100% {
-        background-position: -200% 0;
-    }
+    width: 100%;
+    font-size: 1rem;
 }
 
 .skeleton-item {
@@ -1010,9 +1001,7 @@ body.dark-mode .visual-bottom {
 }
 
 .lazy-image.loading {
-    background: linear-gradient(90deg, var(--skeleton-base) 25%, var(--skeleton-shine) 50%, var(--skeleton-base) 75%);
-    background-size: 200% 100%;
-    animation: skeleton-loading 1.5s infinite;
+    background: var(--skeleton-base);
 }
 
 /* Image Container with Skeleton */
@@ -1028,7 +1017,6 @@ body.dark-mode .visual-bottom {
     object-fit: contain;
 }
 
-/* ===== Outfit Layer Styles ===== */
 .outfit-item-container {
     position: relative;
     width: 100%;
@@ -1040,25 +1028,30 @@ body.dark-mode .visual-bottom {
 }
 
 .outfit-item-image {
-    max-width: 100%;
-    max-height: 80%;
+    max-width: 95%;
+    max-height: 90%;
     object-fit: contain;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
 }
 
 .outfit-item-container .item-name {
     position: absolute;
-    bottom: 5px;
+    bottom: 8px;
     left: 50%;
     transform: translateX(-50%);
     font-size: 10px;
     background: rgba(0, 0, 0, 0.7);
     color: white;
-    padding: 2px 6px;
+    padding: 3px 8px;
     border-radius: 4px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
     max-width: 90%;
+    z-index: 10;
 }
 
 .remove-item-btn {
@@ -1078,6 +1071,7 @@ body.dark-mode .visual-bottom {
     font-size: 10px;
     opacity: 0;
     transition: opacity 0.3s ease;
+    z-index: 15;
 }
 
 .outfit-item-container:hover .remove-item-btn {
@@ -1089,25 +1083,52 @@ body.dark-mode .visual-bottom {
     transform: scale(1.1);
 }
 
-/* Animation effects */
-.item-added {
-    animation: itemAdded 0.3s ease;
+/* 의상 레이어 위치 통일 */
+.outfit-layer {
+    position: relative;
+    min-height: 220px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
 }
 
-.item-removed {
-    animation: itemRemoved 0.3s ease;
+.layer-content {
+    position: relative;
+    width: 100%;
+    height: 300px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
 }
 
-@keyframes itemAdded {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.05); background-color: rgba(34, 197, 94, 0.1); }
-    100% { transform: scale(1); }
+.layer-label {
+    position: absolute;
+    top: 5px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-color);
+    background: var(--bg-color);
+    padding: 4px 12px;
+    border-radius: 12px;
+    border: 1px solid var(--button-border-color);
+    z-index: 5;
 }
 
-@keyframes itemRemoved {
-    0% { transform: scale(1); }
-    50% { transform: scale(0.95); background-color: rgba(239, 68, 68, 0.1); }
-    100% { transform: scale(1); }
+.placeholder-icon {
+    font-size: 4rem;
+    color: var(--text-color);
+    opacity: 0.3;
+    margin-bottom: 10px;
+}
+
+.placeholder-text {
+    font-size: 0.9rem;
+    color: var(--text-color);
+    opacity: 0.5;
 }
 
 /* Recommendation item hover effects */
@@ -1124,44 +1145,44 @@ body.dark-mode .visual-bottom {
 
 /* Style Button Colors */
 .style-selection button[data-style="casual"] {
-    background: linear-gradient(135deg, #4CAF50, #45a049);
+    background: #4CAF50;
     color: white;
 }
 
 .style-selection button[data-style="modern"] {
-    background: linear-gradient(135deg, #2196F3, #1976D2);
+    background: #2196F3;
     color: white;
 }
 
 .style-selection button[data-style="street"] {
-    background: linear-gradient(135deg, #FF9800, #F57C00);
+    background: #FF9800;
     color: white;
 }
 
 .style-selection button[data-style="casual"]:hover {
-    background: linear-gradient(135deg, #45a049, #4CAF50);
+    background: #45a049;
 }
 
 .style-selection button[data-style="modern"]:hover {
-    background: linear-gradient(135deg, #1976D2, #2196F3);
+    background: #1976D2;
 }
 
 .style-selection button[data-style="street"]:hover {
-    background: linear-gradient(135deg, #F57C00, #FF9800);
+    background: #F57C00;
 }
 
 .style-selection button.active[data-style="casual"] {
-    background: linear-gradient(135deg, #388E3C, #4CAF50);
+    background: #388E3C;
     box-shadow: 0 4px 15px rgba(76, 175, 80, 0.4);
 }
 
 .style-selection button.active[data-style="modern"] {
-    background: linear-gradient(135deg, #1565C0, #2196F3);
+    background: #1565C0;
     box-shadow: 0 4px 15px rgba(33, 150, 243, 0.4);
 }
 
 .style-selection button.active[data-style="street"] {
-    background: linear-gradient(135deg, #E65100, #FF9800);
+    background: #E65100;
     box-shadow: 0 4px 15px rgba(255, 152, 0, 0.4);
 }
 
@@ -1175,7 +1196,7 @@ body.dark-mode .visual-bottom {
 }
 
 .action-btn-fixed {
-    background: linear-gradient(135deg, #667eea, #764ba2);
+    background: #667eea;
     color: white;
     border: none;
     padding: 15px;
@@ -1250,6 +1271,25 @@ body.dark-mode .visual-bottom {
         bottom: -25px;
         font-size: 11px;
     }
+    
+    /* 의상 레이어 모바일 크기 */
+    .outfit-layer {
+        width: auto;
+        height: 280px;
+    }
+    
+    .outfit-visualization {
+        gap: 15px;
+    }
+    
+    /* 의상 레이어 내부 크기 */
+    .outfit-layer {
+        min-height: 250px;
+    }
+    
+    .layer-content {
+        height: 250px;
+    }
 }
 
 /* AI Advice Fixed Button */
@@ -1262,7 +1302,7 @@ body.dark-mode .visual-bottom {
 }
 
 .ai-btn-fixed {
-    background: linear-gradient(135deg, #667eea, #764ba2);
+    background: #667eea;
     color: white;
     border: none;
     padding: 15px;
@@ -1304,4 +1344,103 @@ body.dark-mode .visual-bottom {
 
 .ai-btn-fixed:active {
     transform: translateY(-50%) scale(0.95);
+}
+
+/* TPO Situation Selection */
+.tpo-situation-selection {
+    background: var(--bg-color);
+    border-radius: 12px;
+    padding: 20px;
+    margin: 20px 0;
+    border: 1px solid var(--button-border-color);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.tpo-situation-selection h3 {
+    margin: 0 0 15px 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-color);
+    text-align: center;
+}
+
+.tpo-buttons {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.tpo-buttons button {
+    background: #f8f9fa;
+    color: var(--text-color);
+    border: 1px solid var(--button-border-color);
+    padding: 10px 15px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    min-width: 80px;
+    justify-content: center;
+}
+
+.tpo-buttons button:hover {
+    background: #e9ecef;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.tpo-buttons button.active {
+    background: #667eea;
+    color: white;
+    border-color: #667eea;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+}
+
+.tpo-buttons button.active:hover {
+    background: #5a6fd8;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+}
+
+/* TPO Button Colors */
+.tpo-buttons button[data-situation="daily"]:hover {
+    background: #4CAF50;
+    color: white;
+}
+
+.tpo-buttons button[data-situation="date"]:hover {
+    background: #E91E63;
+    color: white;
+}
+
+.tpo-buttons button[data-situation="work"]:hover {
+    background: #2196F3;
+    color: white;
+}
+
+/* Mobile Responsive for TPO */
+@media (max-width: 768px) {
+    .tpo-situation-selection {
+        padding: 15px;
+        margin: 15px 0;
+    }
+    
+    .tpo-buttons {
+        gap: 8px;
+    }
+    
+    .tpo-buttons button {
+        padding: 8px 12px;
+        font-size: 0.8rem;
+        min-width: 70px;
+    }
+    
+    .tpo-buttons button i {
+        font-size: 0.8rem;
+    }
 }
