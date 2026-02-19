@@ -6,10 +6,7 @@ import { API_CONFIG } from './config.js';
 // Google Gemini API 연동 함수
 async function getAIAdvice(weather, selectedClothes) {
     try {
-        // 날씨 데이터 분석
-        const weatherAnalysis = analyzeWeatherConditions(weather);
-        
-        // Google Gemini API 호출 (실제 사용 시 API 키 필요)
+        // Google Gemini API 호출
         const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${API_CONFIG.GEMINI_API_KEY}`, {
             method: 'POST',
             headers: {
@@ -21,7 +18,7 @@ async function getAIAdvice(weather, selectedClothes) {
                         text: `당신은 대한민국 최고의 패션 전문가입니다. 다음 정보를 종합적으로 분석하여 실용적이고 구체적인 조언을 제공해주세요.
 
 분석 기준:
-1. 날씨 조건: ${weatherAnalysis}
+1. 날씨 조건: ${weather}
 2. 선택된 의상: ${selectedClothes}
 3. TPO(시간, 장소, 상황) 고려
 4. 실용성과 안전성 우선
@@ -57,12 +54,11 @@ async function getAIAdvice(weather, selectedClothes) {
         
         // API 호출 실패 시 대체 조언 제공
         const fallbackAdvices = [
-            "오늘 날씨에 맞춰 따뜻한 아우터를 추가하면 더 좋을 것 같아요. 스타일리시하게 코디 완성해보세요!",
-            "선택하신 옷이 잘 어울러요! 날씨가 쌀쌀하니 얇은 니트나 스카프를 추가해보는 건 어떨까요?",
-            "좋은 선택이세요! 오늘 날씨를 고려하면 레이어링으로 온도 조절하면 더 편안할 거예요.",
-            "스타일이 멋지네요! 날씨가 좀 춥다면 보온성 좋은 아이템으로 코디를 보강해보세요.",
-            "내일 비 소식이 있다면 우산이나 방수 처리된 아우터를 챙기는 것을 잊지마세요!",
-            "미세먼지 농도가 높은 날이니 마스크 착용을 권장합니다. 패션 마스크로 스타일을 완성해보세요."
+            "오늘 날씨에 맞춰 따뜻한 아우터를 추가하면 더 좋을 것 같아요.",
+            "체온 유지를 위해 두꺼운 아우터는 필수예요. 일교차가 커요.",
+            "밤을 대비해 겉옷을 챙기세요. 낮과 밤 온도 차이가 큽니다.",
+            "미세먼지 농도가 높을 때는 마스크 착용을 추천드립니다.",
+            "비가 올 예정이니 우산이나 방수 재킷을 준비하세요."
         ];
         
         return fallbackAdvices[Math.floor(Math.random() * fallbackAdvices.length)];
@@ -74,18 +70,10 @@ function analyzeWeatherConditions(weather) {
     const conditions = [];
     
     // 기온 분석
-    if (weather.includes('비')) {
-        conditions.push('강수 확률 높음');
-    }
-    if (weather.includes('눈')) {
-        conditions.push('강설 확률 높음');
-    }
-    
-    // 온도 범위 분석
-    const tempMatch = weather.match(/(\d+)°/);
+    const tempMatch = weather.match(/(\d+)도/);
     if (tempMatch) {
         const temp = parseInt(tempMatch[1]);
-        if (temp < 5) {
+        if (temp < 0) {
             conditions.push('매우 추움');
         } else if (temp < 10) {
             conditions.push('추움');
@@ -117,32 +105,21 @@ function getSelectedClothes() {
     
     document.querySelectorAll('.outfit-layer.filled').forEach(layer => {
         const itemName = layer.querySelector('.item-name');
-        const category = layer.dataset.category;
-        
         if (itemName) {
-            selectedItems.push(`${category}: ${itemName.textContent}`);
+            selectedItems.push(itemName.textContent);
         }
     });
     
-    if (selectedItems.length === 0) {
-        return "아직 선택된 옷이 없습니다";
-    }
-    
-    return selectedItems.join(', ');
+    return selectedItems.length > 0 ? selectedItems.join(', ') : '선택된 의상 없음';
 }
 
 // 현재 날씨 정보 가져오기
 function getCurrentWeather() {
     const weatherElement = document.getElementById('weather');
-    const locationElement = document.getElementById('location');
-    
-    const weather = weatherElement ? weatherElement.textContent : '정보 없음';
-    const location = locationElement ? locationElement.textContent : '정보 없음';
-    
-    return `${location} - ${weather}`;
+    return weatherElement ? weatherElement.textContent : '날씨 정보 없음';
 }
 
-// AI 어드바이스 버튼 이벤트 리스너
+// 이벤트 리스너 설정
 document.addEventListener('DOMContentLoaded', function() {
     const aiAdviceBtn = document.getElementById('get-ai-advice');
     const aiAdviceResult = document.getElementById('ai-advice-result');
@@ -180,15 +157,16 @@ document.addEventListener('DOMContentLoaded', function() {
                 aiAdviceBtn.querySelector('span').textContent = 'TPO 어드바이스 받기';
                 
             } catch (error) {
-                console.error('AI 어드바이스 처리 중 오류:', error);
+                console.error('AI 어드바이스 오류:', error);
                 
-                // 에러 처리
-                aiAdviceText.textContent = '죄송합니다. 잠시 후 다시 시도해주세요.';
+                // 에러 메시지 표시
+                aiAdviceText.textContent = 'AI 조언을 가져오는 중 오류가 발생했습니다. 다시 시도해주세요.';
                 aiAdviceTime.textContent = new Date().toLocaleTimeString('ko-KR', { 
                     hour: '2-digit', 
                     minute: '2-digit' 
                 });
                 
+                // 결과 섹션 표시
                 aiAdviceResult.classList.remove('hidden');
                 
                 // 버튼 상태 복원
@@ -199,8 +177,3 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
-
-// 전역 함수로 내보내기
-window.getAIAdvice = getAIAdvice;
-window.getSelectedClothes = getSelectedClothes;
-window.getCurrentWeather = getCurrentWeather;
