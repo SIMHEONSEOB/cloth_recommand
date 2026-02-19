@@ -1,4 +1,4 @@
-// API 설정 가져오기
+// API 설정 가져오기1
 import { API_CONFIG } from './config.js';
 
 // --- Global Functions ---
