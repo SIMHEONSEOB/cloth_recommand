@@ -81,6 +81,17 @@
                         <button data-style="street"><i class="fas fa-running"></i> 스트리트</button>
                     </div>
                 </div>
+                
+                <div class="control-group">
+                    <div class="control-label">상황 선택</div>
+                    <div class="situation-selection">
+                        <button data-situation="daily" class="situation-btn active"><i class="fas fa-home"></i> 일상</button>
+                        <button data-situation="date" class="situation-btn"><i class="fas fa-heart"></i> 데이트</button>
+                        <button data-situation="work" class="situation-btn"><i class="fas fa-briefcase"></i> 출근</button>
+                        <button data-situation="exercise" class="situation-btn"><i class="fas fa-dumbbell"></i> 운동</button>
+                        <button data-situation="formal" class="situation-btn"><i class="fas fa-glass-cheers"></i> 격식</button>
+                    </div>
+                </div>
             </div>
 
             <div id="outfit-display-section">
@@ -144,7 +155,10 @@
         </main>
     </div>
     <script src="ai-advisor.js" type="module"></script>
+    <script src="ai-style-rater.js" type="module"></script>
+    <script src="tpo-recommender.js" type="module"></script>
     <script src="coupang-partner.js" type="module"></script>
+    <script src="mobile-touch.js" type="module"></script>
     <script src="main.js" type="module"></script>
 </body>
 

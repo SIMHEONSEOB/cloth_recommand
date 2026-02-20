@@ -708,6 +708,149 @@ button i {
         gap: 20px;
     }
     
+    .situation-selection {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+    
+    .situation-btn {
+        padding: 8px 16px;
+        background: var(--bg-color);
+        border: 2px solid var(--border-color);
+        border-radius: 8px;
+        font-size: 0.9rem;
+        font-weight: 500;
+        color: var(--text-secondary);
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+    
+    .situation-btn:hover {
+        border-color: var(--primary-color);
+        color: var(--primary-color);
+        transform: translateY(-2px);
+    }
+    
+    .situation-btn.active {
+        background: var(--primary-color);
+        border-color: var(--primary-color);
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+    }
+    
+    .recommendations-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 16px;
+        margin-top: 24px;
+    }
+    
+    .recommendation-item {
+        background: var(--card-bg-color);
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        padding: 16px;
+        transition: all 0.3s ease;
+        box-shadow: var(--shadow-sm);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .recommendation-item:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-lg);
+        border-color: var(--primary-color);
+    }
+    
+    .recommendation-item::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+    
+    .recommendation-item:hover::before {
+        opacity: 1;
+    }
+    
+    .recommendation-content {
+        margin-bottom: 12px;
+    }
+    
+    .recommendation-name {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: var(--text-color);
+        margin-bottom: 4px;
+    }
+    
+    .recommendation-category {
+        font-size: 0.9rem;
+        color: var(--text-secondary);
+        margin-bottom: 2px;
+    }
+    
+    .recommendation-priority {
+        font-size: 0.8rem;
+        color: var(--primary-color);
+        font-weight: 500;
+    }
+    
+    .add-to-outfit-btn {
+        width: 100%;
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        color: white;
+        border: none;
+        border-radius: 6px;
+        padding: 8px 12px;
+        font-size: 0.9rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+    }
+    
+    .add-to-outfit-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+    }
+    
+    .remove-item-btn {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        background: var(--danger-color);
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 24px;
+        height: 24px;
+        font-size: 0.8rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .remove-item-btn:hover {
+        transform: scale(1.1);
+        background: #dc2626;
+    }
+    
     .outfit-visualization {
         flex-direction: column;
         gap: 16px;
@@ -860,7 +1003,312 @@ button i {
     padding: 20px;
 }
 
-/* ===== 반응형 디자인 ===== */
+/* ===== 아바타 레이어링 및 애니메이션 ===== */
+.outfit-visualization {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    margin: 24px 0;
+    position: relative;
+}
+
+.outfit-layer {
+    background: var(--card-bg-color);
+    border: 2px solid var(--border-color);
+    border-radius: 16px;
+    height: 250px;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: var(--shadow-md);
+    display: flex;
+    flex-direction: column;
+}
+
+/* 레이어별 z-index 설정 */
+#layer-outer {
+    z-index: 4;
+    order: 1;
+}
+
+#layer-top {
+    z-index: 3;
+    order: 2;
+}
+
+#layer-bottom {
+    z-index: 2;
+    order: 3;
+}
+
+#layer-shoes {
+    z-index: 1;
+    order: 4;
+}
+
+/* 레이어 라벨 */
+.layer-label {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    background: var(--primary-color);
+    color: white;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    z-index: 10;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    opacity: 0.9;
+    transition: all 0.3s ease;
+}
+
+.layer-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    position: relative;
+    transition: all 0.4s ease;
+}
+
+/* 플레이스홀더 아이콘 */
+.placeholder-icon {
+    font-size: 3rem;
+    color: var(--text-tertiary);
+    margin-bottom: 12px;
+    opacity: 0.6;
+    transition: all 0.3s ease;
+}
+
+.placeholder-text {
+    color: var(--text-tertiary);
+    font-size: 0.9rem;
+    font-weight: 500;
+    opacity: 0.7;
+    transition: all 0.3s ease;
+}
+
+/* 의상 아이템 추가 애니메이션 */
+.outfit-layer.filled {
+    border-color: var(--primary-color);
+    background: linear-gradient(135deg, var(--bg-color), var(--bg-secondary));
+    transform: scale(1.02);
+    box-shadow: var(--shadow-lg);
+}
+
+.outfit-layer.filled .layer-content {
+    animation: itemAdded 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes itemAdded {
+    0% {
+        transform: scale(0.8) rotate(-5deg);
+        opacity: 0;
+    }
+    50% {
+        transform: scale(1.1) rotate(2deg);
+    }
+    100% {
+        transform: scale(1) rotate(0deg);
+        opacity: 1;
+    }
+}
+
+/* 의상 아이템 이름 */
+.item-name {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-color);
+    text-align: center;
+    margin-bottom: 8px;
+    padding: 8px 12px;
+    background: rgba(99, 102, 241, 0.1);
+    border-radius: 8px;
+    border: 1px solid rgba(99, 102, 241, 0.2);
+    animation: fadeInUp 0.4s ease;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* 제거 버튼 */
+.remove-item-btn {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: var(--danger-color);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 28px;
+    height: 28px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 20;
+    opacity: 0;
+    transform: scale(0.8);
+}
+
+.outfit-layer.filled .remove-item-btn {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.remove-item-btn:hover {
+    transform: scale(1.2) rotate(90deg);
+    background: #dc2626;
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
+/* 의상 제거 애니메이션 */
+.outfit-layer.removing {
+    animation: itemRemoving 0.5s ease;
+}
+
+@keyframes itemRemoving {
+    0% {
+        transform: scale(1) rotate(0deg);
+        opacity: 1;
+    }
+    50% {
+        transform: scale(0.9) rotate(-3deg);
+    }
+    100% {
+        transform: scale(0.8) rotate(0deg);
+        opacity: 0;
+    }
+}
+
+/* 드래그 앤 드롭 애니메이션 */
+.outfit-layer.drag-over {
+    border-color: var(--success-color);
+    background: rgba(16, 185, 129, 0.05);
+    transform: scale(1.05);
+    box-shadow: 0 0 20px rgba(16, 185, 129, 0.3);
+}
+
+.outfit-layer.drag-over .layer-label {
+    background: var(--success-color);
+    animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+}
+
+/* 호버 효과 */
+.outfit-layer:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-xl);
+    border-color: var(--primary-color);
+}
+
+.outfit-layer:hover .placeholder-icon {
+    color: var(--primary-color);
+    transform: scale(1.1);
+}
+
+.outfit-layer:hover .placeholder-text {
+    color: var(--primary-color);
+    font-weight: 600;
+}
+
+/* 로딩 상태 */
+.outfit-layer.loading {
+    position: relative;
+    overflow: hidden;
+}
+
+.outfit-layer.loading::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(99, 102, 241, 0.2), transparent);
+    animation: loading 1.5s infinite;
+}
+
+@keyframes loading {
+    0% {
+        left: -100%;
+    }
+    100% {
+        left: 100%;
+    }
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+    .outfit-visualization {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+    
+    .outfit-layer {
+        height: 200px;
+    }
+    
+    .layer-label {
+        font-size: 0.7rem;
+        padding: 3px 10px;
+    }
+    
+    .placeholder-icon {
+        font-size: 2.5rem;
+    }
+    
+    .item-name {
+        font-size: 1rem;
+        padding: 6px 10px;
+    }
+    
+    .remove-item-btn {
+        width: 24px;
+        height: 24px;
+        font-size: 0.7rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .outfit-layer {
+        height: 180px;
+    }
+    
+    .layer-content {
+        padding: 16px;
+    }
+    
+    .placeholder-icon {
+        font-size: 2rem;
+    }
+    
+    .item-name {
+        font-size: 0.9rem;
+    }
+}
 @media (max-width: 768px) {
     #coupang-section {
         padding: 16px;
