@@ -1,21 +1,20 @@
 // AI 스타일리스트 한 줄 평 기능
 
-// API 설정 가져오기
-import { API_CONFIG } from './config.js';
-
 // AI 스타일 평가 함수
 async function getAIStyleRating(weather, selectedClothes, situation = '일상') {
     try {
-        // Google Gemini API 호출
-        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${API_CONFIG.GEMINI_API_KEY}`, {
+        // OpenAI API 호출
+        const response = await fetch('https://api.openai.com/v1/chat/completions', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
+                'Authorization': 'Bearer sk-proj-4Q3h8kL2mN9pX7rJ6vW5T3yF1zG8bD2cV9nK7sQ5xP1mR4tY6uI3oE8wA2fG7h'
             },
             body: JSON.stringify({
-                contents: [{
-                    parts: [{
-                        text: `당신은 대한민국 최고의 패션 심사위원입니다. 현재 날씨와 사용자가 선택한 의상을 분석하여 따끔하지만 위트 있는 한 줄 평을 해주세요.
+                model: "gpt-4",
+                messages: [{
+                    role: "user",
+                    content: `당신은 대한민국 최고의 패션 심사위원입니다. 현재 날씨와 사용자가 선택한 의상을 분석하여 따끔하지만 위트 있는 한 줄 평을 해주세요.
 
 분석 정보:
 - 현재 날씨: ${weather}
@@ -36,8 +35,9 @@ async function getAIStyleRating(weather, selectedClothes, situation = '일상') 
 "오늘의 코디 점수: 75점 - 5도 날씨에 반팔과 패딩은 좀 과하지 않나요? 계절을 고려한 센스가 필요해요!"
 
 이 정보를 바탕으로 오늘의 코디 점수와 한 줄 평을 부탁드립니다.`
-                    }]
-                }]
+                }],
+                max_tokens: 100,
+                temperature: 0.8
             })
         });
         
@@ -48,7 +48,7 @@ async function getAIStyleRating(weather, selectedClothes, situation = '일상') 
         }
         
         const data = await response.json();
-        return data.candidates[0].content.parts[0].text;
+        return data.choices[0].message.content;
         
     } catch (error) {
         console.error('AI 스타일리스트 생성 중 오류:', error);

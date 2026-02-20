@@ -1,21 +1,20 @@
 // 상황별(TPO) 추천 기능
 
-// API 설정 가져오기
-import { API_CONFIG } from './config.js';
-
 // 상황별 의상 추천 함수
 async function getTPORecommendations(weather, situation, gender, style) {
     try {
-        // Google Gemini API 호출
-        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${API_CONFIG.GEMINI_API_KEY}`, {
+        // OpenAI API 호출
+        const response = await fetch('https://api.openai.com/v1/chat/completions', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
+                'Authorization': 'Bearer sk-proj-4Q3h8kL2mN9pX7rJ6vW5T3yF1zG8bD2cV9nK7sQ5xP1mR4tY6uI3oE8wA2fG7h'
             },
             body: JSON.stringify({
-                contents: [{
-                    parts: [{
-                        text: `당신은 대한민국 최고의 패션 전문가입니다. 현재 날씨와 사용자의 상황에 맞는 의상을 추천해주세요.
+                model: "gpt-4",
+                messages: [{
+                    role: "user",
+                    content: `당신은 대한민국 최고의 패션 전문가입니다. 현재 날씨와 사용자의 상황에 맞는 의상을 추천해주세요.
 
 분석 정보:
 - 현재 날씨: ${weather}
@@ -47,8 +46,9 @@ async function getTPORecommendations(weather, situation, gender, style) {
 }
 
 이 정보를 바탕으로 JSON 형식으로 추천해주세요.`
-                    }]
-                }]
+                }],
+                max_tokens: 300,
+                temperature: 0.7
             })
         });
         
@@ -59,7 +59,7 @@ async function getTPORecommendations(weather, situation, gender, style) {
         }
         
         const data = await response.json();
-        const responseText = data.candidates[0].content.parts[0].text;
+        const responseText = data.choices[0].message.content;
         
         // JSON 파싱
         const jsonMatch = responseText.match(/\{[\s\S]*\}/);

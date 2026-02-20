@@ -121,20 +121,23 @@ function getCurrentOutfit() {
 // AI 스타일리스트 기능
 async function getAIStyleRating(weather, selectedClothes) {
     try {
-        // Google Gemini API 호출 (실제 사용 시 API 키 필요)
-        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${API_CONFIG.GEMINI_API_KEY}`, {
+        // OpenAI API 호출
+        const response = await fetch('https://api.openai.com/v1/chat/completions', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
+                'Authorization': 'Bearer sk-proj-4Q3h8kL2mN9pX7rJ6vW5T3yF1zG8bD2cV9nK7sQ5xP1mR4tY6uI3oE8wA2fG7h'
             },
             body: JSON.stringify({
-                contents: [{
-                    parts: [{
-                        text: `당신은 패션 전문가입니다. 현재 날씨와 사용자가 선택한 옷을 보고 코디 점수를 매겨주세요. 100점 만점에 따라 점수를 매기고, 한 줄로 간결하게 평가해주세요. 예: '오늘 코디 점수: 85점 - 완벽한 데이트룩!'
+                model: "gpt-4",
+                messages: [{
+                    role: "user",
+                    content: `당신은 패션 전문가입니다. 현재 날씨와 사용자가 선택한 옷을 보고 코디 점수를 매겨주세요. 100점 만점에 따라 점수를 매기고, 한 줄로 간결하게 평가해주세요. 예: '오늘 코디 점수: 85점 - 완벽한 데이트룩!'
 
 현재 기온은 ${weather.currentTemperature}도이고 사용자는 ${selectedClothes}를 골랐어. 이 코디에 대해 패션 전문가로서 따끔하지만 위트 있게 한 줄 평을 해줘.`
-                    }]
-                }]
+                }],
+                max_tokens: 100,
+                temperature: 0.8
             })
         });
         
@@ -143,7 +146,7 @@ async function getAIStyleRating(weather, selectedClothes) {
         }
         
         const data = await response.json();
-        return data.candidates[0].content.parts[0].text;
+        return data.choices[0].message.content;
         
     } catch (error) {
         console.error('AI 스타일리스트 생성 중 오류:', error);

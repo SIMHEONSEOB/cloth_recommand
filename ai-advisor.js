@@ -1,21 +1,20 @@
 // AI 코디네이터 TPO 어드바이스 기능
 
-// API 설정 가져오기
-import { API_CONFIG } from './config.js';
-
-// Google Gemini API 연동 함수
+// OpenAI API 연동 함수
 async function getAIAdvice(weather, selectedClothes) {
     try {
-        // Google Gemini API 호출
-        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${API_CONFIG.GEMINI_API_KEY}`, {
+        // OpenAI API 호출
+        const response = await fetch('https://api.openai.com/v1/chat/completions', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
+                'Authorization': 'Bearer sk-proj-4Q3h8kL2mN9pX7rJ6vW5T3yF1zG8bD2cV9nK7sQ5xP1mR4tY6uI3oE8wA2fG7h'
             },
             body: JSON.stringify({
-                contents: [{
-                    parts: [{
-                        text: `당신은 대한민국 최고의 패션 전문가입니다. 다음 정보를 종합적으로 분석하여 실용적이고 구체적인 조언을 제공해주세요.
+                model: "gpt-4",
+                messages: [{
+                    role: "user",
+                    content: `당신은 대한민국 최고의 패션 전문가입니다. 다음 정보를 종합적으로 분석하여 실용적이고 구체적인 조언을 제공해주세요.
 
 분석 기준:
 1. 날씨 조건: ${weather}
@@ -35,8 +34,9 @@ async function getAIAdvice(weather, selectedClothes) {
 두 번째 문장: 구체적인 개선 조언이나 추가 아이템 추천
 
 오늘 날씨: ${weather}, 선택한 옷: ${selectedClothes}. 이 코디가 적절할까? 실용적인 TPO 조언을 부탁드립니다.`
-                    }]
-                }]
+                }],
+                max_tokens: 150,
+                temperature: 0.7
             })
         });
         
@@ -47,7 +47,7 @@ async function getAIAdvice(weather, selectedClothes) {
         }
         
         const data = await response.json();
-        return data.candidates[0].content.parts[0].text;
+        return data.choices[0].message.content;
         
     } catch (error) {
         console.error('AI 어드바이스 오류:', error);
