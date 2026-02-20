@@ -1,7 +1,7 @@
-// 쿠팡 파트너 기능
+// 쿠팡 파트너 기능 - 기본 버전
 
 // 쿠팡 파트너 ID (실제 사용 시 자신의 파트너 ID로 교체)
-const COUPANG_PARTNER_ID = 'your-partner-id';
+const COUPANG_PARTNER_ID = 'SEOB0001'; // 실제 파트너스 ID로 교체 필요
 
 // 선택된 의상 정보 가져오기
 function getSelectedOutfitItems() {
@@ -106,8 +106,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 // 버튼 상태 복원
                 searchCoupangBtn.classList.remove('loading');
-                searchCoupangBtn.querySelector('i').className = 'fas fa-search';
-                searchCoupangBtn.querySelector('span').textContent = '쿠팡에서 검색';
+                searchCoupangBtn.querySelector('i').className = 'fas fa-shopping-bag';
+                searchCoupangBtn.querySelector('span').textContent = '쿠팡에서 구매하기';
             }, 1000);
         });
     }
