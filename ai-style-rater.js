@@ -3,12 +3,18 @@
 // AI 스타일 평가 함수
 async function getAIStyleRating(weather, selectedClothes, situation = '일상') {
     try {
+        // API 키 가져오기
+        const apiKey = getOpenAIKey();
+        if (!apiKey) {
+            throw new Error('OpenAI API 키가 필요합니다.');
+        }
+        
         // OpenAI API 호출
         const response = await fetch('https://api.openai.com/v1/chat/completions', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': 'Bearer sk-proj-4Q3h8kL2mN9pX7rJ6vW5T3yF1zG8bD2cV9nK7sQ5xP1mR4tY6uI3oE8wA2fG7h'
+                'Authorization': `Bearer ${apiKey}`
             },
             body: JSON.stringify({
                 model: "gpt-4",
